@@ -7,8 +7,10 @@
  * controllers wrap their bodies in try/catch.
  */
 
+const wantsJson = require('../utils/wantsJson');
+
 function notFound(req, res) {
-  if (req.xhr || req.path.startsWith('/api')) {
+  if (wantsJson(req)) {
     return res.status(404).json({ error: 'Not found.' });
   }
   return res.status(404).render('pages/error', {
@@ -49,7 +51,7 @@ function errorHandler(err, req, res, next) {
     message = err.message;
   }
 
-  if (req.xhr || req.path.startsWith('/api') || req.accepts('json') === 'json') {
+  if (wantsJson(req)) {
     return res.status(status).json({ error: message });
   }
   return res.status(status).render('pages/error', { title: 'Error', message });

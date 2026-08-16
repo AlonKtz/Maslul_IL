@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Car = require('../models/Car');
-const Post = require('../models/Post');
+const Event = require('../models/Event');
+const Listing = require('../models/Listing');
 const Group = require('../models/Group');
 const { contains, paginate } = require('../utils/query');
 
@@ -26,9 +27,10 @@ async function showProfile(req, res, next) {
       });
     }
 
-    const [cars, postCount, groups] = await Promise.all([
+    const [cars, eventCount, listingCount, groups] = await Promise.all([
       Car.find({ owner: user._id }).sort({ createdAt: -1 }),
-      Post.countDocuments({ author: user._id }),
+      Event.countDocuments({ host: user._id }),
+      Listing.countDocuments({ seller: user._id }),
       Group.find({ members: user._id }).select('name category'),
     ]);
 
@@ -40,7 +42,8 @@ async function showProfile(req, res, next) {
       title: user.displayName || user.username,
       user,
       cars,
-      postCount,
+      eventCount,
+      listingCount,
       groups,
       isSelf,
       isFriend,
@@ -175,16 +178,17 @@ async function remove(req, res, next) {
     // Clean up the data that belongs to this member.
     await Promise.all([
       Car.deleteMany({ owner: id }),
-      Post.deleteMany({ author: id }),
+      Event.deleteMany({ host: id }),
+      Listing.deleteMany({ seller: id }),
       User.updateMany({ friends: id }, { $pull: { friends: id } }),
       Group.updateMany({ members: id }, { $pull: { members: id } }),
     ]);
 
-    // Groups they managed are removed along with their posts.
+    // Groups they managed are removed along with the events those groups host.
     const managed = await Group.find({ admin: id }).select('_id');
     if (managed.length) {
       const ids = managed.map((g) => g._id);
-      await Post.deleteMany({ group: { $in: ids } });
+      await Event.deleteMany({ group: { $in: ids } });
       await Group.deleteMany({ _id: { $in: ids } });
     }
 

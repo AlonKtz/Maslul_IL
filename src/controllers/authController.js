@@ -36,7 +36,7 @@ async function register(req, res, next) {
 
     // Log the new user straight in.
     req.session.userId = user._id;
-    return res.status(201).json({ ok: true, redirect: '/feed' });
+    return res.status(201).json({ ok: true, redirect: '/events' });
   } catch (err) {
     next(err);
   }
@@ -57,7 +57,7 @@ async function login(req, res, next) {
     }
 
     req.session.userId = user._id;
-    return res.json({ ok: true, redirect: '/feed' });
+    return res.json({ ok: true, redirect: '/events' });
   } catch (err) {
     next(err);
   }

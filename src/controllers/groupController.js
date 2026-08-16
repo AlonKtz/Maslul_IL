@@ -1,5 +1,5 @@
 const Group = require('../models/Group');
-const Post = require('../models/Post');
+const Event = require('../models/Event');
 const { contains, paginate, num } = require('../utils/query');
 
 /**
@@ -161,7 +161,8 @@ async function update(req, res, next) {
 // DELETE /api/groups/:id — also removes the group's posts.
 async function remove(req, res, next) {
   try {
-    await Post.deleteMany({ group: req.group._id });
+    // Events hosted by this group lose their home, so remove them too.
+    await Event.deleteMany({ group: req.group._id });
     await req.group.deleteOne();
     res.json({ ok: true });
   } catch (err) {

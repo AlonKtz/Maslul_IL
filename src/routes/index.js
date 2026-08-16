@@ -1,10 +1,31 @@
 const express = require('express');
+const { requireLogin, requireAdmin } = require('../middleware/auth');
+const { CITIES } = require('../data/cities');
+
 const router = express.Router();
 
-// GET / — landing page for guests, feed for members.
+// GET / — landing page for guests, meets & races for members.
 router.get('/', (req, res) => {
-  if (req.currentUser) return res.redirect('/feed');
+  if (req.currentUser) return res.redirect('/events');
   res.render('pages/landing', { title: 'Home' });
+});
+
+// The search, chat, stats and admin pages are shells: their content is
+// loaded over Ajax by the scripts in /public/js.
+router.get('/search', requireLogin, (req, res) => {
+  res.render('pages/search', { title: 'Search', cities: CITIES });
+});
+
+router.get('/chat', requireLogin, (req, res) => {
+  res.render('pages/chat', { title: 'Chat' });
+});
+
+router.get('/stats', requireLogin, (req, res) => {
+  res.render('pages/stats', { title: 'Statistics' });
+});
+
+router.get('/admin', requireLogin, requireAdmin, (req, res) => {
+  res.render('pages/admin', { title: 'Administration' });
 });
 
 module.exports = router;

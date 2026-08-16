@@ -45,8 +45,10 @@ app.use(require('./src/routes/index'));
 app.use(require('./src/routes/auth'));
 app.use(require('./src/routes/users'));
 app.use(require('./src/routes/groups'));
-app.use(require('./src/routes/posts'));
+app.use(require('./src/routes/events'));
+app.use(require('./src/routes/listings'));
 app.use(require('./src/routes/cars'));
+app.use(require('./src/routes/uploads'));
 
 // ---------------------------------------------------------------- errors
 // Must be registered last, after every route.

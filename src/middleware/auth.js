@@ -1,4 +1,5 @@
 const Group = require('../models/Group');
+const wantsJson = require('../utils/wantsJson');
 
 /**
  * Access-control middleware.
@@ -37,7 +38,7 @@ async function attachUser(req, res, next) {
 function requireLogin(req, res, next) {
   if (req.currentUser) return next();
 
-  if (req.xhr || req.accepts('json') === 'json' || req.path.startsWith('/api')) {
+  if (wantsJson(req)) {
     return res.status(401).json({ error: 'You must be logged in to do that.' });
   }
   return res.redirect('/login');
@@ -47,7 +48,7 @@ function requireLogin(req, res, next) {
 function requireAdmin(req, res, next) {
   if (req.currentUser && req.currentUser.role === 'admin') return next();
 
-  if (req.xhr || req.path.startsWith('/api')) {
+  if (wantsJson(req)) {
     return res.status(403).json({ error: 'Administrator access required.' });
   }
   return res.status(403).render('pages/error', {
@@ -81,7 +82,7 @@ async function requireGroupAdmin(req, res, next) {
 
 // Redirects already-logged-in users away from login/register pages.
 function requireGuest(req, res, next) {
-  if (req.currentUser) return res.redirect('/feed');
+  if (req.currentUser) return res.redirect('/events');
   next();
 }
 

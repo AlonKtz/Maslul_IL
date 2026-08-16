@@ -23,7 +23,7 @@ jQuery(function ($) {
 
     API.post('/auth/login', { username: username, password: password })
       .done(function (res) {
-        window.location.href = res.redirect || '/feed';
+        window.location.href = res.redirect || '/events';
       })
       .fail(function (jqXHR) {
         API.showError('#login-error', API.errorMessage(jqXHR));
@@ -60,7 +60,7 @@ jQuery(function ($) {
 
     API.post('/auth/register', payload)
       .done(function (res) {
-        window.location.href = res.redirect || '/feed';
+        window.location.href = res.redirect || '/events';
       })
       .fail(function (jqXHR) {
         API.showError('#register-error', API.errorMessage(jqXHR));

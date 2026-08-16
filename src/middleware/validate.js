@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const wantsJson = require('../utils/wantsJson');
 
 /**
  * Runs after a list of express-validator checks.
@@ -11,7 +12,7 @@ function handleValidation(req, res, next) {
 
   const errors = result.array().map((e) => ({ field: e.path, message: e.msg }));
 
-  if (req.xhr || req.path.startsWith('/api') || req.accepts('json') === 'json') {
+  if (wantsJson(req)) {
     return res.status(400).json({ error: errors[0].message, errors });
   }
   return res.status(400).render('pages/error', {
