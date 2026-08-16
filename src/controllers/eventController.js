@@ -16,6 +16,8 @@ function showEvents(req, res) {
     title: 'Meets & races',
     cities: CITIES.map((c) => c.name),
     raceTypes: Event.RACE_TYPES,
+    // Optional: put a YouTube video id in .env to show a weekly recap.
+    youtubeId: process.env.RECAP_YOUTUBE_ID || '',
   });
 }
 

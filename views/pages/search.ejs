@@ -1,9 +1,134 @@
+<% pageScripts = ['/js/search.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Search</h1>
+      <p class="muted">Find meets and races near you, or track down members and groups.</p>
+    </div>
+  </div>
+
+  <div class="tabs" id="search-tabs">
+    <button class="tab is-active" data-tab="panel-area" type="button">Area of interest</button>
+    <button class="tab" data-tab="panel-members" type="button">Members</button>
+    <button class="tab" data-tab="panel-groups" type="button">Groups</button>
+  </div>
+
+  <!-- ============================================================ area search -->
+  <div id="panel-area" class="tab-panel is-active">
+    <section class="card">
+      <h2>Draw where you are willing to travel</h2>
+      <p class="muted small">
+        Outline an area on the map and Maslul finds everything happening inside it.
+        The search runs against the real coordinates stored for each event.
+      </p>
+
+      <div class="form-actions" style="margin-bottom:1rem">
+        <label class="small" style="margin:0;display:flex;align-items:center;gap:.5rem">
+          Looking for
+          <select id="area-mode" style="width:auto">
+            <option value="events">Meets &amp; races</option>
+            <option value="listings">Items for sale</option>
+          </select>
+        </label>
+      </div>
+
+      <%# The canvas map is a React component (see public/components/CanvasMap.jsx). %>
+      <div id="area-map"
+           data-react="CanvasMap"
+           data-props='<%- JSON.stringify({ cities: cities, mode: "events" }) %>'></div>
+    </section>
+  </div>
+
+  <!-- =========================================================== member search -->
+  <div id="panel-members" class="tab-panel">
+    <section class="search-panel" style="margin-top:1.25rem">
+      <h2 class="small" style="margin-top:0">Find members</h2>
+      <form id="member-search" novalidate>
+        <div class="filter-row">
+          <div>
+            <label for="m-username">Name or username</label>
+            <input id="m-username" name="username" type="text" placeholder="alon">
+          </div>
+          <div>
+            <label for="m-location">Location</label>
+            <input id="m-location" name="location" type="text" placeholder="Haifa">
+          </div>
+          <div>
+            <label for="m-keyword">Bio contains</label>
+            <input id="m-keyword" name="keyword" type="text" placeholder="turbo">
+          </div>
+          <div>
+            <label for="m-carmake">Owns a car by</label>
+            <input id="m-carmake" name="carMake" type="text" placeholder="Toyota">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Search members</button>
+          <button class="btn btn-ghost" type="reset">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="member-results" class="grid"></div>
+  </div>
+
+  <!-- ============================================================ group search -->
+  <div id="panel-groups" class="tab-panel">
+    <section class="search-panel" style="margin-top:1.25rem">
+      <h2 class="small" style="margin-top:0">Find groups</h2>
+      <form id="group-search" novalidate>
+        <div class="filter-row">
+          <div>
+            <label for="gs-name">Name</label>
+            <input id="gs-name" name="name" type="text" placeholder="JDM">
+          </div>
+          <div>
+            <label for="gs-category">Category</label>
+            <select id="gs-category" name="category">
+              <option value="">Any</option>
+              <% ['Brand','Off-road','Classic','EV','Racing','Tuning','JDM','General'].forEach(function (c) { %>
+                <option value="<%= c %>"><%= c %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div>
+            <label for="gs-brand">Brand</label>
+            <input id="gs-brand" name="brand" type="text" placeholder="Nissan">
+          </div>
+          <div>
+            <label for="gs-privacy">Privacy</label>
+            <select id="gs-privacy" name="privacy">
+              <option value="">Any</option>
+              <option value="public">Public only</option>
+              <option value="private">Private only</option>
+            </select>
+          </div>
+          <div>
+            <label for="gs-members">Min members</label>
+            <input id="gs-members" name="minMembers" type="number" min="1" placeholder="3">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Search groups</button>
+          <button class="btn btn-ghost" type="reset">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="group-results" class="grid"></div>
+  </div>
+
 </main>
+
+<%# React and Babel are served from /public/vendor so the page works offline. %>
+<script src="/vendor/react.development.js"></script>
+<script src="/vendor/react-dom.development.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script type="text/babel" src="/components/CanvasMap.jsx" data-type="module"></script>
+<script src="/components/mount.js" defer></script>
 
 <%- include('../partials/footer') %>

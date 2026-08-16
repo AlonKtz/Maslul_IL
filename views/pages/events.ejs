@@ -152,6 +152,24 @@
     <div id="events-going" class="grid"></div>
   </div>
 
+  <!-- ---------------------------------------------------------------- video -->
+  <section class="card">
+    <h2>Recaps</h2>
+    <p class="muted small">Clips from past meets and races.</p>
+
+    <%# React video player (see public/components/VideoShowcase.jsx). %>
+    <div id="video-showcase"
+         data-react="VideoShowcase"
+         data-props='<%- JSON.stringify({ youtubeId: youtubeId }) %>'></div>
+  </section>
+
 </main>
+
+<%# React and Babel come from /public/vendor so the page works offline. %>
+<script src="/vendor/react.development.js"></script>
+<script src="/vendor/react-dom.development.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script type="text/babel" src="/components/VideoShowcase.jsx"></script>
+<script src="/components/mount.js" defer></script>
 
 <%- include('../partials/footer') %>
