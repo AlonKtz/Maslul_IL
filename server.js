@@ -48,7 +48,13 @@ app.use(require('./src/routes/groups'));
 app.use(require('./src/routes/events'));
 app.use(require('./src/routes/listings'));
 app.use(require('./src/routes/cars'));
+app.use(require('./src/routes/messages'));
 app.use(require('./src/routes/uploads'));
+
+// ---------------------------------------------------------------- websockets
+// Real-time chat. It shares the Express session, so the socket knows which
+// member is connected without trusting anything the client sends.
+require('./src/socket/chat')(server, sessionMiddleware);
 
 // ---------------------------------------------------------------- errors
 // Must be registered last, after every route.

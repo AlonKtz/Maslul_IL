@@ -16,10 +16,8 @@ router.get('/search', requireLogin, (req, res) => {
   res.render('pages/search', { title: 'Search', cities: CITIES });
 });
 
-router.get('/chat', requireLogin, (req, res) => {
-  res.render('pages/chat', { title: 'Chat' });
-});
-
+// /chat is served by src/routes/messages.js, which also loads the
+// conversation list — it must not be declared here as well.
 router.get('/stats', requireLogin, (req, res) => {
   res.render('pages/stats', { title: 'Statistics' });
 });
