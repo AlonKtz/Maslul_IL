@@ -1,9 +1,54 @@
+<% pageScripts = ['/js/stats.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Statistics</h1>
+      <p class="muted">
+        Everything on this page is calculated from the database as it is right now.
+      </p>
+    </div>
+    <button id="refresh-stats" class="btn btn-ghost" type="button">Refresh</button>
+  </div>
+
+  <!-- ------------------------------------------------------------ counters -->
+  <section class="card">
+    <div class="filter-row" id="summary" style="text-align:center">
+      <p class="muted">Loading…</p>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------- charts -->
+  <section class="card">
+    <h2>Meets and races per month</h2>
+    <p class="muted small">Grouped by the month the event takes place.</p>
+    <div id="chart-events-month" class="chart"></div>
+  </section>
+
+  <section class="card">
+    <h2>Most common makes in the garages</h2>
+    <p class="muted small">Bar length is the number of cars; hover for average power.</p>
+    <div id="chart-cars-make" class="chart"></div>
+  </section>
+
+  <section class="card">
+    <h2>Marketplace by category</h2>
+    <p class="muted small">How many items are listed, and what they cost on average.</p>
+    <div id="chart-listings" class="chart"></div>
+  </section>
+
+  <section class="card">
+    <h2>Where events happen</h2>
+    <p class="muted small">Events per city, with the total number of people going.</p>
+    <div id="chart-cities" class="chart"></div>
+  </section>
+
 </main>
+
+<%# D3 is served from /public/vendor so the charts work with no internet. %>
+<script src="/vendor/d3.min.js"></script>
 
 <%- include('../partials/footer') %>

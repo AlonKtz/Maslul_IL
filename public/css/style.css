@@ -664,6 +664,37 @@ a { color: var(--accent-2); }
 
 .search-results { max-height: 320px; overflow-y: auto; margin-top: 1rem; }
 
+/* ---- D3 charts ---------------------------------------------------------- */
+.chart { width: 100%; overflow-x: auto; }
+.chart svg { display: block; }
+
+.chart .domain,
+.chart .tick line { stroke: var(--border); }
+
+.chart rect {
+  transition: opacity 0.2s ease;      /* transition */
+}
+
+.chart rect:hover { opacity: 0.8; cursor: pointer; }
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 200;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);    /* border-radius */
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.15s ease;     /* transition */
+}
+
+.chart-tooltip.is-visible { opacity: 1; }
+
 /* ---- footer ------------------------------------------------------------- */
 .site-footer {
   margin-top: 3rem;

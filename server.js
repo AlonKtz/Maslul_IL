@@ -49,6 +49,7 @@ app.use(require('./src/routes/events'));
 app.use(require('./src/routes/listings'));
 app.use(require('./src/routes/cars'));
 app.use(require('./src/routes/messages'));
+app.use(require('./src/routes/stats'));
 app.use(require('./src/routes/uploads'));
 
 // ---------------------------------------------------------------- websockets
