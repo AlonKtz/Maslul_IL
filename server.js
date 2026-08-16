@@ -43,6 +43,7 @@ app.use(attachUser);
 // ---------------------------------------------------------------- routes
 app.use(require('./src/routes/index'));
 app.use(require('./src/routes/auth'));
+app.use(require('./src/routes/feed'));
 app.use(require('./src/routes/users'));
 app.use(require('./src/routes/groups'));
 app.use(require('./src/routes/events'));
@@ -50,6 +51,7 @@ app.use(require('./src/routes/listings'));
 app.use(require('./src/routes/cars'));
 app.use(require('./src/routes/messages'));
 app.use(require('./src/routes/stats'));
+app.use(require('./src/routes/admin'));
 app.use(require('./src/routes/uploads'));
 
 // ---------------------------------------------------------------- websockets

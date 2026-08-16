@@ -82,7 +82,7 @@ async function requireGroupAdmin(req, res, next) {
 
 // Redirects already-logged-in users away from login/register pages.
 function requireGuest(req, res, next) {
-  if (req.currentUser) return res.redirect('/events');
+  if (req.currentUser) return res.redirect('/feed');
   next();
 }
 

@@ -1,9 +1,74 @@
+<% pageScripts = ['/js/admin.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Administration</h1>
+      <p class="muted">
+        Only site administrators can open this page — everybody else gets a 403.
+      </p>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="filter-row" id="admin-counts" style="text-align:center">
+      <p class="muted">Loading…</p>
+    </div>
+  </section>
+
+  <div class="tabs" id="admin-tabs">
+    <button class="tab is-active" data-tab="panel-members" type="button">Members</button>
+    <button class="tab" data-tab="panel-content" type="button">Recent content</button>
+  </div>
+
+  <!-- --------------------------------------------------------- members -->
+  <div id="panel-members" class="tab-panel is-active">
+    <section class="search-panel" style="margin-top:1.25rem">
+      <h2 class="small" style="margin-top:0">Find a member</h2>
+      <form id="admin-member-search" novalidate>
+        <div class="filter-row">
+          <div>
+            <label for="a-username">Name or username</label>
+            <input id="a-username" name="username" type="text" placeholder="noa">
+          </div>
+          <div>
+            <label for="a-location">Location</label>
+            <input id="a-location" name="location" type="text" placeholder="Haifa">
+          </div>
+          <div>
+            <label for="a-role">Role</label>
+            <select id="a-role" name="role">
+              <option value="">Any</option>
+              <option value="user">Members</option>
+              <option value="admin">Administrators</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Search</button>
+          <button class="btn btn-ghost" type="reset">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="admin-members"></div>
+  </div>
+
+  <!-- --------------------------------------------------------- content -->
+  <div id="panel-content" class="tab-panel">
+    <section class="card">
+      <h2>Newest events</h2>
+      <div id="admin-events"></div>
+    </section>
+    <section class="card">
+      <h2>Newest listings</h2>
+      <div id="admin-listings"></div>
+    </section>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

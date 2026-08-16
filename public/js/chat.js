@@ -34,7 +34,10 @@
     return '<div class="bubble ' + (mine ? 'is-mine' : 'is-theirs') + '" data-id="' + msg._id + '">' +
       '<div class="bubble-text">' + UI.escape(msg.text) + '</div>' +
       '<div class="bubble-time">' + UI.formatDateTime(msg.createdAt) +
-        (mine ? ' <button class="bubble-delete" type="button" title="Delete">&times;</button>' : '') +
+        (mine
+          ? ' <button class="bubble-edit" type="button" title="Edit">edit</button>' +
+            ' <button class="bubble-delete" type="button" title="Delete">&times;</button>'
+          : '') +
       '</div>' +
     '</div>';
   }
@@ -146,6 +149,29 @@
     if (peerId && String(data.userId) === peerId) {
       $('#peer-status').text(data.online ? 'online' : 'offline');
     }
+  });
+
+  // ---------------------------------------------------------------- edit
+  // A member may correct something they already sent.
+  $('#thread').on('click', '.bubble-edit', function () {
+    var $bubble = $(this).closest('.bubble');
+    var $text = $bubble.find('.bubble-text');
+    var current = $text.text();
+
+    var updated = window.prompt('Edit your message:', current);
+    if (updated === null) return;                 // cancelled
+
+    updated = $.trim(updated);
+    if (!updated) return UI.toast('A message cannot be empty.', true);
+    if (updated === current) return;
+    if (updated.length > 1000) return UI.toast('Message is too long.', true);
+
+    API.put('/api/messages/' + $bubble.data('id'), { text: updated })
+      .done(function () {
+        $text.text(updated);
+        UI.toast('Message updated');
+      })
+      .fail(function (jq) { UI.toast(API.errorMessage(jq), true); });
   });
 
   // ---------------------------------------------------------------- delete

@@ -704,3 +704,36 @@ a { color: var(--accent-2); }
   font-size: 0.9rem;
   text-align: center;
 }
+
+/* ---- feed --------------------------------------------------------------- */
+.feed-item { margin: 0 0 1.25rem; }
+
+.feed-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feed-head img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;                 /* border-radius */
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.feed-head .badge { margin-left: auto; }
+
+.bubble-edit {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s ease;         /* transition */
+}
+
+.bubble-edit:hover { color: var(--accent-2); }

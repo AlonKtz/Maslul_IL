@@ -1,0 +1,47 @@
+<% pageScripts = ['/js/feed.js']; %>
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container">
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Your feed</h1>
+      <p class="muted">
+        What your friends are doing and what is happening in your groups.
+      </p>
+    </div>
+  </div>
+
+  <div class="tabs" id="feed-tabs">
+    <button class="tab is-active" data-tab="panel-feed" type="button" data-filter="all">Everything</button>
+    <button class="tab" data-tab="panel-feed" type="button" data-filter="friends">Friends</button>
+    <button class="tab" data-tab="panel-feed" type="button" data-filter="groups">My groups</button>
+  </div>
+
+  <div class="layout-split">
+    <div id="panel-feed" class="tab-panel is-active">
+      <div id="feed-items"></div>
+      <div class="form-actions">
+        <button id="load-more" class="btn btn-ghost" type="button" style="display:none">
+          Load more
+        </button>
+      </div>
+    </div>
+
+    <aside>
+      <section class="card" style="margin-top:0">
+        <h2 class="small">Your groups</h2>
+        <div id="my-groups" class="people"></div>
+      </section>
+
+      <section class="card">
+        <h2 class="small">People you might know</h2>
+        <div id="suggestions" class="people"></div>
+      </section>
+    </aside>
+  </div>
+
+</main>
+
+<%- include('../partials/footer') %>
