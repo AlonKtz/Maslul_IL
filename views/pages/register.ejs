@@ -1,0 +1,38 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container">
+  <section class="card auth-card">
+    <h1 class="glow">Join Maslul</h1>
+    <p class="muted">Israel's first social network for car lovers.</p>
+
+    <form id="register-form" novalidate>
+      <label for="reg-username">Username</label>
+      <input type="text" id="reg-username" name="username" autocomplete="username" required
+             minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+">
+      <small class="hint">3-20 characters: letters, numbers and underscore.</small>
+
+      <label for="reg-display">Display name</label>
+      <input type="text" id="reg-display" name="displayName" maxlength="40">
+
+      <label for="reg-password">Password</label>
+      <input type="password" id="reg-password" name="password" autocomplete="new-password"
+             required minlength="6">
+
+      <label for="reg-location">Location</label>
+      <input type="text" id="reg-location" name="location" maxlength="60" placeholder="Tel Aviv">
+
+      <label for="reg-bio">Short bio</label>
+      <textarea id="reg-bio" name="bio" maxlength="300" rows="3"
+                placeholder="What do you drive?"></textarea>
+
+      <p class="form-error" id="register-error" role="alert"></p>
+
+      <button class="btn btn-primary btn-block" type="submit">Create account</button>
+    </form>
+
+    <p class="muted small">Already a member? <a href="/login">Sign in</a></p>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

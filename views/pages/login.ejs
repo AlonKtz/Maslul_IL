@@ -1,0 +1,25 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<main class="container">
+  <section class="card auth-card">
+    <h1 class="glow">Welcome back</h1>
+    <p class="muted">Sign in to get back on the road.</p>
+
+    <form id="login-form" novalidate>
+      <label for="login-username">Username</label>
+      <input type="text" id="login-username" name="username" autocomplete="username" required>
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+
+      <p class="form-error" id="login-error" role="alert"></p>
+
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    <p class="muted small">No account yet? <a href="/register">Join Maslul</a></p>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

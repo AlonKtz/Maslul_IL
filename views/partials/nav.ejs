@@ -1,0 +1,33 @@
+<header class="site-header">
+  <nav class="nav container">
+    <a class="brand" href="/">
+      <span class="brand-mark">מסלול</span>
+      <span class="brand-name">Maslul</span>
+    </a>
+
+    <% if (currentUser) { %>
+      <ul class="nav-links">
+        <li><a href="/feed">Feed</a></li>
+        <li><a href="/groups">Groups</a></li>
+        <li><a href="/garage">Garage</a></li>
+        <li><a href="/chat">Chat</a></li>
+        <li><a href="/stats">Stats</a></li>
+        <% if (currentUser.role === 'admin') { %>
+          <li><a href="/admin">Admin</a></li>
+        <% } %>
+      </ul>
+      <div class="nav-user">
+        <a class="nav-avatar" href="/profile/<%= currentUser.username %>">
+          <img src="<%= currentUser.avatar %>" alt="" width="32" height="32">
+          <span><%= currentUser.displayName || currentUser.username %></span>
+        </a>
+        <button id="logout-btn" class="btn btn-ghost" type="button">Log out</button>
+      </div>
+    <% } else { %>
+      <ul class="nav-links">
+        <li><a href="/login">Sign in</a></li>
+        <li><a class="btn btn-primary" href="/register">Join Maslul</a></li>
+      </ul>
+    <% } %>
+  </nav>
+</header>
