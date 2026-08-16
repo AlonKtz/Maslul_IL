@@ -115,8 +115,13 @@ async function search(req, res, next) {
 // GET /api/users/:id
 async function getOne(req, res, next) {
   try {
-    const user = await User.findById(req.params.id)
-      .select('username displayName avatar location bio friends createdAt');
+    // Pending friend requests are private: they are only included when a
+    // member is looking at their own record.
+    const isSelf = String(req.params.id) === String(req.currentUser._id);
+    const fields = 'username displayName avatar location bio friends createdAt' +
+      (isSelf ? ' friendRequests' : '');
+
+    const user = await User.findById(req.params.id).select(fields);
     if (!user) return res.status(404).json({ error: 'Member not found.' });
     res.json({ user });
   } catch (err) {

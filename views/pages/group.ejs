@@ -1,9 +1,129 @@
+<% pageScripts = ['/js/group-detail.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
-<main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+<main class="container" data-group-id="<%= group._id %>">
+
+  <div class="page-head">
+    <div>
+      <span class="badge"><%= group.category %></span>
+      <% if (group.isPrivate) { %><span class="badge badge-private">Private</span><% } %>
+      <h1 class="glow"><%= group.name %></h1>
+      <p class="muted">
+        <%= group.members.length %> member<%= group.members.length === 1 ? '' : 's' %>
+        &middot; managed by
+        <a href="/profile/<%= group.admin.username %>"><%= group.admin.displayName || group.admin.username %></a>
+      </p>
+    </div>
+    <div class="form-actions" style="margin:0">
+      <% if (!isManager) { %>
+        <% if (isMember) { %>
+          <button id="leave-group" class="btn btn-ghost" type="button">Leave group</button>
+        <% } else { %>
+          <button id="join-group" class="btn btn-primary" type="button">Join group</button>
+        <% } %>
+      <% } else { %>
+        <button id="toggle-edit" class="btn btn-ghost" type="button">Edit group</button>
+        <button id="delete-group" class="btn btn-ghost" type="button">Delete group</button>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (group.description) { %>
+    <section class="card">
+      <div class="text-columns"><p><%= group.description %></p></div>
+    </section>
+  <% } %>
+
+  <!-- ------------------------------------------------- manager-only editing -->
+  <% if (isManager) { %>
+    <section id="edit-panel" class="card collapse">
+      <h2>Group settings</h2>
+      <form id="group-edit-form" novalidate>
+        <div class="form-grid">
+          <div>
+            <label for="e-name">Name</label>
+            <input id="e-name" name="name" type="text" maxlength="50" value="<%= group.name %>" required>
+          </div>
+          <div>
+            <label for="e-category">Category</label>
+            <select id="e-category" name="category">
+              <% ['Brand','Off-road','Classic','EV','Racing','Tuning','JDM','General'].forEach(function (c) { %>
+                <option value="<%= c %>" <%= group.category === c ? 'selected' : '' %>><%= c %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div>
+            <label for="e-brand">Brand</label>
+            <input id="e-brand" name="brand" type="text" maxlength="40" value="<%= group.brand %>">
+          </div>
+          <div>
+            <label for="e-private" style="margin-top:2rem">
+              <input id="e-private" name="isPrivate" type="checkbox" value="true"
+                     style="width:auto" <%= group.isPrivate ? 'checked' : '' %>>
+              Private group
+            </label>
+          </div>
+        </div>
+
+        <label for="e-desc">Description</label>
+        <textarea id="e-desc" name="description" rows="3" maxlength="500"><%= group.description %></textarea>
+
+        <p id="edit-error" class="form-error"></p>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ------------------------------------------- pending join requests -->
+    <section class="card">
+      <h2>Join requests <span class="muted small">(manager only)</span></h2>
+      <div id="pending" class="people">
+        <% group.pendingRequests.forEach(function (p) { %>
+          <span class="person" data-user-id="<%= p._id %>">
+            <img src="<%= p.avatar %>" alt="">
+            <span><%= p.displayName || p.username %></span>
+            <button class="btn btn-ghost small btn-approve" type="button">Approve</button>
+            <button class="btn btn-ghost small btn-reject" type="button">Reject</button>
+          </span>
+        <% }); %>
+      </div>
+      <% if (!group.pendingRequests.length) { %>
+        <p class="muted small" id="no-pending">No requests waiting.</p>
+      <% } %>
+    </section>
+  <% } %>
+
+  <div class="layout-split">
+    <!-- ------------------------------------------------------ group events -->
+    <section>
+      <h2>Events from this group</h2>
+      <div id="group-events" class="grid"></div>
+    </section>
+
+    <!-- ----------------------------------------------------------- members -->
+    <aside>
+      <section class="card" style="margin-top:0">
+        <h2 class="small">Members</h2>
+        <div id="members" class="people">
+          <% group.members.forEach(function (m) { %>
+            <span class="person" data-user-id="<%= m._id %>">
+              <a href="/profile/<%= m.username %>" style="display:flex;align-items:center;gap:.5rem;color:inherit;text-decoration:none">
+                <img src="<%= m.avatar %>" alt="">
+                <span><%= m.displayName || m.username %></span>
+              </a>
+              <% if (isManager && !m._id.equals(group.admin._id)) { %>
+                <button class="btn btn-ghost small btn-remove-member" type="button">&times;</button>
+              <% } %>
+            </span>
+          <% }); %>
+        </div>
+      </section>
+    </aside>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

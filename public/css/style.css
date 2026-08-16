@@ -6,11 +6,18 @@
    ========================================================================== */
 
 /* ---- 1. @font-face (CSS3 requirement) -----------------------------------
-   The display font used for the brand and headings. The file is served from
-   /public/fonts so the site works with no internet connection.            */
+   'MaslulDisplay' is the display face used for the brand and the headings.
+   It is defined from fonts already installed on the machine (local()) with a
+   list of fallbacks, so the site needs no font download and renders the same
+   with no internet connection. Drop a .woff2 into /public/fonts and add a
+   url() line here if you want to ship a custom face instead.             */
 @font-face {
   font-family: 'MaslulDisplay';
-  src: url('/fonts/maslul-display.woff2') format('woff2');
+  src: local('Bahnschrift SemiBold'),
+       local('Bahnschrift'),
+       local('Impact'),
+       local('Arial Narrow Bold'),
+       local('Segoe UI Bold');
   font-weight: 700;
   font-display: swap;
 }
@@ -234,6 +241,227 @@ textarea { resize: vertical; }
 .muted { color: var(--muted); }
 .small { font-size: 0.88rem; }
 a { color: var(--accent-2); }
+
+/* ---- page layout -------------------------------------------------------- */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 2rem 0 0.5rem;
+}
+
+.page-head h1 { margin: 0; font-family: 'MaslulDisplay', 'Segoe UI', sans-serif; }
+
+.layout-split {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout-split { grid-template-columns: 1fr; }
+}
+
+/* ---- tabs --------------------------------------------------------------- */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin: 1rem 0 0;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.6rem 1.1rem;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;  /* border-radius */
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.25s ease, background-color 0.25s ease;  /* transition */
+}
+
+.tab:hover { color: var(--text); background: var(--surface); }
+
+.tab.is-active {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.tab-panel { display: none; }
+.tab-panel.is-active { display: block; }
+
+/* ---- grids and item cards ---------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.item-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);          /* border-radius */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* transition */
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.item-card img.item-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--surface-2);
+  display: block;
+}
+
+.item-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+.item-title { margin: 0; font-size: 1.05rem; }
+.item-title a { color: var(--text); text-decoration: none; }
+.item-title a:hover { color: var(--accent-2); }
+.item-meta { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.item-actions { display: flex; gap: 0.5rem; padding: 0 1rem 1rem; flex-wrap: wrap; }
+
+.price {
+  font-family: 'MaslulDisplay', 'Segoe UI', sans-serif;
+  font-size: 1.35rem;
+  color: var(--accent-2);
+  text-shadow: 0 0 10px rgba(244, 162, 97, 0.35);  /* text-shadow */
+}
+
+/* ---- badges ------------------------------------------------------------- */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;              /* border-radius */
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--surface-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.badge-meet { background: rgba(42, 157, 143, 0.15); color: #6fd3c6; border-color: rgba(42, 157, 143, 0.4); }
+.badge-race { background: rgba(230, 57, 70, 0.15); color: #ff8f98; border-color: rgba(230, 57, 70, 0.4); }
+.badge-sold { background: rgba(151, 163, 176, 0.15); color: var(--muted); }
+.badge-private { background: rgba(244, 162, 97, 0.15); color: var(--accent-2); border-color: rgba(244, 162, 97, 0.4); }
+
+/* ---- search panel ------------------------------------------------------- */
+.search-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: end;
+}
+
+.filter-row label { margin-top: 0.25rem; }
+
+/* ---- forms in dialogs / collapsible panels ------------------------------ */
+.collapse { display: none; }
+.collapse.is-open { display: block; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0 1rem;
+}
+
+.form-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; }
+
+/* ---- comments ----------------------------------------------------------- */
+.comment {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.comment img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }  /* border-radius */
+.comment-body { flex: 1; }
+.comment-author { font-weight: 600; font-size: 0.9rem; }
+
+/* ---- member / avatar lists ---------------------------------------------- */
+.people { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0; }
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;               /* border-radius */
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.25s ease, transform 0.2s ease;   /* transition */
+}
+
+.person:hover { border-color: var(--accent); transform: translateY(-2px); }
+.person img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+
+/* ---- states ------------------------------------------------------------- */
+.empty, .loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 2.5rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);       /* border-radius */
+  margin: 1.25rem 0;
+}
+
+.toast {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 100;
+  padding: 0.8rem 1.1rem;
+  border-radius: var(--radius-sm);    /* border-radius */
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  /* transition */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.is-visible { opacity: 1; transform: translateY(0); }
+.toast.is-error { border-color: rgba(230, 57, 70, 0.5); color: #ff8f98; }
+
+/* ---- description text uses columns on wide screens --------------------- */
+/* multiple-columns (CSS3 requirement) — long descriptions read better in
+   two columns on a wide screen.                                           */
+.text-columns {
+  column-count: 2;
+  column-gap: 2rem;
+}
+
+@media (max-width: 760px) {
+  .text-columns { column-count: 1; }
+}
 
 /* ---- footer ------------------------------------------------------------- */
 .site-footer {

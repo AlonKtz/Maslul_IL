@@ -1,9 +1,116 @@
+<% pageScripts = ['/js/groups.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Groups</h1>
+      <p class="muted">Communities built around a brand, a scene or a style.</p>
+    </div>
+    <button id="toggle-create" class="btn btn-primary" type="button">Start a group</button>
+  </div>
+
+  <!-- ---------------------------------------------------------------- create -->
+  <section id="create-panel" class="card collapse">
+    <h2>Start a group</h2>
+    <form id="group-form" novalidate>
+      <input type="hidden" name="id" value="">
+
+      <div class="form-grid">
+        <div>
+          <label for="g-name">Name</label>
+          <input id="g-name" name="name" type="text" maxlength="50" required placeholder="JDM Israel">
+        </div>
+        <div>
+          <label for="g-category">Category</label>
+          <select id="g-category" name="category">
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="g-brand">Brand <span class="hint">(optional)</span></label>
+          <input id="g-brand" name="brand" type="text" maxlength="40" placeholder="Toyota">
+        </div>
+        <div>
+          <label for="g-private" style="margin-top:2rem">
+            <input id="g-private" name="isPrivate" type="checkbox" value="true" style="width:auto">
+            Private group <span class="hint">(joining needs approval)</span>
+          </label>
+        </div>
+      </div>
+
+      <label for="g-desc">Description</label>
+      <textarea id="g-desc" name="description" rows="3" maxlength="500"
+                placeholder="Who is this group for?"></textarea>
+
+      <p id="group-error" class="form-error"></p>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Create group</button>
+        <button id="cancel-edit" class="btn btn-ghost" type="button">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ---------------------------------------------------------------- search -->
+  <section class="search-panel">
+    <h2 class="small" style="margin-top:0">Find a group</h2>
+    <form id="group-search" novalidate>
+      <div class="filter-row">
+        <div>
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" placeholder="JDM">
+        </div>
+        <div>
+          <label for="f-category">Category</label>
+          <select id="f-category" name="category">
+            <option value="">Any</option>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="f-brand">Brand</label>
+          <input id="f-brand" name="brand" type="text" placeholder="Toyota">
+        </div>
+        <div>
+          <label for="f-privacy">Privacy</label>
+          <select id="f-privacy" name="privacy">
+            <option value="">Any</option>
+            <option value="public">Public only</option>
+            <option value="private">Private only</option>
+          </select>
+        </div>
+        <div>
+          <label for="f-members">Min members</label>
+          <input id="f-members" name="minMembers" type="number" min="1" placeholder="5">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <button id="clear-search" class="btn btn-ghost" type="button">Clear</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ---------------------------------------------------------------- tabs -->
+  <div class="tabs" id="group-tabs">
+    <button class="tab is-active" data-tab="panel-all" type="button">All groups</button>
+    <button class="tab" data-tab="panel-mine" type="button">My groups</button>
+  </div>
+
+  <div id="panel-all" class="tab-panel is-active">
+    <div id="groups-all" class="grid"></div>
+  </div>
+  <div id="panel-mine" class="tab-panel">
+    <div id="groups-mine" class="grid"></div>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

@@ -8,4 +8,7 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <script src="/vendor/jquery.min.js"></script>
 </head>
-<body>
+<%# The id of the signed-in member is published to the client here, so the
+    scripts can tell "mine" from "somebody else's" without another request. %>
+<body data-user-id="<%= currentUser ? currentUser._id : '' %>"
+      data-user-role="<%= currentUser ? currentUser.role : 'guest' %>">

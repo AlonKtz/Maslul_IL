@@ -1,9 +1,111 @@
+<% pageScripts = ['/js/event-detail.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
-<main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+<main class="container" data-event-id="<%= event._id %>">
+
+  <div class="page-head">
+    <div>
+      <span class="badge <%= event.type === 'race' ? 'badge-race' : 'badge-meet' %>">
+        <%= event.type === 'race' ? (event.raceType || 'Race') : 'Meet' %>
+      </span>
+      <h1 class="glow"><%= event.title %></h1>
+      <p class="muted">
+        <%= event.city %><% if (event.address) { %> &middot; <%= event.address %><% } %>
+      </p>
+    </div>
+    <% if (isHost) { %>
+      <button id="delete-event" class="btn btn-ghost" type="button">Delete event</button>
+    <% } %>
+  </div>
+
+  <div class="layout-split">
+    <div>
+      <section class="card">
+        <img src="<%= event.coverImage %>" alt=""
+             style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius-sm)">
+
+        <p class="muted small" style="margin-top:1rem">
+          <strong>When:</strong>
+          <span id="event-when" data-value="<%= event.startsAt.toISOString() %>"></span>
+        </p>
+        <p class="muted small">
+          <strong>Hosted by:</strong>
+          <a href="/profile/<%= event.host.username %>">
+            <%= event.host.displayName || event.host.username %>
+          </a>
+        </p>
+        <% if (event.group) { %>
+          <p class="muted small">
+            <strong>Group:</strong> <a href="/groups/<%= event.group._id %>"><%= event.group.name %></a>
+          </p>
+        <% } %>
+
+        <% if (event.description) { %>
+          <div class="text-columns" style="margin-top:1rem"><p><%= event.description %></p></div>
+        <% } %>
+
+        <div class="form-actions">
+          <% if (!isHost) { %>
+            <button id="attend-btn" class="btn btn-primary" type="button">
+              <%= isAttending ? 'Cancel attendance' : 'I am going' %>
+            </button>
+          <% } else { %>
+            <span class="muted small">You are hosting this event.</span>
+          <% } %>
+          <button id="like-btn" class="btn btn-ghost" type="button">
+            Like (<span id="like-count"><%= event.likes.length %></span>)
+          </button>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------- comments -->
+      <section class="card">
+        <h2>Comments</h2>
+
+        <form id="comment-form" novalidate>
+          <label for="comment-text" class="small">Add a comment</label>
+          <textarea id="comment-text" name="text" rows="2" maxlength="500"
+                    placeholder="Ask a question or say you are coming…"></textarea>
+          <p id="comment-error" class="form-error"></p>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Post comment</button>
+          </div>
+        </form>
+
+        <div id="comments"></div>
+
+        <%# The comments already loaded by the controller are handed to the
+            client as JSON, so the first render needs no extra request. %>
+        <script id="event-comments" type="application/json">
+          <%- JSON.stringify(event.comments) %>
+        </script>
+      </section>
+    </div>
+
+    <!-- --------------------------------------------------------- attendees -->
+    <aside>
+      <section class="card" style="margin-top:0">
+        <h2 class="small">
+          Going
+          <span class="muted">(<span id="attendee-count"><%= event.attendees.length %></span><%
+            if (event.maxAttendees > 0) { %> / <%= event.maxAttendees %><% } %>)</span>
+        </h2>
+        <div id="attendees" class="people">
+          <% event.attendees.forEach(function (a) { %>
+            <a class="person" href="/profile/<%= a.username %>">
+              <img src="<%= a.avatar %>" alt="">
+              <span><%= a.displayName || a.username %></span>
+            </a>
+          <% }); %>
+        </div>
+        <% if (!event.attendees.length) { %>
+          <p class="muted small">Nobody has signed up yet.</p>
+        <% } %>
+      </section>
+    </aside>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

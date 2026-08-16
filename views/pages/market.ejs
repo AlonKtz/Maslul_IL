@@ -1,9 +1,171 @@
+<% pageScripts = ['/js/market.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Marketplace</h1>
+      <p class="muted">Buy and sell cars, parts and gear — locally.</p>
+    </div>
+    <button id="toggle-create" class="btn btn-primary" type="button">Sell something</button>
+  </div>
+
+  <!-- ---------------------------------------------------------------- create -->
+  <section id="create-panel" class="card collapse">
+    <h2>List an item</h2>
+    <form id="listing-form" novalidate>
+      <input type="hidden" name="id" value="">
+
+      <div class="form-grid">
+        <div>
+          <label for="li-title">Title</label>
+          <input id="li-title" name="title" type="text" maxlength="80" required
+                 placeholder="BBS RS 17&quot; set of four">
+        </div>
+        <div>
+          <label for="li-price">Price (₪)</label>
+          <input id="li-price" name="price" type="number" min="0" step="1" required placeholder="3200">
+        </div>
+        <div>
+          <label for="li-category">Category</label>
+          <select id="li-category" name="category" required>
+            <option value="">Choose…</option>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="li-condition">Condition</label>
+          <select id="li-condition" name="condition">
+            <% conditions.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="li-city">City</label>
+          <select id="li-city" name="city" required>
+            <option value="">Choose a city…</option>
+            <% cities.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="li-photos">Photos <span class="hint">(up to 6)</span></label>
+          <input id="li-photos" name="photoFiles" type="file" accept="image/*" multiple>
+        </div>
+      </div>
+
+      <p class="hint" style="margin-top:1rem">Selling a whole car? Fill these in too.</p>
+      <div class="form-grid">
+        <div>
+          <label for="li-make">Make</label>
+          <input id="li-make" name="make" type="text" maxlength="40" placeholder="Mazda">
+        </div>
+        <div>
+          <label for="li-model">Model</label>
+          <input id="li-model" name="model" type="text" maxlength="40" placeholder="MX-5">
+        </div>
+        <div>
+          <label for="li-year">Year</label>
+          <input id="li-year" name="year" type="number" min="1900" max="2027" placeholder="1994">
+        </div>
+      </div>
+
+      <label for="li-desc">Description</label>
+      <textarea id="li-desc" name="description" rows="3" maxlength="1000"
+                placeholder="Condition, history, what is included…"></textarea>
+
+      <p id="listing-error" class="form-error"></p>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Publish listing</button>
+        <button id="cancel-edit" class="btn btn-ghost" type="button">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ---------------------------------------------------------------- search -->
+  <section class="search-panel">
+    <h2 class="small" style="margin-top:0">Filter the market</h2>
+    <form id="listing-search" novalidate>
+      <div class="filter-row">
+        <div>
+          <label for="f-keyword">Keyword</label>
+          <input id="f-keyword" name="keyword" type="text" placeholder="wheels, turbo…">
+        </div>
+        <div>
+          <label for="f-category">Category</label>
+          <select id="f-category" name="category">
+            <option value="">Any</option>
+            <% categories.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="f-condition">Condition</label>
+          <select id="f-condition" name="condition">
+            <option value="">Any</option>
+            <% conditions.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="f-city">City</label>
+          <select id="f-city" name="city">
+            <option value="">Anywhere</option>
+            <% cities.forEach(function (c) { %>
+              <option value="<%= c %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label for="f-pmin">Min price</label>
+          <input id="f-pmin" name="priceMin" type="number" min="0" placeholder="0">
+        </div>
+        <div>
+          <label for="f-pmax">Max price</label>
+          <input id="f-pmax" name="priceMax" type="number" min="0" placeholder="50000">
+        </div>
+        <div>
+          <label for="f-make">Make</label>
+          <input id="f-make" name="make" type="text" placeholder="Mazda">
+        </div>
+        <div>
+          <label for="f-sort">Sort by</label>
+          <select id="f-sort" name="sort">
+            <option value="">Newest</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <button id="clear-search" class="btn btn-ghost" type="button">Clear</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ---------------------------------------------------------------- tabs -->
+  <div class="tabs" id="market-tabs">
+    <button class="tab is-active" data-tab="panel-all" type="button">Everything for sale</button>
+    <button class="tab" data-tab="panel-mine" type="button">My listings</button>
+  </div>
+
+  <div id="panel-all" class="tab-panel is-active">
+    <div id="listings-all" class="grid"></div>
+  </div>
+  <div id="panel-mine" class="tab-panel">
+    <div id="listings-mine" class="grid"></div>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

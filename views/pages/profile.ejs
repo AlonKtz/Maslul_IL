@@ -1,9 +1,167 @@
+<% pageScripts = ['/js/profile.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
-<main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+<main class="container" data-profile-id="<%= user._id %>" data-profile-username="<%= user.username %>">
+
+  <div class="page-head">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <img src="<%= user.avatar %>" alt="" width="72" height="72"
+           style="border-radius:50%;border:3px solid var(--border);object-fit:cover">
+      <div>
+        <h1 class="glow" style="margin:0"><%= user.displayName || user.username %></h1>
+        <p class="muted" style="margin:0">
+          @<%= user.username %><% if (user.location) { %> &middot; <%= user.location %><% } %>
+        </p>
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin:0">
+      <% if (isSelf) { %>
+        <button id="toggle-edit" class="btn btn-ghost" type="button">Edit profile</button>
+      <% } else { %>
+        <% if (isFriend) { %>
+          <button id="unfriend-btn" class="btn btn-ghost" type="button">Remove friend</button>
+        <% } else if (requestSent) { %>
+          <button class="btn btn-ghost" type="button" disabled>Request sent</button>
+        <% } else { %>
+          <button id="friend-btn" class="btn btn-primary" type="button">Add friend</button>
+        <% } %>
+        <a class="btn btn-ghost" href="/chat?to=<%= user._id %>">Message</a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (user.bio) { %>
+    <section class="card"><p style="margin:0"><%= user.bio %></p></section>
+  <% } %>
+
+  <!-- ------------------------------------------------------- edit own profile -->
+  <% if (isSelf) { %>
+    <section id="edit-panel" class="card collapse">
+      <h2>Edit your profile</h2>
+      <form id="profile-form" novalidate>
+        <div class="form-grid">
+          <div>
+            <label for="p-name">Display name</label>
+            <input id="p-name" name="displayName" type="text" maxlength="40" value="<%= user.displayName %>">
+          </div>
+          <div>
+            <label for="p-location">Location</label>
+            <input id="p-location" name="location" type="text" maxlength="60" value="<%= user.location %>">
+          </div>
+          <div>
+            <label for="p-avatar">Profile photo</label>
+            <input id="p-avatar" name="avatarFile" type="file" accept="image/*">
+          </div>
+        </div>
+
+        <label for="p-bio">Bio</label>
+        <textarea id="p-bio" name="bio" rows="3" maxlength="300"><%= user.bio %></textarea>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">
+        <p class="hint">Leave the password fields empty to keep your current password.</p>
+
+        <div class="form-grid">
+          <div>
+            <label for="p-current">Current password</label>
+            <input id="p-current" name="currentPassword" type="password" autocomplete="current-password">
+          </div>
+          <div>
+            <label for="p-new">New password</label>
+            <input id="p-new" name="newPassword" type="password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <p id="profile-error" class="form-error"></p>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Save profile</button>
+          <button id="delete-account" class="btn btn-ghost" type="button">Delete my account</button>
+        </div>
+      </form>
+    </section>
+  <% } %>
+
+  <!-- --------------------------------------------------------------- stats -->
+  <section class="card">
+    <div class="filter-row" style="text-align:center">
+      <div><strong style="font-size:1.6rem" class="glow"><%= cars.length %></strong><br><span class="muted small">cars</span></div>
+      <div><strong style="font-size:1.6rem" class="glow"><%= eventCount %></strong><br><span class="muted small">events hosted</span></div>
+      <div><strong style="font-size:1.6rem" class="glow"><%= listingCount %></strong><br><span class="muted small">items listed</span></div>
+      <div><strong style="font-size:1.6rem" class="glow"><%= user.friends.length %></strong><br><span class="muted small">friends</span></div>
+      <div><strong style="font-size:1.6rem" class="glow"><%= groups.length %></strong><br><span class="muted small">groups</span></div>
+    </div>
+  </section>
+
+  <div class="layout-split">
+    <div>
+      <!-- ------------------------------------------------------------ garage -->
+      <section>
+        <h2>Garage</h2>
+        <% if (!cars.length) { %>
+          <p class="empty">No cars in this garage yet.</p>
+        <% } else { %>
+          <div class="grid">
+            <% cars.forEach(function (car) { %>
+              <article class="item-card">
+                <img class="item-image" src="<%= car.photo %>" alt="">
+                <div class="item-body">
+                  <span class="badge"><%= car.category %></span>
+                  <h3 class="item-title"><%= car.year %> <%= car.make %> <%= car.model %></h3>
+                  <p class="item-meta">
+                    <%= [car.engine, car.horsepower ? car.horsepower + ' hp' : '', car.color].filter(Boolean).join(' · ') %>
+                  </p>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        <% } %>
+      </section>
+    </div>
+
+    <aside>
+      <!-- ----------------------------------------------------------- friends -->
+      <section class="card" style="margin-top:0">
+        <h2 class="small">Friends</h2>
+        <% if (!user.friends.length) { %>
+          <p class="muted small">No friends yet.</p>
+        <% } else { %>
+          <div class="people">
+            <% user.friends.forEach(function (f) { %>
+              <a class="person" href="/profile/<%= f.username %>">
+                <img src="<%= f.avatar %>" alt="">
+                <span><%= f.displayName || f.username %></span>
+              </a>
+            <% }); %>
+          </div>
+        <% } %>
+      </section>
+
+      <!-- ------------------------------------------------------------ groups -->
+      <section class="card">
+        <h2 class="small">Groups</h2>
+        <% if (!groups.length) { %>
+          <p class="muted small">Not a member of any group.</p>
+        <% } else { %>
+          <div class="people">
+            <% groups.forEach(function (g) { %>
+              <a class="person" href="/groups/<%= g._id %>"><span><%= g.name %></span></a>
+            <% }); %>
+          </div>
+        <% } %>
+      </section>
+
+      <!-- --------------------------------------------- incoming friend requests -->
+      <% if (isSelf && user.friendRequests && user.friendRequests.length) { %>
+        <section class="card">
+          <h2 class="small">Friend requests</h2>
+          <div id="requests" class="people"></div>
+        </section>
+      <% } %>
+    </aside>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>
