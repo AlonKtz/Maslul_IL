@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets  (NEVER commit real credentials)
+.env
+.env.local
+
+# User-uploaded files (keep the folder, ignore contents)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
