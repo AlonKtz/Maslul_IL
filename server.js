@@ -43,6 +43,10 @@ app.use(attachUser);
 // ---------------------------------------------------------------- routes
 app.use(require('./src/routes/index'));
 app.use(require('./src/routes/auth'));
+app.use(require('./src/routes/users'));
+app.use(require('./src/routes/groups'));
+app.use(require('./src/routes/posts'));
+app.use(require('./src/routes/cars'));
 
 // ---------------------------------------------------------------- errors
 // Must be registered last, after every route.
