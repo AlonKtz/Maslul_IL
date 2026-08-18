@@ -2,6 +2,14 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  A member's profile.
+
+  isSelf is the flag that matters here. If it is your own profile you get the
+  edit form and the delete account button. If it is somebody else's you get
+  the friend button and a link to message them instead.
+%>
+
 <main class="container" data-profile-id="<%= user._id %>" data-profile-username="<%= user.username %>">
 
   <div class="page-head">

@@ -2,6 +2,16 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The search page.
+
+  Three tabs. The first is the map, which is the React canvas component. The
+  other two are ordinary forms that search members and groups over ajax.
+
+  The map gets its cities through data-props as json. That is how I pass
+  server data into a React component without a build step.
+%>
+
 <main class="container">
 
   <div class="page-head">

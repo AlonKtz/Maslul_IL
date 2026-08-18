@@ -1,6 +1,12 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  Sign up form. Same idea as the login page, auth.js handles the submit.
+  The rules here (username length, password length) are checked again on the
+  server, because anyone could skip the browser checks.
+%>
+
 <main class="container">
   <section class="card auth-card">
     <h1 class="glow">Join Maslul</h1>

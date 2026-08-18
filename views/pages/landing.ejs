@@ -1,6 +1,12 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The front page, and the only page a guest can see anything on.
+  Anyone already logged in never gets here, because the / route sends them
+  straight to their feed instead.
+%>
+
 <main>
   <section class="hero">
     <div class="container">

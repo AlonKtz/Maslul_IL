@@ -2,6 +2,16 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  Meets and races.
+  The form at the top creates an event, the panel under it is the search, and
+  the three tabs are all upcoming, ones I host, and ones I said I would go to.
+  Everything below the tabs is filled in by public/js/events.js over ajax.
+
+  The city and race format dropdowns are built from lists the controller
+  passes in, so the options can only ever be values the model accepts.
+%>
+
 <main class="container">
 
   <div class="page-head">

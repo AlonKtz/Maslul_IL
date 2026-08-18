@@ -11,7 +11,9 @@
   <script src="/js/ui.js"></script>
   <script src="/js/auth.js"></script>
 
-  <%# Each page asks for the extra scripts it needs by setting `pageScripts`. %>
+  <%# Each page sets a pageScripts variable at the very top with the extra
+      files it needs, and this loop adds a script tag for each one. That way
+      the garage page does not download the chat code and so on. %>
   <% if (typeof pageScripts !== 'undefined' && pageScripts.length) { %>
     <% pageScripts.forEach(function (src) { %>
       <script src="<%= src %>"></script>

@@ -1,3 +1,10 @@
+<%#
+  The bar at the top of every page.
+  It renders completely differently depending on whether somebody is logged
+  in, which is what the currentUser check below does. currentUser is put there
+  by the attachUser middleware, so every page has it without asking.
+  The Admin link only appears for a site admin.
+%>
 <header class="site-header">
   <nav class="nav container">
     <a class="brand" href="/">

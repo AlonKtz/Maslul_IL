@@ -1,9 +1,134 @@
+<% pageScripts = ['/js/listing-detail.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
-<main class="container">
-  <h1 class="glow"><%= title %></h1>
-  <p class="muted">This page is built in the next phase.</p>
+<%#
+  One item in the marketplace.
+  The controller hands us the listing itself and isSeller, which says whether
+  the person looking at it is the one selling it. Almost everything on this
+  page is hidden or shown based on that one flag.
+%>
+<main class="container" data-listing-id="<%= listing._id %>">
+
+  <div class="page-head">
+    <div>
+      <span class="badge"><%= listing.category %></span>
+      <% if (listing.status === 'sold') { %>
+        <span class="badge badge-sold">Sold</span>
+      <% } %>
+      <h1 class="glow"><%= listing.title %></h1>
+      <p class="muted"><%= listing.condition %> &middot; <%= listing.city %></p>
+    </div>
+
+    <%# only the seller gets the buttons that change the item %>
+    <% if (isSeller) { %>
+      <div class="form-actions" style="margin:0">
+        <button id="toggle-sold" class="btn btn-ghost" type="button">
+          <%= listing.status === 'sold' ? 'Put back on sale' : 'Mark as sold' %>
+        </button>
+        <button id="delete-listing" class="btn btn-ghost" type="button">Delete</button>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="layout-split">
+    <div>
+      <section class="card">
+        <%# the first photo is shown big, the rest go underneath as thumbnails.
+            if there are no photos at all I fall back to the placeholder car. %>
+        <img id="main-photo"
+             src="<%= listing.photos.length ? listing.photos[0] : '/img/default-car.svg' %>"
+             alt=""
+             style="width:100%;max-height:380px;object-fit:cover;border-radius:var(--radius-sm)">
+
+        <% if (listing.photos.length > 1) { %>
+          <div class="people" style="margin-top:.75rem">
+            <% listing.photos.forEach(function (photo) { %>
+              <img class="thumb" src="<%= photo %>" alt=""
+                   style="width:70px;height:52px;object-fit:cover;border-radius:var(--radius-sm);
+                          border:1px solid var(--border);cursor:pointer">
+            <% }); %>
+          </div>
+        <% } %>
+
+        <p class="price" style="font-size:2rem;margin:1rem 0 .25rem">
+          &#8362; <%= listing.price.toLocaleString('en-US') %>
+        </p>
+
+        <%# the make, model and year are only filled in when somebody is
+            selling a whole car, so only show that line if one of them is set %>
+        <% if (listing.make || listing.model || listing.year) { %>
+          <p class="item-meta">
+            <%= [listing.make, listing.model, listing.year].filter(Boolean).join(' ') %>
+          </p>
+        <% } %>
+
+        <p class="muted small">Listed <span id="listed-when"
+          data-value="<%= listing.createdAt.toISOString() %>"></span></p>
+
+        <% if (listing.description) { %>
+          <div class="text-columns" style="margin-top:1rem"><p><%= listing.description %></p></div>
+        <% } %>
+
+        <div class="form-actions">
+          <button id="like-btn" class="btn btn-ghost" type="button">
+            Save (<span id="like-count"><%= listing.likes.length %></span>)
+          </button>
+          <% if (!isSeller) { %>
+            <a class="btn btn-primary" href="/chat?to=<%= listing.seller._id %>">Message the seller</a>
+          <% } %>
+        </div>
+      </section>
+
+      <%# questions from buyers. same comment setup as the event page. %>
+      <section class="card">
+        <h2>Questions</h2>
+
+        <form id="comment-form" novalidate>
+          <label for="comment-text" class="small">Ask the seller something</label>
+          <textarea id="comment-text" name="text" rows="2" maxlength="500"
+                    placeholder="Is it still available? Would you post it?"></textarea>
+          <p id="comment-error" class="form-error"></p>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Post question</button>
+          </div>
+        </form>
+
+        <div id="comments"></div>
+
+        <%# the controller already loaded the comments, so I hand them to the
+            script as json instead of making it fetch them again %>
+        <script id="listing-comments" type="application/json">
+          <%- JSON.stringify(listing.comments) %>
+        </script>
+      </section>
+    </div>
+
+    <aside>
+      <section class="card" style="margin-top:0">
+        <h2 class="small">Seller</h2>
+        <a class="person" href="/profile/<%= listing.seller.username %>">
+          <img src="<%= listing.seller.avatar %>" alt="">
+          <span><%= listing.seller.displayName || listing.seller.username %></span>
+        </a>
+        <% if (listing.seller.location) { %>
+          <p class="muted small" style="margin-top:.75rem">Based in <%= listing.seller.location %></p>
+        <% } %>
+        <p class="muted small">Item is in <%= listing.city %></p>
+      </section>
+
+      <section class="card">
+        <h2 class="small">Details</h2>
+        <p class="item-meta">Category: <%= listing.category %></p>
+        <p class="item-meta">Condition: <%= listing.condition %></p>
+        <% if (listing.year) { %><p class="item-meta">Year: <%= listing.year %></p><% } %>
+        <p class="item-meta">
+          Status: <%= listing.status === 'sold' ? 'Sold' : 'Available' %>
+        </p>
+      </section>
+    </aside>
+  </div>
+
 </main>
 
 <%- include('../partials/footer') %>

@@ -2,6 +2,15 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The statistics page.
+
+  Every chart is an empty div here. public/js/stats.js asks each endpoint for
+  its numbers and draws the svg with D3. D3 itself is loaded at the bottom of
+  this file from /public/vendor, not from a CDN, so the charts still work with
+  no internet.
+%>
+
 <main class="container">
 
   <div class="page-head">

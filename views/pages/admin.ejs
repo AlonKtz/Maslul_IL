@@ -2,6 +2,14 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The admin page.
+
+  There is nothing secret in this file, the protection is on the server. The
+  admin router runs requireLogin and requireAdmin before any of these routes,
+  so a normal member gets a 403 and never receives this html at all.
+%>
+
 <main class="container">
 
   <div class="page-head">

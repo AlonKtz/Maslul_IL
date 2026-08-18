@@ -2,6 +2,16 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  One group's page.
+
+  This page changes a lot depending on who is looking at it. isManager decides
+  whether the settings form and the join requests section exist at all, and
+  isMember decides whether you see Join or Leave. Both come from the
+  controller. Hiding them here is only for tidiness, the real check is on the
+  server, so removing the hidden markup in devtools gets you nowhere.
+%>
+
 <main class="container" data-group-id="<%= group._id %>">
 
   <div class="page-head">

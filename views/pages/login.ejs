@@ -1,6 +1,11 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  Sign in form. It does not post normally, public/js/auth.js catches the
+  submit and sends it with ajax, then redirects when the server says ok.
+%>
+
 <main class="container">
   <section class="card auth-card">
     <h1 class="glow">Welcome back</h1>

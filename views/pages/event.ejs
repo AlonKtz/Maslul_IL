@@ -2,6 +2,14 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  One event's page.
+
+  isHost decides whether the delete button exists, and isAttending sets what
+  the RSVP button says when the page first loads. After that
+  public/js/event-detail.js keeps it up to date without reloading.
+%>
+
 <main class="container" data-event-id="<%= event._id %>">
 
   <div class="page-head">

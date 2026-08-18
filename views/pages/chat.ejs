@@ -2,6 +2,16 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The chat page.
+
+  The left column is who you can talk to, the middle is the conversation, and
+  the panel at the bottom searches your old messages.
+
+  The socket.io client is loaded at the bottom of this file, before the footer
+  scripts, because public/js/chat.js needs io() to exist when it runs.
+%>
+
 <main class="container" data-open-with="<%= openWith %>">
 
   <div class="page-head">

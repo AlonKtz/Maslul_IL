@@ -2,6 +2,14 @@
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
+<%#
+  The feed.
+  This page is nearly empty on purpose. All it has is the tabs, an empty div
+  and the sidebar. public/js/feed.js asks /api/feed for the timeline and
+  fills it in. Doing it this way means switching tabs or loading more does
+  not reload the page.
+%>
+
 <main class="container">
 
   <div class="page-head">

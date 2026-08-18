@@ -8,7 +8,12 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <script src="/vendor/jquery.min.js"></script>
 </head>
-<%# The id of the signed-in member is published to the client here, so the
-    scripts can tell "mine" from "somebody else's" without another request. %>
+<%# The top of every page.
+
+    I put the signed in member's id and role on the body tag. The client
+    scripts read them with $('body').data('user-id') to work out which cards
+    belong to you, so they can show an Edit button instead of a View one.
+    It saves a request on every page. It is only used for what to display,
+    never for permission, because anyone can edit it in devtools. %>
 <body data-user-id="<%= currentUser ? currentUser._id : '' %>"
       data-user-role="<%= currentUser ? currentUser.role : 'guest' %>">
