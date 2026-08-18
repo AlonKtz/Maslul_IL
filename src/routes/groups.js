@@ -18,7 +18,7 @@ const groupRules = [
     .isLength({ max: 40 }).withMessage('Brand is too long'),
 ];
 
-// A manager action always names the member it applies to.
+// every manager action says which member it is about, so check that id
 const memberRule = [body('userId').isMongoId().withMessage('Invalid member id')];
 
 router.use(requireLogin);
@@ -27,20 +27,21 @@ router.use(requireLogin);
 router.get('/groups', groups.showGroups);
 router.get('/groups/:id', validateObjectId(), groups.showGroup);
 
-// API — /search before /:id
+// /search before /:id, same reason as the other route files
 router.get('/api/groups/search', groups.search);
 router.get('/api/groups', groups.list);
 router.post('/api/groups', groupRules, handleValidation, groups.create);
 
-// Editing and deleting a group is restricted to its manager.
+// only the manager can edit or delete the group. requireGroupAdmin does that check
 router.put('/api/groups/:id', validateObjectId(), requireGroupAdmin, groupRules, handleValidation, groups.update);
 router.delete('/api/groups/:id', validateObjectId(), requireGroupAdmin, groups.remove);
 
-// Membership — any member may join or leave.
+// joining and leaving is open to any logged in member
 router.post('/api/groups/:id/join', validateObjectId(), groups.join);
 router.post('/api/groups/:id/leave', validateObjectId(), groups.leave);
 
-// Manager-only membership management (the "extended abilities").
+// these three are manager only. this is the part of the brief that wants a
+// manager to have more abilities than a normal member.
 router.post('/api/groups/:id/approve', validateObjectId(), requireGroupAdmin, memberRule, handleValidation, groups.approve);
 router.post('/api/groups/:id/reject', validateObjectId(), requireGroupAdmin, memberRule, handleValidation, groups.reject);
 router.post('/api/groups/:id/remove-member', validateObjectId(), requireGroupAdmin, memberRule, handleValidation, groups.removeMember);

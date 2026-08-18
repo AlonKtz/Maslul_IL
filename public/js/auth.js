@@ -1,8 +1,10 @@
-/**
- * Client-side authentication: register, login and logout.
- * Forms are submitted with Ajax (no page reload) and validated here first,
- * so the user gets immediate feedback before we bother the server.
- */
+/*
+  Sign up, sign in and sign out on the browser side.
+
+  The forms go through ajax so the page never reloads. I also check the input
+  here before sending it, so the user gets told straight away instead of
+  waiting for a round trip to the server.
+*/
 jQuery(function ($) {
   'use strict';
 
@@ -14,7 +16,8 @@ jQuery(function ($) {
     var username = $.trim($('#login-username').val());
     var password = $('#login-password').val();
 
-    // Client-side validation (server validates again — never trust the client).
+    // check it here first. the server checks it again anyway, because anyone can
+    // skip this by just calling the endpoint directly
     if (!username || !password) {
       return API.showError('#login-error', 'Please fill in both fields.');
     }

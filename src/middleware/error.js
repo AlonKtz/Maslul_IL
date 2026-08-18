@@ -1,11 +1,12 @@
-/**
- * Central error handling (requirement: the server must not crash on bad
- * input or unexpected behaviour).
- *
- * notFound runs when no route matched; errorHandler catches everything a
- * controller passes to next(err) — including async errors, because the
- * controllers wrap their bodies in try/catch.
- */
+/*
+  All the error handling in one place. The point is that the server should
+  never crash, no matter what somebody types or sends.
+
+  notFound runs when no route matched the url at all.
+  errorHandler catches anything a controller passes to next(err). That covers
+  async errors too, because every controller wraps its body in try/catch and
+  sends the error here.
+*/
 
 const wantsJson = require('../utils/wantsJson');
 
@@ -19,31 +20,31 @@ function notFound(req, res) {
   });
 }
 
-// Express identifies an error handler by its four arguments — keep `next`.
-// eslint-disable-next-line no-unused-vars
+// express only treats a function as an error handler if it takes four
+// arguments, so next has to stay here even though it looks unused.
 function errorHandler(err, req, res, next) {
   console.error('[error]', err.message);
 
   let status = err.status || 500;
   let message = 'Something went wrong. Please try again.';
 
-  // Mongoose validation error -> report the first field message.
+  // a schema rule failed. show the first message so the user gets something clear
   if (err.name === 'ValidationError') {
     status = 400;
     message = Object.values(err.errors)[0].message;
   }
-  // Bad ObjectId that slipped past validateObjectId.
+  // someone put a broken id in the url and it got past the id check
   else if (err.name === 'CastError') {
     status = 400;
     message = 'Invalid value provided.';
   }
-  // Duplicate key (e.g. username or group name already taken).
+  // unique index blew up, so the username or group name is already taken
   else if (err.code === 11000) {
     status = 409;
     const field = Object.keys(err.keyValue || { value: '' })[0];
     message = `That ${field} is already taken.`;
   }
-  // Upload too large / bad file (multer).
+  // multer rejected the upload, usually too big or the wrong file type
   else if (err.code === 'LIMIT_FILE_SIZE') {
     status = 400;
     message = 'The uploaded file is too large (max 2MB).';

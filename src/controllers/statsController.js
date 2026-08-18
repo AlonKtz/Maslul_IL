@@ -5,21 +5,21 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const Message = require('../models/Message');
 
-/**
- * Statistics controller.
- *
- * Every figure here is produced by a MongoDB aggregation over the live
- * collections — nothing is hard-coded. The charts on /stats redraw from
- * whatever is in the database at the moment the page is opened, so adding an
- * event or a car and reloading changes the graphs.
- */
+/*
+  All the numbers behind the statistics page.
 
-// GET /stats — page shell; the numbers arrive over Ajax.
+  Every one of these is a mongo aggregation running over the real collections.
+  Nothing here is typed in by hand. That was the point of the requirement, the
+  graphs have to come from the database. If you add a car and reload the page
+  the bars change.
+*/
+
+// GET /stats. renders the empty page, the numbers come after over ajax
 function showStats(req, res) {
   res.render('pages/stats', { title: 'Statistics' });
 }
 
-// GET /api/stats/summary — the headline counters.
+// GET /api/stats/summary, the big counters along the top
 async function summary(req, res, next) {
   try {
     const [members, groups, events, listings, cars, messages] = await Promise.all([
@@ -38,8 +38,8 @@ async function summary(req, res, next) {
 }
 
 // GET /api/stats/events-per-month
-// Meets and races per calendar month — the "average posts per group per
-// month" style figure the brief asks for, applied to our own content.
+// how many meets and races happen each month. this is my version of the
+// "average posts per month" example the brief gives.
 async function eventsPerMonth(req, res, next) {
   try {
     const rows = await Event.aggregate([
@@ -56,7 +56,8 @@ async function eventsPerMonth(req, res, next) {
       { $sort: { '_id.year': 1, '_id.month': 1 } },
     ]);
 
-    // Reshape into one entry per month with a meet and a race figure.
+    // mongo gives me one row per month per type. the chart wants one row per
+    // month with both numbers on it, so reshape it here.
     const byMonth = new Map();
 
     rows.forEach((row) => {
@@ -72,13 +73,13 @@ async function eventsPerMonth(req, res, next) {
   }
 }
 
-// GET /api/stats/cars-by-make — the ten most common makes in the garages.
+// GET /api/stats/cars-by-make, the ten most common makes across all garages
 async function carsByMake(req, res, next) {
   try {
     const data = await Car.aggregate([
       {
         $group: {
-          // Group case-insensitively so "bmw" and "BMW" count together.
+          // upper case the make first, otherwise "bmw" and "BMW" get counted separately
           _id: { $toUpper: '$make' },
           count: { $sum: 1 },
           averageHorsepower: { $avg: '$horsepower' },
@@ -102,7 +103,7 @@ async function carsByMake(req, res, next) {
   }
 }
 
-// GET /api/stats/listings-by-category — how many items and the average price.
+// GET /api/stats/listings-by-category, item counts plus the average price
 async function listingsByCategory(req, res, next) {
   try {
     const data = await Listing.aggregate([
@@ -130,7 +131,7 @@ async function listingsByCategory(req, res, next) {
   }
 }
 
-// GET /api/stats/events-by-city — where things actually happen.
+// GET /api/stats/events-by-city, which cities things actually happen in
 async function eventsByCity(req, res, next) {
   try {
     const data = await Event.aggregate([
@@ -153,8 +154,7 @@ async function eventsByCity(req, res, next) {
 }
 
 // GET /api/stats/group-activity
-// Average number of events each group hosts per month — the closest match to
-// the example in the brief.
+// roughly how many events each group puts on per month.
 async function groupActivity(req, res, next) {
   try {
     const data = await Group.aggregate([
@@ -172,7 +172,7 @@ async function groupActivity(req, res, next) {
           name: 1,
           members: { $size: '$members' },
           events: { $size: '$events' },
-          // Months since the group was created, at least one.
+          // how many months the group has existed. never less than 1 or I divide by zero
           monthsActive: {
             $max: [
               1,

@@ -1,6 +1,7 @@
-/**
- * Marketplace page — listings CRUD, search and the sold flag, all over Ajax.
- */
+/*
+  The marketplace page. Creating, editing and deleting listings, the search,
+  and the sold button. All of it over ajax.
+*/
 (function ($) {
   'use strict';
 
@@ -102,7 +103,7 @@
     delete payload.id;
     delete payload.photoFiles;
 
-    // ---- client-side validation
+    // check the input before sending it
     if (!payload.title || payload.title.length < 3) {
       return API.showError('#listing-error', 'Give the item a title of at least 3 characters.');
     }

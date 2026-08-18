@@ -7,7 +7,8 @@ const { handleValidation, validateObjectId } = require('../middleware/validate')
 
 const router = express.Router();
 
-// Shared validation rules for creating/updating a car.
+// the validation rules for adding or editing a car. I keep them in one place
+// because create and update both need exactly the same checks.
 const carRules = [
   body('make').trim().notEmpty().withMessage('Make is required')
     .isLength({ max: 40 }).withMessage('Make is too long'),
@@ -27,13 +28,14 @@ const carRules = [
     .isLength({ max: 500 }).withMessage('Description is too long'),
 ];
 
-// Everything here needs a signed-in member.
+// nothing in this file works unless you are logged in
 router.use(requireLogin);
 
 // Page
 router.get('/garage', cars.showGarage);
 
-// API — order matters: /search must be declared before /:id
+// the order matters here. /search has to come before /:id, otherwise express
+// reads the word "search" as an id and the route never runs.
 router.get('/api/cars/search', cars.search);
 router.get('/api/cars', cars.list);
 router.get('/api/cars/:id', validateObjectId(), cars.getOne);

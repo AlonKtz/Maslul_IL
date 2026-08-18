@@ -24,7 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Sessions are stored in MongoDB so they survive a server restart.
+// sessions go in mongo rather than memory, so restarting the server does not
+// log everybody out
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || 'maslul-dev-secret',
   resave: false,
@@ -37,7 +38,7 @@ const sessionMiddleware = session({
 });
 app.use(sessionMiddleware);
 
-// Makes the logged-in user available to every route and view.
+// puts the logged in user on every request and every page
 app.use(attachUser);
 
 // ---------------------------------------------------------------- routes
@@ -55,12 +56,12 @@ app.use(require('./src/routes/admin'));
 app.use(require('./src/routes/uploads'));
 
 // ---------------------------------------------------------------- websockets
-// Real-time chat. It shares the Express session, so the socket knows which
-// member is connected without trusting anything the client sends.
+// the live chat. it shares the express session, which is how the socket knows
+// who is connected without trusting anything the browser sends it.
 require('./src/socket/chat')(server, sessionMiddleware);
 
 // ---------------------------------------------------------------- errors
-// Must be registered last, after every route.
+// these two have to be last, after every route, or they catch everything
 app.use(notFound);
 app.use(errorHandler);
 
@@ -73,7 +74,8 @@ connectDB().then(() => {
   });
 });
 
-// Last-resort guards: log instead of letting the process die.
+// last line of defence. if something slips past all the try/catch blocks I
+// log it instead of letting the whole server fall over.
 process.on('unhandledRejection', (reason) => {
   console.error('[unhandledRejection]', reason);
 });

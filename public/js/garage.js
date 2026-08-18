@@ -1,6 +1,7 @@
-/**
- * Garage page — the member's own cars plus a search across every garage.
- */
+/*
+  The garage page. Two tabs, one for your own cars and one for searching
+  through everybody else's.
+*/
 (function ($) {
   'use strict';
 
@@ -62,7 +63,7 @@
     e.preventDefault();
     var params = UI.formValues($(this));
 
-    // A quick sanity check on the ranges before asking the server.
+    // make sure the ranges make sense before sending them
     if (params.yearFrom && params.yearTo && Number(params.yearFrom) > Number(params.yearTo)) {
       return UI.toast('The "year from" cannot be later than the "year to".', true);
     }
@@ -110,7 +111,7 @@
     delete payload.id;
     delete payload.photoFile;
 
-    // ---- client-side validation
+    // check the input before sending it
     if (!payload.make) return API.showError('#car-error', 'Enter the make.');
     if (!payload.model) return API.showError('#car-error', 'Enter the model.');
     var year = Number(payload.year);

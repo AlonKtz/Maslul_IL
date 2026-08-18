@@ -1,8 +1,9 @@
-/**
- * Meets & races page.
- * Everything here talks to the server with jQuery Ajax (through API) and
- * re-renders the lists in place — the page itself never reloads.
- */
+/*
+  The meets and races page.
+
+  Everything here talks to the server with jQuery ajax through my API helper,
+  and redraws the list in place. The page itself never reloads once it is open.
+*/
 (function ($) {
   'use strict';
 
@@ -75,7 +76,8 @@
       .done(function (res) {
         render($('#events-all'), res.events, 'Nothing matched those filters.');
         UI.toast(res.total + ' event' + (res.total === 1 ? '' : 's') + ' found');
-        // Make sure the user is looking at the list they just filtered.
+        // jump them to the tab holding the results, otherwise they search and
+        // nothing seems to happen
         $('#event-tabs .tab[data-tab="panel-all"]').trigger('click');
       })
       .fail(function (jq) { UI.toast(API.errorMessage(jq), true); });
@@ -89,7 +91,7 @@
   // ---------------------------------------------------------------- create / edit
   UI.initToggle('#toggle-create', '#create-panel');
 
-  // The race-format field only makes sense for races.
+  // the race format dropdown only makes sense if they picked race, so hide it
   $('#ev-type').on('change', function () {
     $('#race-type-wrap').toggle($(this).val() === 'race');
   });
@@ -118,8 +120,8 @@
     delete payload.id;
     delete payload.imageFile;
 
-    // ---- client-side validation, so we do not bother the server with
-    // ---- input we already know is wrong.
+    // check everything here first. no point sending the server something I
+    // already know is wrong.
     if (!payload.title || payload.title.length < 3) {
       return API.showError('#event-error', 'Give the event a title of at least 3 characters.');
     }
@@ -137,7 +139,8 @@
 
     var $button = $form.find('button[type="submit"]').prop('disabled', true).text('Saving…');
 
-    // Upload the cover photo first (if one was chosen), then save the event.
+    // if they picked a photo, upload that first and get a url back. then save
+    // the event with that url on it.
     var file = $('#ev-image')[0].files[0];
     var uploaded = file ? UI.uploadImage(file) : $.Deferred().resolve(null).promise();
 
@@ -160,8 +163,8 @@
   });
 
   // ---------------------------------------------------------------- card actions
-  // One delegated handler covers every card in every tab, including cards
-  // that are added after this script runs.
+  // I attach one handler to the grid instead of one per card. that way it also
+  // works for cards that get added later, which the per card version did not.
   $('.grid').on('click', '.btn-delete', function () {
     var $card = $(this).closest('.item-card');
     var id = $card.data('id');
@@ -203,7 +206,8 @@
       $('#ev-desc').val(ev.description || '');
       $('#ev-max').val(ev.maxAttendees || 0);
 
-      // datetime-local wants "YYYY-MM-DDTHH:mm" in local time.
+      // the datetime input only accepts "YYYY-MM-DDTHH:mm" in local time, so build
+      // that string by hand
       var d = new Date(ev.startsAt);
       var pad = function (n) { return String(n).padStart(2, '0'); };
       $('#ev-starts').val(

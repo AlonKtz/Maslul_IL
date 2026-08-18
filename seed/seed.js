@@ -1,11 +1,12 @@
-/**
- * Seeds Maslul with enough content to look like a real network.
- *
- *   npm run seed          add the demo data (clears what is there first)
- *   npm run seed -- keep  add it without clearing
- *
- * Every member's password is "secret123". The site administrator is "alon".
- */
+/*
+  Fills the database with enough content that the site looks like a real
+  network instead of an empty shell.
+
+    npm run seed          wipes what is there and puts the demo data in
+    npm run seed -- keep  adds it without wiping first
+
+  Every account uses the password "secret123". The site admin is "alon".
+*/
 require('dotenv').config();
 
 const mongoose = require('mongoose');
@@ -24,7 +25,7 @@ const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const pickSome = (list, n) => [...list].sort(() => Math.random() - 0.5).slice(0, n);
 const between = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// A date n days from now (negative = in the past), at a given hour.
+// gives a date n days from now. a negative number means in the past.
 function daysFromNow(n, hour = 19) {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -76,7 +77,7 @@ const GROUPS = [
   { name: 'EV Drivers IL', category: 'EV', brand: 'Tesla',
     description: 'Charging maps, road trips and range arguments.' },
   { name: 'Drift Collective', category: 'Racing', brand: 'Nissan',
-    description: 'Practice days, tyre orders and seat time. Private — we approve members.',
+    description: 'Practice days, tyre orders and seat time. Private group, we approve members.',
     isPrivate: true },
   { name: 'Tuning Garage', category: 'Tuning', brand: '',
     description: 'Maps, dynos and honest dyno graphs.' },
@@ -208,7 +209,8 @@ async function seed() {
   }
 
   // ---- members --------------------------------------------------------
-  // Created one at a time so the password-hashing hook runs for each.
+  // one at a time on purpose. insertMany would skip the pre save hook and the
+  // passwords would end up stored as plain text.
   const users = [];
   for (const member of MEMBERS) {
     users.push(await User.create(Object.assign({ password: 'secret123' }, member)));
@@ -216,7 +218,8 @@ async function seed() {
   console.log(`[seed] ${users.length} members`);
 
   // ---- friendships ----------------------------------------------------
-  // Everybody gets between three and six friends, both ways.
+  // give everyone three to six friends. it has to go both ways or the feed
+  // looks wrong from one side.
   for (const user of users) {
     const others = users.filter((u) => !u._id.equals(user._id));
     for (const friend of pickSome(others, between(3, 6))) {
@@ -226,7 +229,7 @@ async function seed() {
       }
     }
   }
-  // A couple of pending requests so the profile page has something to show.
+  // leave a couple of requests pending so the profile page has something to show
   users[1].friendRequests.push(users[9]._id);
   users[2].friendRequests.push(users[10]._id);
   await Promise.all(users.map((u) => u.save()));
@@ -241,7 +244,8 @@ async function seed() {
     const group = await Group.create(Object.assign({}, GROUPS[i], {
       admin: admin._id,
       members: [admin._id, ...members.map((m) => m._id)],
-      // The private group has somebody waiting to be let in.
+      // put somebody in the queue for the private group so the approve button
+      // has something to do when I demo it
       pendingRequests: GROUPS[i].isPrivate ? [users[11]._id] : [],
     }));
     groups.push(group);
@@ -259,8 +263,8 @@ async function seed() {
   console.log(`[seed] ${cars.length} cars`);
 
   // ---- events ---------------------------------------------------------
-  // Spread across the last four months and the next two, so the "per month"
-  // chart has a real shape.
+  // spread the events over the last few months and the next couple, otherwise
+  // the per month chart is just one tall bar and looks like nothing.
   const events = [];
   const offsets = [-105, -92, -74, -61, -45, -33, -20, -12, -5, 3, 9, 16, 23, 30, 38, 47, 55];
 
@@ -303,7 +307,7 @@ async function seed() {
       seller: users[(i + 3) % users.length]._id,
       city,
       location: point(city),
-      // A couple of things have already sold.
+      // mark a few as already sold so the sold badge shows up
       status: i % 9 === 0 ? 'sold' : 'available',
       likes: pickSome(users, between(0, 5)).map((u) => u._id),
       comments: Math.random() > 0.6
@@ -338,7 +342,7 @@ async function seed() {
 
   // ---- done -----------------------------------------------------------
   console.log('\n  Seeding complete.');
-  console.log('  Sign in with any of these — the password is always "secret123":');
+  console.log('  Sign in with any of these, the password is always "secret123":');
   console.log('    alon   (site administrator)');
   console.log('    noa, yossi, dana, itai, maya, omer, tamar, eitan, shira, gil, roni\n');
 

@@ -22,7 +22,7 @@ router.use(requireLogin);
 // Page
 router.get('/profile/:username', users.showProfile);
 
-// API — /search before /:id
+// /search before /:id, same as the other route files
 router.get('/api/users/search', users.search);
 router.get('/api/users', users.list);
 router.get('/api/users/:id', validateObjectId(), users.getOne);

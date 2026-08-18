@@ -3,25 +3,28 @@ const Group = require('../models/Group');
 const { CITIES, coordinatesOf } = require('../data/cities');
 const { contains, paginate, num, date } = require('../utils/query');
 
-/**
- * Event controller — car meets and races.
- * Full Create / Update / Delete / List / Search, plus RSVP, likes and comments.
- *
- * Rule: only the host (or a site administrator) may edit or delete an event.
- */
+/*
+  Everything to do with events, which means both car meets and races.
 
-// GET /events — page shell; the data arrives over Ajax.
+  Full create, update, delete, list and search, plus saying you are going,
+  likes and comments.
+
+  The rule is that only the person hosting the event can change or delete it.
+  Site admins can too.
+*/
+
+// GET /events. renders the empty page, the events load after over ajax
 function showEvents(req, res) {
   res.render('pages/events', {
     title: 'Meets & races',
     cities: CITIES.map((c) => c.name),
     raceTypes: Event.RACE_TYPES,
-    // Optional: put a YouTube video id in .env to show a weekly recap.
+    // optional. if you put a youtube id in .env it shows up as the weekly recap
     youtubeId: process.env.RECAP_YOUTUBE_ID || '',
   });
 }
 
-// GET /events/:id — single event page
+// GET /events/:id, one event on its own page
 async function showEvent(req, res, next) {
   try {
     const event = await Event.findById(req.params.id)
@@ -63,7 +66,7 @@ async function list(req, res, next) {
     if (req.query.group) filter.group = req.query.group;
     if (req.query.type && Event.EVENT_TYPES.includes(req.query.type)) filter.type = req.query.type;
 
-    // By default only show events that have not happened yet.
+    // unless you ask for past ones, only show events that are still coming up
     filter.startsAt = req.query.past === 'true' ? { $lt: new Date() } : { $gte: new Date() };
 
     const sort = req.query.past === 'true' ? { startsAt: -1 } : { startsAt: 1 };
@@ -86,7 +89,7 @@ async function list(req, res, next) {
 
 // ---------------------------------------------------------------- SEARCH
 // GET /api/events/search
-// Parameters: keyword, type, raceType, city, dateFrom, dateTo, freeSpots.
+// takes keyword, type, race format, city and a date range
 async function search(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -128,10 +131,11 @@ async function search(req, res, next) {
 
 // ---------------------------------------------------------------- AREA SEARCH
 // POST /api/events/area
-// Body: { polygon: [[lng, lat], ...], type, dateFrom, dateTo }
+// the body has the polygon, which is a list of [lng, lat] points.
 //
-// The polygon comes from the shape the member drew on the canvas map.
-// MongoDB answers with the events whose location falls inside it ($geoWithin).
+// those points are the shape the user drew on the canvas map. I hand the
+// shape to mongo and $geoWithin gives me back every event that sits inside
+// it. this is the part I am most happy with.
 async function searchArea(req, res, next) {
   try {
     const { polygon, type, dateFrom, dateTo, includePast } = req.body;
@@ -140,7 +144,7 @@ async function searchArea(req, res, next) {
       return res.status(400).json({ error: 'Draw an area with at least three points.' });
     }
 
-    // Every point must be a valid [lng, lat] pair — never trust the client.
+    // check every point before using it. the browser can send me anything
     const clean = polygon.map((p) => {
       if (!Array.isArray(p) || p.length !== 2) throw Object.assign(new Error('Bad point'), { status: 400, expose: true });
       const lng = Number(p[0]);
@@ -151,7 +155,7 @@ async function searchArea(req, res, next) {
       return [lng, lat];
     });
 
-    // GeoJSON polygons must be closed: the last point repeats the first.
+    // geojson wants the shape closed, so the last point has to repeat the first one
     const first = clean[0];
     const last = clean[clean.length - 1];
     if (first[0] !== last[0] || first[1] !== last[1]) clean.push([first[0], first[1]]);
@@ -229,7 +233,7 @@ async function create(req, res, next) {
 }
 
 // ---------------------------------------------------------------- UPDATE
-// PUT /api/events/:id — host only.
+// PUT /api/events/:id, only the host can do this
 async function update(req, res, next) {
   try {
     const event = await Event.findById(req.params.id);
@@ -243,7 +247,7 @@ async function update(req, res, next) {
       if (req.body[f] !== undefined) event[f] = req.body[f];
     });
 
-    // Changing the city moves the point on the map as well.
+    // if the city changed then the map coordinates have to change with it
     if (req.body.city !== undefined) {
       const coordinates = coordinatesOf(req.body.city);
       if (!coordinates) return res.status(400).json({ error: 'Pick a city from the list.' });
@@ -262,7 +266,7 @@ async function update(req, res, next) {
 }
 
 // ---------------------------------------------------------------- DELETE
-// DELETE /api/events/:id — host only.
+// DELETE /api/events/:id, only the host can do this
 async function remove(req, res, next) {
   try {
     const event = await Event.findById(req.params.id);
@@ -280,7 +284,7 @@ async function remove(req, res, next) {
 }
 
 // ---------------------------------------------------------------- RSVP
-// POST /api/events/:id/attend — toggles attendance.
+// POST /api/events/:id/attend. press once to go, press again to cancel
 async function toggleAttend(req, res, next) {
   try {
     const event = await Event.findById(req.params.id);

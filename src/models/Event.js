@@ -5,14 +5,14 @@ const { CITY_NAMES } = require('../data/cities');
 const EVENT_TYPES = ['meet', 'race'];
 const RACE_TYPES = ['Drag', 'Track', 'Rally', 'Hillclimb', 'Drift', 'Time attack'];
 
-/**
- * Event model — a car meet or a race.
- *
- * `location` is a GeoJSON point so MongoDB can answer "which events fall
- * inside the area the user drew on the map?" with a $geoWithin query.
- * It is filled in from the chosen city (see src/data/cities.js), so the
- * member never has to type coordinates.
- */
+/*
+  Event model. An event is either a car meet or a race.
+
+  The location field is saved as a GeoJSON point. I need that so Mongo can run
+  a $geoWithin query and tell me which events fall inside the shape the user
+  draws on the map. The coordinates come from the city they pick
+  (see src/data/cities.js) so nobody has to type in numbers.
+*/
 const eventSchema = new mongoose.Schema(
   {
     title: {
@@ -29,7 +29,7 @@ const eventSchema = new mongoose.Schema(
       enum: { values: EVENT_TYPES, message: '{VALUE} is not a valid event type' },
       required: [true, 'Event type is required'],
     },
-    // Only meaningful when type === 'race'.
+    // this one only matters when the type is 'race'
     raceType: {
       type: String,
       enum: { values: RACE_TYPES.concat(['']), message: '{VALUE} is not a valid race type' },
@@ -48,7 +48,7 @@ const eventSchema = new mongoose.Schema(
     },
     address: { type: String, maxlength: [120, 'Address is too long'], default: '' },
 
-    // GeoJSON point: [longitude, latitude]
+    // GeoJSON point. the order is [longitude, latitude], not the other way round
     location: {
       type: { type: String, enum: ['Point'], default: 'Point' },
       coordinates: {
@@ -62,7 +62,7 @@ const eventSchema = new mongoose.Schema(
     },
 
     coverImage: { type: String, default: '/img/default-event.svg' },
-    maxAttendees: { type: Number, min: [0, 'Cannot be negative'], default: 0 }, // 0 = unlimited
+    maxAttendees: { type: Number, min: [0, 'Cannot be negative'], default: 0 }, // 0 means no limit
 
     attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -71,9 +71,9 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Required for $geoWithin / $near queries on `location`.
+// mongo needs this index before it will run the map area search
 eventSchema.index({ location: '2dsphere' });
-// The event lists are almost always sorted by when the event happens.
+// nearly every event list is sorted by date, so index that as well
 eventSchema.index({ startsAt: 1 });
 
 module.exports = mongoose.model('Event', eventSchema);

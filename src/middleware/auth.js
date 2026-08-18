@@ -1,16 +1,17 @@
 const Group = require('../models/Group');
 const wantsJson = require('../utils/wantsJson');
 
-/**
- * Access-control middleware.
- *
- * The logged-in user's id is kept in the session (req.session.userId).
- * `res.locals.currentUser` is filled by attachUser so every EJS view can
- * render differently for guests vs logged-in users.
- */
+/*
+  All the middleware that decides who is allowed to do what.
 
-// Loads the current user (if any) onto req/res for downstream use.
-// Runs on every request; never blocks.
+  When someone logs in I only keep their id in the session, nothing else.
+  attachUser then loads the full user on every request and puts it on
+  res.locals.currentUser, which means every EJS page can check it and show
+  something different to a guest than to a logged in member.
+*/
+
+// runs on every single request. loads the logged in user if there is one.
+// it never blocks anything, it just makes the user available further down.
 async function attachUser(req, res, next) {
   res.locals.currentUser = null;
   req.currentUser = null;
@@ -24,7 +25,7 @@ async function attachUser(req, res, next) {
       req.currentUser = user;
       res.locals.currentUser = user;
     } else {
-      // Session points at a deleted user — clear it.
+      // the session points at a user that no longer exists, so throw the session away
       req.session.destroy(() => {});
     }
   } catch (err) {
@@ -33,8 +34,8 @@ async function attachUser(req, res, next) {
   next();
 }
 
-// Blocks anyone who is not logged in.
-// Ajax requests get 401 JSON; normal page requests get redirected to login.
+// stops anyone who is not logged in.
+// an ajax call gets back 401 and json, a normal page visit gets sent to /login.
 function requireLogin(req, res, next) {
   if (req.currentUser) return next();
 
@@ -44,7 +45,7 @@ function requireLogin(req, res, next) {
   return res.redirect('/login');
 }
 
-// Blocks anyone who is not a site administrator.
+// only lets site admins through
 function requireAdmin(req, res, next) {
   if (req.currentUser && req.currentUser.role === 'admin') return next();
 
@@ -57,8 +58,8 @@ function requireAdmin(req, res, next) {
   });
 }
 
-// Blocks anyone who is not the admin of :id group (site admins always pass).
-// Used to gate group-management pages and actions.
+// only lets the admin of that group through. site admins can always pass.
+// this is what protects all the group management actions.
 async function requireGroupAdmin(req, res, next) {
   try {
     const group = await Group.findById(req.params.id || req.params.groupId);
@@ -73,14 +74,14 @@ async function requireGroupAdmin(req, res, next) {
       return res.status(403).json({ error: 'Only the group manager can do that.' });
     }
 
-    req.group = group; // pass it along so the controller need not re-query
+    req.group = group; // hand the group to the controller so it does not have to look it up again
     next();
   } catch (err) {
     next(err);
   }
 }
 
-// Redirects already-logged-in users away from login/register pages.
+// if you are already logged in there is no reason to see login or register
 function requireGuest(req, res, next) {
   if (req.currentUser) return res.redirect('/feed');
   next();

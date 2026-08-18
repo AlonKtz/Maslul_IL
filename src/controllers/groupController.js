@@ -2,21 +2,23 @@ const Group = require('../models/Group');
 const Event = require('../models/Event');
 const { contains, paginate, num } = require('../utils/query');
 
-/**
- * Group controller — car communities.
- * Full Create / Update / Delete / List / Search, plus membership management.
- *
- * Management rule: only the group's manager (`admin`) — or a site
- * administrator — may edit the group, remove members or approve join
- * requests. This is the "extended abilities" requirement.
- */
+/*
+  Everything to do with groups, which are the communities on the site.
 
-// GET /groups — browse page
+  Full create, update, delete, list and search, plus all the membership stuff.
+
+  The important rule is that only the person who runs the group can edit it,
+  remove members or approve people who want to join. Site admins can as well.
+  This is the part of the brief that asks for a manager to have more abilities
+  than a normal member.
+*/
+
+// GET /groups, the browse page
 function showGroups(req, res) {
   res.render('pages/groups', { title: 'Groups', categories: Group.CATEGORIES });
 }
 
-// GET /groups/:id — single group page
+// GET /groups/:id, one group on its own page
 async function showGroup(req, res, next) {
   try {
     const group = await Group.findById(req.params.id)
@@ -35,7 +37,7 @@ async function showGroup(req, res, next) {
     const isMember = group.members.some((m) => m._id.equals(me._id));
     const isManager = group.admin._id.equals(me._id);
 
-    // Private groups are closed to non-members.
+    // if the group is private then people who are not in it cannot see anything
     if (group.isPrivate && !isMember && !isManager && me.role !== 'admin') {
       return res.status(403).render('pages/error', {
         title: 'Private group',
@@ -83,7 +85,7 @@ async function list(req, res, next) {
 
 // ---------------------------------------------------------------- SEARCH
 // GET /api/groups/search
-// Parameters: name, category, brand, privacy, minMembers.
+// takes name, category, brand, public or private, and a minimum member count
 async function search(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -115,7 +117,7 @@ async function search(req, res, next) {
 }
 
 // ---------------------------------------------------------------- CREATE
-// POST /api/groups — the creator automatically becomes manager and member.
+// POST /api/groups. whoever creates it becomes the manager and the first member
 async function create(req, res, next) {
   try {
     const { name, description, category, brand, isPrivate, coverImage } = req.body;
@@ -139,7 +141,8 @@ async function create(req, res, next) {
 }
 
 // ---------------------------------------------------------------- UPDATE
-// PUT /api/groups/:id — requireGroupAdmin already loaded req.group.
+// PUT /api/groups/:id. the requireGroupAdmin middleware already fetched the
+// group and checked permission, so I can just use req.group here
 async function update(req, res, next) {
   try {
     const group = req.group;
@@ -158,10 +161,10 @@ async function update(req, res, next) {
 }
 
 // ---------------------------------------------------------------- DELETE
-// DELETE /api/groups/:id — also removes the group's posts.
+// DELETE /api/groups/:id, this takes the group's events with it
 async function remove(req, res, next) {
   try {
-    // Events hosted by this group lose their home, so remove them too.
+    // the events belonging to this group have nowhere to live now, so delete them
     await Event.deleteMany({ group: req.group._id });
     await req.group.deleteOne();
     res.json({ ok: true });
@@ -172,7 +175,8 @@ async function remove(req, res, next) {
 
 // ---------------------------------------------------------------- MEMBERSHIP
 // POST /api/groups/:id/join
-// Public groups join immediately; private groups queue a request for the manager.
+// joining a public group is instant. a private one puts you in a queue for
+// the manager to approve.
 async function join(req, res, next) {
   try {
     const group = await Group.findById(req.params.id);
@@ -219,7 +223,7 @@ async function leave(req, res, next) {
   }
 }
 
-// POST /api/groups/:id/approve  { userId }  — manager only
+// POST /api/groups/:id/approve, manager only
 async function approve(req, res, next) {
   try {
     const group = req.group;
@@ -239,7 +243,7 @@ async function approve(req, res, next) {
   }
 }
 
-// POST /api/groups/:id/reject  { userId }  — manager only
+// POST /api/groups/:id/reject, manager only
 async function reject(req, res, next) {
   try {
     const group = req.group;
@@ -251,7 +255,7 @@ async function reject(req, res, next) {
   }
 }
 
-// POST /api/groups/:id/remove-member  { userId }  — manager only
+// POST /api/groups/:id/remove-member, manager only
 async function removeMember(req, res, next) {
   try {
     const group = req.group;

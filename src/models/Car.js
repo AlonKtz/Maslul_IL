@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
-// Body types power part of the advanced garage search.
+// the body types a user can choose. the garage search filter uses this list too
 const CAR_CATEGORIES = ['Sedan', 'Hatchback', 'SUV', 'Coupe', 'Convertible', 'Pickup', 'Van', 'Other'];
 
-/**
- * Car model — a vehicle in a user's virtual "garage".
- * This is the model behind the advanced multi-parameter search
- * (make + model + year range + horsepower range + color/category).
- */
+/*
+  Car model.
+  Every car belongs to one user and shows up in their garage.
+  This is also the model behind the big search on the garage page, where you
+  can filter by make, model, year range, horsepower range, colour and body type.
+*/
 const carSchema = new mongoose.Schema(
   {
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

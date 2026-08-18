@@ -16,12 +16,13 @@ router.use(requireLogin);
 // Page
 router.get('/chat', messages.showChat);
 
-// API — the fixed paths must come before /:userId
+// the fixed paths have to come before /:userId or they get read as an id
 router.get('/api/messages/conversations', messages.conversations);
 router.get('/api/messages/search', messages.search);
 router.get('/api/messages/:userId', validateObjectId('userId'), messages.history);
 
-// Messages are created over the socket, but editing and deleting are REST.
+// new messages are created over the socket, not here. editing and deleting
+// are normal http requests though.
 router.put('/api/messages/:id', validateObjectId(), textRule, handleValidation, messages.update);
 router.delete('/api/messages/:id', validateObjectId(), messages.remove);
 

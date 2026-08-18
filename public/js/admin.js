@@ -1,7 +1,7 @@
-/**
- * Administration page — the site administrator's extra abilities:
- * search every member, change roles, and moderate recent content.
- */
+/*
+  The admin page. The things only a site admin can do, which is searching
+  every member, changing somebody's role, and deleting content.
+*/
 (function ($) {
   'use strict';
 
@@ -115,8 +115,9 @@
     });
   }
 
-  // Administrators may delete anybody's content — the ownership checks in the
-  // controllers allow it for the admin role.
+  // an admin can delete anyone's stuff. I did not need a separate endpoint for
+  // this, because the ownership check in each controller already lets the
+  // admin role through.
   $('#panel-content').on('click', '.btn-remove', function () {
     var $row = $(this).closest('.comment');
     var kind = $row.data('kind');

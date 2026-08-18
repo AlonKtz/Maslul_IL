@@ -1,14 +1,15 @@
-/**
- * Israeli cities with their coordinates.
- *
- * Used in two places:
- *   1. the "city" dropdown when creating an event or a listing — picking a
- *      city gives us the coordinates without asking the user for numbers;
- *   2. the canvas map, which plots these points so the user can see where
- *      things are before drawing an area of interest.
- *
- * Coordinates are [longitude, latitude] to match the order GeoJSON uses.
- */
+/*
+  A list of cities in Israel with their coordinates.
+
+  I use this in two places:
+    1. the city dropdown when you create an event or a listing. picking a city
+       gives me the coordinates so the user never has to type numbers.
+    2. the canvas map, which draws these as dots so you can see where things
+       are before you draw an area.
+
+  The coordinates are written [longitude, latitude] because that is the order
+  GeoJSON and MongoDB expect. It is the opposite of how people normally say it.
+*/
 const CITIES = [
   { name: 'Tel Aviv', coordinates: [34.7818, 32.0853] },
   { name: 'Jerusalem', coordinates: [35.2137, 31.7683] },
@@ -39,7 +40,7 @@ const CITIES = [
 
 const CITY_NAMES = CITIES.map((c) => c.name);
 
-// Returns the [lng, lat] pair for a city name, or null if we do not know it.
+// gives back the [lng, lat] for a city name, or null if the name is not in the list
 function coordinatesOf(cityName) {
   const city = CITIES.find((c) => c.name === cityName);
   return city ? city.coordinates : null;

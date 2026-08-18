@@ -1,4 +1,4 @@
-# Maslul — מסלול
+# Maslul (מסלול)
 
 **Israel's first social network for car lovers.**
 
@@ -15,7 +15,7 @@ Final project for the Web Application Development course.
 ### 1. Requirements
 
 * [Node.js](https://nodejs.org/) 18 or newer (developed on 22)
-* A MongoDB database — either a free [Atlas](https://www.mongodb.com/atlas) cluster
+* A MongoDB database. Either a free [Atlas](https://www.mongodb.com/atlas) cluster
   or a local MongoDB server
 
 ### 2. Install
@@ -61,7 +61,7 @@ npm start
 
 Then open <http://localhost:3000>.
 
-Use `npm run dev` while working on it — nodemon restarts the server when a file
+Use `npm run dev` while working on it. Nodemon restarts the server when a file
 changes.
 
 ### Signing in
@@ -84,16 +84,16 @@ server.js              entry point: Express app, sessions, routes, websockets
 config/db.js           MongoDB connection
 
 src/
-  models/              Model layer — Mongoose schemas and their validation
+  models/              Model layer. Mongoose schemas and their validation
     User.js  Group.js  Event.js  Listing.js  Car.js  Message.js
-  controllers/         Controller layer — all the logic lives here
+  controllers/         Controller layer. All the logic lives here
   routes/              thin routers that map URLs to controller functions
   middleware/          authentication, validation, uploads, error handling
   socket/chat.js       Socket.io handlers for the live chat
   data/cities.js       Israeli cities with their coordinates
   utils/               small shared helpers
 
-views/                 View layer — EJS templates
+views/                 View layer. EJS templates
   partials/            head, nav, footer
   pages/               one file per page
 
@@ -144,7 +144,8 @@ friend requests are only ever readable by that member.
 ### Area search on a hand-drawn map
 
 The `/search` page draws a map of Israel on a `<canvas>` from stored
-coordinates — no map library and no map tiles, so it needs no internet. Click
+coordinates. There is no map library and no map tiles, so it needs no
+internet at all. Click
 points to outline the area you are willing to travel to, and the shape is sent
 to the server, which answers with a MongoDB `$geoWithin` query against the
 coordinates saved on each event or listing.
@@ -153,7 +154,7 @@ coordinates saved on each event or listing.
 
 Chat runs over WebSockets with Socket.io. The socket reuses the Express session,
 so it knows which member is connected without trusting anything the browser
-sends — an unauthenticated socket is refused. Messages are delivered live to
+sends, and a socket with no session is refused. Messages are delivered live to
 every tab a member has open and saved to MongoDB, so the conversation survives a
 reload. Typing indicators and online/offline presence are included.
 
@@ -181,7 +182,7 @@ a clear message instead of a crash.
 | Views | EJS |
 | Client | jQuery with Ajax for every request to the server |
 | Components | React (Video and Canvas), compiled in the browser with Babel |
-| Styling | CSS3 — `@font-face`, `text-shadow`, `transition`, multiple columns, `border-radius` |
+| Styling | CSS3: `@font-face`, `text-shadow`, `transition`, multiple columns, `border-radius` |
 | Real time | Socket.io / WebSockets |
 | Charts | D3.js |
 | Sessions | express-session with connect-mongo |

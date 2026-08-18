@@ -1,10 +1,10 @@
-/**
- * Statistics page — four charts drawn with D3 from live database figures.
- *
- * Each chart fetches its own endpoint with jQuery Ajax and then builds the
- * SVG with D3. Nothing is hard-coded: add an event or a car, press Refresh,
- * and the bars change.
- */
+/*
+  The statistics page. Four charts, all drawn with D3.
+
+  Each chart asks its own endpoint for data with jQuery ajax, then builds the
+  svg with D3. None of the numbers are typed in. Add an event or a car, press
+  Refresh, and the bars move.
+*/
 (function ($, d3) {
   'use strict';
 
@@ -18,7 +18,8 @@
     grid: '#2b343d',
   };
 
-  // Removes whatever was drawn before, then gives back a fresh <svg>.
+  // clears out the old chart and gives me back a clean svg to draw into.
+  // without the clear, redrawing stacks a second chart on top of the first.
   function freshSvg(selector, height) {
     var container = d3.select(selector);
     container.selectAll('*').remove();
@@ -40,15 +41,16 @@
     d3.select(selector).append('p').attr('class', 'empty').text(text);
   }
 
-  /**
-   * Applies a shape's final size, growing into it when that is sensible.
-   *
-   * The final values are always applied, and the animation is only an
-   * enhancement: animations are driven by animation frames, which the browser
-   * does not run for a hidden tab. If the bars relied on the animation alone,
-   * opening this page in a background tab — or with "reduce motion" turned
-   * on — would leave the reader looking at an empty chart.
-   */
+  /*
+    Sets a bar to its real size, and animates it growing when that makes sense.
+
+    This one caught me out. The final size always gets applied here. The
+    animation is only a bonus on top. The reason is that animations run on
+    animation frames, and the browser does not run those for a tab that is
+    hidden. When the growing was the only thing setting the size, opening the
+    page in a background tab left you staring at an empty chart. Same if you
+    have reduce motion switched on.
+  */
   function settle(selection, from, to) {
     var reduceMotion = window.matchMedia
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -64,7 +66,7 @@
     Object.keys(to).forEach(function (key) { moving.attr(key, to[key]); });
   }
 
-  // A single tooltip reused by every chart.
+  // one tooltip element shared by all four charts instead of one each
   var tooltip = d3.select('body').append('div').attr('class', 'chart-tooltip');
 
   function showTip(html, event) {
@@ -76,7 +78,7 @@
   function hideTip() { tooltip.classed('is-visible', false); }
 
   // ------------------------------------------------------------------ 1
-  // Grouped bar chart: meets and races per month.
+  // chart 1. two bars per month, one for meets and one for races
   function drawEventsPerMonth(data) {
     var sel = '#chart-events-month';
     if (!data.length) return message(sel, 'No events yet.');
@@ -98,7 +100,7 @@
       .nice()
       .range([innerH, 0]);
 
-    // horizontal grid lines
+    // the faint lines going across, makes the heights easier to read
     g.append('g')
       .call(d3.axisLeft(y).ticks(5).tickSize(-innerW).tickFormat(''))
       .selectAll('line').attr('stroke', COLOURS.grid);
@@ -145,7 +147,7 @@
   }
 
   // ------------------------------------------------------------------ 2
-  // Horizontal bars: cars by make.
+  // chart 2. sideways bars, one per car make
   function drawCarsByMake(data) {
     var sel = '#chart-cars-make';
     if (!data.length) return message(sel, 'No cars in any garage yet.');
@@ -194,7 +196,7 @@
   }
 
   // ------------------------------------------------------------------ 3
-  // Bars with a second series drawn as dots: count and average price.
+  // chart 3. bars for how many items, plus a line of dots for average price
   function drawListings(data) {
     var sel = '#chart-listings';
     if (!data.length) return message(sel, 'Nothing listed for sale yet.');
@@ -222,7 +224,8 @@
       .selectAll('text').attr('fill', COLOURS.muted)
       .attr('transform', 'rotate(-32)').style('text-anchor', 'end').style('font-size', '11px');
 
-    // Counts are whole numbers, so never show half a listing on the axis.
+    // counts are whole numbers so force whole number ticks. it was showing 0.5
+    // of a listing before, which makes no sense
     g.append('g')
       .call(d3.axisLeft(y).ticks(Math.min(5, y.domain()[1])).tickFormat(d3.format('d')))
       .selectAll('text').attr('fill', COLOURS.muted);
@@ -249,7 +252,7 @@
         height: function (d) { return innerH - y(d.count); },
       });
 
-    // average price as a line with dots, on the right-hand axis
+    // the average price goes on its own axis on the right, drawn as a line
     var line = d3.line()
       .x(function (d) { return x(d.category) + x.bandwidth() / 2; })
       .y(function (d) { return yPrice(d.averagePrice); });
@@ -265,7 +268,7 @@
   }
 
   // ------------------------------------------------------------------ 4
-  // Events per city.
+  // chart 4. how many events happen in each city
   function drawCities(data) {
     var sel = '#chart-cities';
     if (!data.length) return message(sel, 'No events yet.');
@@ -346,7 +349,8 @@
     UI.toast('Charts refreshed from the database');
   });
 
-  // Redraw on resize so the charts always fit their column.
+  // redraw when the window resizes so the charts keep fitting. the timeout
+  // stops it firing hundreds of times while you drag the window
   var resizeTimer = null;
   $(window).on('resize', function () {
     clearTimeout(resizeTimer);

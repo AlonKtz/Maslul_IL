@@ -1,15 +1,17 @@
-/**
- * VideoShowcase — a React player for race and meet recaps.
- *
- * It uses a real HTML5 <video> element and drives it from React with custom
- * controls (play/pause, seek, volume, playlist), which is what the "Video"
- * requirement asks for. A second tab embeds a YouTube clip for the weekly
- * recap, but the requirement is satisfied by the <video> player itself —
- * an embed is somebody else's player, not ours.
- *
- * Clips are read from /video/clips.json. Drop .mp4 files into /public/video
- * and list them there; the component copes with the list being empty.
- */
+/*
+  The video player for race and meet recaps.
+
+  It uses a real html5 video element and drives it from React, with my own
+  controls on top. Play and pause, the seek bar, volume, and the playlist
+  underneath.
+
+  There is a second tab with a YouTube embed for the weekly recap. I kept both
+  because an embed is really just somebody else's player sitting in an iframe,
+  so on its own I do not think it would count as using video.
+
+  The clips come from /video/clips.json. Drop mp4 files into /public/video and
+  add them to that file. It handles an empty list fine.
+*/
 
 const { useState, useRef, useEffect } = React;
 
@@ -32,7 +34,7 @@ function VideoShowcase({ youtubeId }) {
   const [tab, setTab] = useState('local');
   const [loadError, setLoadError] = useState(false);
 
-  // Load the clip list once.
+  // grab the clip list once when the component first appears
   useEffect(() => {
     window.jQuery
       .getJSON('/video/clips.json')
@@ -40,12 +42,12 @@ function VideoShowcase({ youtubeId }) {
       .fail(() => setClips([]));
   }, []);
 
-  // Keep the element's volume in step with the slider.
+  // push the slider value onto the actual video element
   useEffect(() => {
     if (videoRef.current) videoRef.current.volume = volume;
   }, [volume]);
 
-  // Switching clip resets the player.
+  // picking a different clip starts it from the beginning again
   useEffect(() => {
     setTime(0);
     setPlaying(false);
@@ -57,7 +59,8 @@ function VideoShowcase({ youtubeId }) {
     if (!video) return;
 
     if (video.paused) {
-      // play() rejects if the file is missing or the format is unsupported.
+      // play() throws if the file is missing or the browser cannot play the
+      // format, so catch that and show a message instead of failing silently
       const started = video.play();
       if (started && started.catch) started.catch(() => setLoadError(true));
     } else {
@@ -114,7 +117,7 @@ function VideoShowcase({ youtubeId }) {
                 onLoadedMetadata={(e) => setDuration(e.target.duration)}
                 onError={() => setLoadError(true)}
                 onEnded={() => {
-                  // Roll on to the next clip automatically.
+                  // when one finishes, move on to the next one
                   if (current < clips.length - 1) setCurrent(current + 1);
                   else setPlaying(false);
                 }}

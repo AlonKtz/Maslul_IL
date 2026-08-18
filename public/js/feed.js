@@ -1,7 +1,7 @@
-/**
- * Feed page — one timeline mixing events and marketplace listings from the
- * member's friends and the groups they belong to.
- */
+/*
+  The feed page. One timeline that mixes events and marketplace listings
+  together, from your friends and from the groups you are in.
+*/
 (function ($) {
   'use strict';
 

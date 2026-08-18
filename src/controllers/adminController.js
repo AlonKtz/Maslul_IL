@@ -6,21 +6,23 @@ const Car = require('../models/Car');
 const Message = require('../models/Message');
 const { contains, paginate } = require('../utils/query');
 
-/**
- * Administration controller.
- *
- * Everything here is behind requireAdmin, so only a site administrator can
- * reach it — a regular member gets 403 even if they type the address in.
- * The administrator's extra powers are the moderation ones: seeing every
- * member and removing content that should not be on the site.
- */
+/*
+  The admin page.
 
-// GET /admin — page shell.
+  Every route in here sits behind requireAdmin, so only a site admin can get
+  to it. A normal member gets a 403 even if they type the address in by hand,
+  which I tested.
+
+  What the admin can do that nobody else can is see every member, change
+  somebody's role, and delete content that should not be on the site.
+*/
+
+// GET /admin, renders the page
 function showAdmin(req, res) {
   res.render('pages/admin', { title: 'Administration' });
 }
 
-// GET /api/admin/overview — counts plus the newest members and content.
+// GET /api/admin/overview, the totals plus the newest members
 async function overview(req, res, next) {
   try {
     const [members, groups, events, listings, cars, messages, recentMembers] = await Promise.all([
@@ -43,7 +45,7 @@ async function overview(req, res, next) {
   }
 }
 
-// GET /api/admin/members — search every member, including their role.
+// GET /api/admin/members. searches every member. normal users cannot see roles
 async function members(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -71,7 +73,7 @@ async function members(req, res, next) {
   }
 }
 
-// POST /api/admin/members/:id/role — promote or demote a member.
+// POST /api/admin/members/:id/role, makes somebody an admin or takes it away
 async function setRole(req, res, next) {
   try {
     const { role } = req.body;
@@ -79,7 +81,8 @@ async function setRole(req, res, next) {
       return res.status(400).json({ error: 'Role must be "user" or "admin".' });
     }
 
-    // An administrator must not be able to lock themselves out.
+    // do not let an admin remove their own admin rights. if they were the only
+    // one left, nobody could ever get back into this page
     if (String(req.params.id) === String(req.currentUser._id) && role !== 'admin') {
       return res.status(400).json({ error: 'You cannot remove your own administrator rights.' });
     }
@@ -96,7 +99,7 @@ async function setRole(req, res, next) {
   }
 }
 
-// GET /api/admin/reported — the newest content, so it can be moderated.
+// GET /api/admin/content, the newest events and listings so they can be checked
 async function content(req, res, next) {
   try {
     const [events, listings] = await Promise.all([

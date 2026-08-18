@@ -37,7 +37,7 @@ router.use(requireLogin);
 router.get('/market', listings.showMarket);
 router.get('/market/:id', validateObjectId(), listings.showListing);
 
-// API — /search and /area before /:id
+// /search and /area before /:id, same as the other files
 router.get('/api/listings/search', listings.search);
 router.post('/api/listings/area', listings.searchArea);
 router.get('/api/listings', listings.list);

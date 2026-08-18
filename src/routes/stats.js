@@ -9,7 +9,7 @@ router.use(requireLogin);
 // Page
 router.get('/stats', stats.showStats);
 
-// Data endpoints — each one runs an aggregation over the live collections.
+// each one of these runs an aggregation over the real collections
 router.get('/api/stats/summary', stats.summary);
 router.get('/api/stats/events-per-month', stats.eventsPerMonth);
 router.get('/api/stats/cars-by-make', stats.carsByMake);

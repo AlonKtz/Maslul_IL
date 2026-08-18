@@ -1,6 +1,6 @@
-/**
- * Profile page — editing your own details, and the friend actions.
- */
+/*
+  The profile page. Editing your own details, and the friend buttons.
+*/
 (function ($) {
   'use strict';
 
@@ -17,7 +17,7 @@
     var payload = UI.formValues($form, true);
     delete payload.avatarFile;
 
-    // ---- client-side validation
+    // check the input before sending it
     if (payload.newPassword && payload.newPassword.length < 6) {
       return API.showError('#profile-error', 'The new password must be at least 6 characters.');
     }
@@ -25,7 +25,7 @@
       return API.showError('#profile-error', 'Enter your current password to change it.');
     }
     if (!payload.newPassword) {
-      // Nothing to change — do not send the password fields at all.
+      // they left the password boxes empty, so strip those fields out entirely
       delete payload.newPassword;
       delete payload.currentPassword;
     }
@@ -85,7 +85,8 @@
   });
 
   // ---------------------------------------------------------------- incoming requests
-  // Only rendered on your own profile, when somebody has asked to be a friend.
+  // this block only exists on your own profile, and only when somebody has
+  // actually sent you a request
   var $requests = $('#requests');
   if ($requests.length) {
     API.get('/api/users/' + profileId).done(function (res) {
@@ -94,7 +95,7 @@
         $requests.html('<p class="muted small">No requests.</p>');
         return;
       }
-      // Look each requester up so we can show a name and a picture.
+      // I only have their ids, so look each one up to get a name and a picture
       var lookups = ids.map(function (id) { return API.get('/api/users/' + id); });
 
       $.when.apply($, lookups).done(function () {

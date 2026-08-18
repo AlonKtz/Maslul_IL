@@ -1,16 +1,17 @@
 const Car = require('../models/Car');
 const { contains, paginate, num } = require('../utils/query');
 
-/**
- * Car controller — the "virtual garage".
- * Supports the full set of operations required for every model:
- * Create, Update, Delete, List and Search.
- *
- * Ownership rule: a member may only edit or delete cars in their own garage
- * (site administrators may moderate any car).
- */
+/*
+  The garage. Everything to do with cars.
 
-// GET /garage — page shell; the data itself is fetched with Ajax.
+  This has the full set of actions the project needs on every model, so
+  create, update, delete, list and search.
+
+  The rule here is ownership. You can only edit or delete a car that is in
+  your own garage. Site admins are the exception, they can remove any car.
+*/
+
+// GET /garage. this only renders the empty page, the cars come later over ajax
 function showGarage(req, res) {
   res.render('pages/garage', { title: 'Garage', categories: Car.CATEGORIES });
 }
@@ -46,9 +47,9 @@ async function list(req, res, next) {
 
 // ---------------------------------------------------------------- SEARCH
 // GET /api/cars/search
-// Advanced multi-parameter search (requirement: at least three parameters).
-// Accepts: make, model, category, color, yearFrom, yearTo, hpMin, hpMax.
-// Every parameter is optional and they combine with AND.
+// the big search. it takes make, model, category, colour, a year range and a
+// horsepower range, so eight parameters in total.
+// every one is optional, and the ones you do fill in all have to match.
 async function search(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -59,7 +60,7 @@ async function search(req, res, next) {
     if (model && model.trim()) filter.model = contains(model);
     if (color && color.trim()) filter.color = contains(color);
 
-    // Only accept a category we actually defined, otherwise ignore it.
+    // only accept a category from my own list, otherwise just ignore it
     if (category && Car.CATEGORIES.includes(category)) filter.category = category;
 
     // Year range
@@ -144,7 +145,7 @@ async function update(req, res, next) {
       return res.status(403).json({ error: 'You can only edit cars in your own garage.' });
     }
 
-    // Only these fields may be changed by the client.
+    // the only fields the browser is allowed to change. anything else it sends is ignored
     const allowed = ['make', 'model', 'year', 'category', 'engine', 'horsepower', 'color', 'description', 'photo'];
     allowed.forEach((field) => {
       if (req.body[field] !== undefined) car[field] = req.body[field];

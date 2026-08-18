@@ -1,10 +1,10 @@
-/**
- * Chat page.
- *
- * The live part runs over Socket.io; the conversation list and the message
- * search use ordinary Ajax. The two work together: a message that arrives on
- * the socket is added to the thread straight away, without a reload.
- */
+/*
+  The chat page.
+
+  The live bit runs over Socket.io. The conversation list and the message
+  search are normal ajax. The two work together, so a message that comes in on
+  the socket gets added to the thread on screen straight away with no reload.
+*/
 (function ($) {
   'use strict';
 
@@ -66,7 +66,7 @@
     $('#thread').html('<p class="loading">Loading…</p>');
     API.clearError('#chat-error');
 
-    // Ask the server for the history over the socket.
+    // ask the server for the old messages, over the socket rather than http
     socket.emit('history:load', { withUserId: peerId }, function (res) {
       if (!res || res.error) {
         $('#thread').html('<p class="empty">' + UI.escape((res && res.error) || 'Could not load.') + '</p>');
@@ -94,7 +94,7 @@
 
     var text = $.trim($('#chat-text').val());
 
-    // Client-side checks first.
+    // check it here before sending
     if (!peerId) return API.showError('#chat-error', 'Choose somebody to talk to first.');
     if (!text) return API.showError('#chat-error', 'Write something first.');
     if (text.length > 1000) return API.showError('#chat-error', 'Message is too long.');
@@ -114,7 +114,8 @@
     var toId = String(msg.to._id || msg.to);
     var other = fromId === CURRENT_USER_ID ? toId : fromId;
 
-    // Only append it if that conversation is the one on screen.
+    // only stick it in the thread if that is the conversation currently open,
+    // otherwise just show a toast
     if (peerId && other === peerId) {
       if ($('#thread .empty').length) $('#thread').empty();
       $('#thread').append(bubble(msg));
@@ -152,7 +153,7 @@
   });
 
   // ---------------------------------------------------------------- edit
-  // A member may correct something they already sent.
+  // lets you fix a message you already sent
   $('#thread').on('click', '.bubble-edit', function () {
     var $bubble = $(this).closest('.bubble');
     var $text = $bubble.find('.bubble-text');
@@ -245,7 +246,8 @@
   // ---------------------------------------------------------------- start
   loadConversations();
 
-  // Arriving from "Message" on a profile opens that conversation directly.
+  // if you got here by pressing Message on somebody's profile, open that
+  // conversation straight away instead of making you find them in the list
   var openWith = $('main').data('open-with');
   if (openWith) {
     API.get('/api/users/' + openWith).done(function (res) {

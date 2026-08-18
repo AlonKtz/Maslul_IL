@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Maslul — main stylesheet
+   Maslul main stylesheet
    Contains the five required CSS3 features, each marked with a comment:
      1. @font-face      2. text-shadow      3. transition
      4. multiple-columns                    5. border-radius
@@ -452,8 +452,8 @@ a { color: var(--accent-2); }
 .toast.is-error { border-color: rgba(230, 57, 70, 0.5); color: #ff8f98; }
 
 /* ---- description text uses columns on wide screens --------------------- */
-/* multiple-columns (CSS3 requirement) — long descriptions read better in
-   two columns on a wide screen.                                           */
+/* multiple-columns (CSS3 requirement). a long description reads better split
+   into two columns on a wide screen.                                       */
 .text-columns {
   column-count: 2;
   column-gap: 2rem;
@@ -650,7 +650,7 @@ a { color: var(--accent-2); }
 
 .person.chat-open { border: 1px solid var(--border); cursor: pointer; font: inherit; }
 
-/* Presence dot — grey when offline, green when connected. */
+/* the little dot next to a name. grey when offline, green when connected. */
 .dot {
   width: 8px;
   height: 8px;

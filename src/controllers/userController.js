@@ -5,16 +5,17 @@ const Listing = require('../models/Listing');
 const Group = require('../models/Group');
 const { contains, paginate } = require('../utils/query');
 
-/**
- * User controller — member profiles and the friend graph.
- * Full Create / Update / Delete / List / Search.
- * (Create lives in authController as registration, which is the same thing
- * from the user's point of view.)
- *
- * Privacy rule: a member may only edit or delete their own account.
- */
+/*
+  Member profiles and the friends system.
 
-// GET /profile/:username — a member's profile page
+  Full create, update, delete, list and search. Create is the odd one out, it
+  lives in authController as the register function, because signing up and
+  creating a user are the same thing from the user's side.
+
+  The privacy rule is that you can only edit or delete your own account.
+*/
+
+// GET /profile/:username, somebody's profile page
 async function showProfile(req, res, next) {
   try {
     const user = await User.findOne({ username: String(req.params.username).toLowerCase() })
@@ -77,7 +78,8 @@ async function list(req, res, next) {
 
 // ---------------------------------------------------------------- SEARCH
 // GET /api/users/search
-// Parameters: username, location, bio (keyword), hasCarMake.
+// takes username or display name, location, a word from the bio, and the make
+// of a car they own
 async function search(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -90,7 +92,8 @@ async function search(req, res, next) {
     if (location && location.trim()) filter.location = contains(location);
     if (keyword && keyword.trim()) filter.bio = contains(keyword);
 
-    // Members who own a car of a given make — joins through the Car model.
+    // find everyone who owns a car of this make. I have to go through the Car
+    // collection first and collect the owner ids, then filter users by those.
     if (carMake && carMake.trim()) {
       const owners = await Car.find({ make: contains(carMake) }).distinct('owner');
       filter._id = { $in: owners };
@@ -130,7 +133,7 @@ async function getOne(req, res, next) {
 }
 
 // ---------------------------------------------------------------- UPDATE
-// PUT /api/users/:id — a member may only update their own profile.
+// PUT /api/users/:id, you can only change your own profile
 async function update(req, res, next) {
   try {
     if (req.params.id !== String(req.currentUser._id) && req.currentUser.role !== 'admin') {
@@ -171,7 +174,7 @@ async function update(req, res, next) {
 }
 
 // ---------------------------------------------------------------- DELETE
-// DELETE /api/users/:id — removes the member and everything they own.
+// DELETE /api/users/:id. this wipes the account and everything attached to it
 async function remove(req, res, next) {
   try {
     if (req.params.id !== String(req.currentUser._id) && req.currentUser.role !== 'admin') {
@@ -235,7 +238,7 @@ async function sendFriendRequest(req, res, next) {
   }
 }
 
-// POST /api/users/:id/accept — accept the request sent by :id
+// POST /api/users/:id/accept, accepts the friend request that person sent me
 async function acceptFriendRequest(req, res, next) {
   try {
     const me = await User.findById(req.currentUser._id);

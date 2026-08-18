@@ -1,19 +1,24 @@
-/**
- * CanvasMap — a React component that draws a map of Israel on a <canvas> and
- * lets the member outline an area of interest by clicking points.
- *
- * The shape they draw is sent to the server, which answers with the meets,
- * races or items for sale whose stored coordinates fall inside it
- * (MongoDB $geoWithin). Nothing is loaded from the internet: the outline is
- * drawn from the coordinates below, so the map works offline.
- *
- * This component covers the React "Canvas" requirement.
- */
+/*
+  The map. A React component that draws Israel onto a canvas and lets you
+  click points to outline the area you care about.
+
+  The shape gets sent to the server, which sends back the meets, races or
+  items for sale that sit inside it. Mongo does the actual work with
+  $geoWithin.
+
+  Nothing here comes off the internet. The outline is just the list of
+  coordinates below, drawn by hand, so the map still works with no connection.
+  I went this way instead of using a map library because the project is only
+  allowed to use what we covered in class, and it also means nothing breaks if
+  the wifi in the lab is down.
+
+  This is the component that covers the Canvas part of the React requirement.
+*/
 
 const { useState, useRef, useEffect, useCallback } = React;
 
-/* Simplified outline of Israel as [longitude, latitude] pairs. It is a
-   schematic shape — enough to recognise the country and place the cities. */
+/* A rough outline of Israel as [longitude, latitude] pairs. It is a
+   rough shape, just enough to recognise the country and place the cities. */
 const ISRAEL_OUTLINE = [
   [35.10, 33.09], [35.55, 33.25], [35.60, 32.95], [35.55, 32.70],
   [35.57, 32.38], [35.55, 32.10], [35.22, 31.90], [35.45, 31.50],
@@ -27,7 +32,8 @@ const WIDTH = 340;
 const HEIGHT = 660;
 const PADDING = 16;
 
-/* Longitudes are squeezed by cos(latitude) so the country keeps its real
+/* Longitude gets squashed by cos(latitude), otherwise the country comes out
+   too wide. This keeps it roughly the right
    proportions instead of looking too wide. */
 const MEAN_LAT_RAD = (31.3 * Math.PI) / 180;
 const LNG_SCALE = Math.cos(MEAN_LAT_RAD);
@@ -49,15 +55,15 @@ function computeProjection(points) {
   const offsetY = (HEIGHT - (maxY - minY) * scale) / 2;
 
   return {
-    // geographic -> canvas pixels
+    // turns real coordinates into pixels on the canvas
     toCanvas([lng, lat]) {
       return [
         (lng * LNG_SCALE - minX) * scale + offsetX,
-        // canvas y grows downwards, latitude grows upwards
+        // canvas y counts downwards but latitude counts upwards, so flip it
         (maxY - lat) * scale + offsetY,
       ];
     },
-    // canvas pixels -> geographic
+    // and the other way round, pixels back into real coordinates
     toGeo(x, y) {
       return [
         ((x - offsetX) / scale + minX) / LNG_SCALE,
@@ -85,11 +91,11 @@ function CanvasMap({ cities, mode }) {
 
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    // sea
+    // the background, which is the sea
     ctx.fillStyle = '#0d1b26';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // land
+    // the country itself
     ctx.beginPath();
     ISRAEL_OUTLINE.forEach((point, i) => {
       const [x, y] = PROJECTION.toCanvas(point);
@@ -103,7 +109,7 @@ function CanvasMap({ cities, mode }) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // cities
+    // a dot and a label for each city
     cities.forEach((city) => {
       const [x, y] = PROJECTION.toCanvas(city.coordinates);
       ctx.beginPath();
@@ -115,7 +121,7 @@ function CanvasMap({ cities, mode }) {
       ctx.fillText(city.name, x + 5, y + 3);
     });
 
-    // results found inside the drawn area
+    // the things the search found, drawn as bigger markers
     if (results && results.points) {
       results.points.forEach((p) => {
         const [x, y] = PROJECTION.toCanvas(p.coordinates);
@@ -129,14 +135,14 @@ function CanvasMap({ cities, mode }) {
       });
     }
 
-    // the polygon being drawn
+    // the shape the user is drawing right now
     if (polygon.length) {
       const pts = polygon.map((p) => PROJECTION.toCanvas(p));
 
       ctx.beginPath();
       pts.forEach(([x, y], i) => (i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
 
-      // a dashed line follows the cursor so the shape is easy to close
+      // a line follows the mouse so you can see where the next side would go
       if (hover && polygon.length >= 1) ctx.lineTo(hover[0], hover[1]);
 
       if (polygon.length >= 3) {
@@ -149,7 +155,7 @@ function CanvasMap({ cities, mode }) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // handles
+      // the little circles on each corner
       pts.forEach(([x, y], i) => {
         ctx.beginPath();
         ctx.arc(x, y, 4, 0, Math.PI * 2);
@@ -164,7 +170,8 @@ function CanvasMap({ cities, mode }) {
   // ------------------------------------------------------------------ input
   function canvasPoint(evt) {
     const rect = canvasRef.current.getBoundingClientRect();
-    // The canvas is sized in CSS, so scale the click back to canvas units.
+    // the canvas is stretched by css, so a click at 300px on screen is not
+    // 300px on the canvas. this scales it back.
     const x = (evt.clientX - rect.left) * (WIDTH / rect.width);
     const y = (evt.clientY - rect.top) * (HEIGHT / rect.height);
     return [x, y];
@@ -205,7 +212,7 @@ function CanvasMap({ cities, mode }) {
 
     const url = mode === 'listings' ? '/api/listings/area' : '/api/events/area';
 
-    // jQuery Ajax, like the rest of the client.
+    // jQuery ajax, same as everywhere else in the project
     window.jQuery
       .ajax({
         url,

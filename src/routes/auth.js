@@ -6,7 +6,7 @@ const { requireGuest, requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Validation rules reused by the register route.
+// the checks the sign up form has to pass on the server
 const registerRules = [
   body('username')
     .trim()
@@ -31,7 +31,7 @@ const loginRules = [
 router.get('/register', requireGuest, auth.showRegister);
 router.get('/login', requireGuest, auth.showLogin);
 
-// Actions (called via Ajax)
+// the actual actions. the forms call these with ajax
 router.post('/auth/register', requireGuest, registerRules, handleValidation, auth.register);
 router.post('/auth/login', requireGuest, loginRules, handleValidation, auth.login);
 router.post('/auth/logout', requireLogin, auth.logout);

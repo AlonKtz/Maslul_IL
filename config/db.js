@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
-/**
- * Connect to MongoDB using the connection string in process.env.MONGO_URI.
- * Called once on server startup (see server.js). If the connection fails we
- * exit the process, because the app is useless without a database.
- */
+/*
+  Connects to MongoDB using the string in MONGO_URI from the .env file.
+  server.js calls this once when the app starts.
+  If it cannot connect I stop the process on purpose, because there is no point
+  running the site with no database behind it.
+*/
 async function connectDB() {
   const uri = process.env.MONGO_URI;
 

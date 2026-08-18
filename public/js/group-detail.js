@@ -1,7 +1,7 @@
-/**
- * Single group page: membership, the manager's settings form and the
- * manager-only approve / reject / remove controls.
- */
+/*
+  One group's page. Joining and leaving, and if you are the manager, the
+  settings form plus the approve, reject and remove buttons.
+*/
 (function ($) {
   'use strict';
 

@@ -6,7 +6,8 @@ const { handleValidation, validateObjectId } = require('../middleware/validate')
 
 const router = express.Router();
 
-// Every route in this file is for site administrators only.
+// everything in this file is site admin only. the two middlewares below run
+// on every route in here so I cannot forget one by accident.
 router.use(requireLogin, requireAdmin);
 
 router.get('/admin', admin.showAdmin);

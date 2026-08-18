@@ -1,11 +1,12 @@
 const { validationResult } = require('express-validator');
 const wantsJson = require('../utils/wantsJson');
 
-/**
- * Runs after a list of express-validator checks.
- * If any failed, answers 400 with the messages instead of letting bad data
- * reach the controller (requirement: validation on the server side).
- */
+/*
+  This runs straight after the express-validator rules on a route.
+  If any rule failed it answers 400 with the messages and stops there, so bad
+  data never reaches the controller. This is the server side half of the
+  validation, the browser does its own checks first.
+*/
 function handleValidation(req, res, next) {
   const result = validationResult(req);
   if (result.isEmpty()) return next();
@@ -21,10 +22,11 @@ function handleValidation(req, res, next) {
   });
 }
 
-/**
- * Guards against invalid ObjectId strings in the URL (e.g. /posts/abc).
- * Without this, Mongoose throws a CastError on every malformed id.
- */
+/*
+  Checks that an id in the url actually looks like a mongo id before I use it.
+  Without this, something like /api/cars/abc makes mongoose throw a CastError
+  on every request.
+*/
 function validateObjectId(paramName = 'id') {
   return function checkId(req, res, next) {
     const value = req.params[paramName];

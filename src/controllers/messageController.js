@@ -2,19 +2,22 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 const { contains, paginate } = require('../utils/query');
 
-/**
- * Message controller — the REST side of the chat.
- * The live delivery happens over Socket.io (src/socket/chat.js); these
- * endpoints cover the conversation list, history and search, and complete
- * the Create/Update/Delete/List/Search set for the Message model.
- *
- * Privacy rule: a member can only ever see messages they sent or received.
- */
+/*
+  The normal http side of the chat.
 
-// GET /chat — page shell
+  Sending messages live is done by the socket, over in src/socket/chat.js.
+  What is here is the conversation list, loading old messages, searching them,
+  and editing or deleting one. Together with the socket that gives the Message
+  model the same create, update, delete, list and search as everything else.
+
+  The privacy rule is simple. Every query is limited to messages you sent or
+  received, so you can never read anyone else's chat.
+*/
+
+// GET /chat, renders the page
 async function showChat(req, res, next) {
   try {
-    // People the member can talk to: their friends first.
+    // the people you can start a chat with, which is your friends
     const me = await User.findById(req.currentUser._id)
       .populate('friends', 'username displayName avatar');
 
@@ -29,7 +32,7 @@ async function showChat(req, res, next) {
 }
 
 // GET /api/messages/conversations
-// One entry per person the member has talked to, with the last message.
+// one row per person you have talked to, showing the newest message
 async function conversations(req, res, next) {
   try {
     const meId = req.currentUser._id;
@@ -40,7 +43,7 @@ async function conversations(req, res, next) {
       .populate('to', 'username displayName avatar')
       .limit(300);
 
-    // Group by the other participant, keeping the newest message.
+    // group the messages by the other person and keep only the newest one
     const byPerson = new Map();
 
     messages.forEach((msg) => {
@@ -61,7 +64,7 @@ async function conversations(req, res, next) {
   }
 }
 
-// GET /api/messages/:userId — the conversation with one member
+// GET /api/messages/:userId, the whole conversation with one person
 async function history(req, res, next) {
   try {
     const meId = req.currentUser._id;
@@ -90,14 +93,15 @@ async function history(req, res, next) {
   }
 }
 
-// GET /api/messages/search — keyword, the other person, and a date range.
+// GET /api/messages/search. takes a keyword, who it was with, and a date range
 async function search(req, res, next) {
   try {
     const meId = req.currentUser._id;
     const { page, limit, skip } = paginate(req.query);
     const { keyword, withUser, dateFrom, dateTo, unreadOnly } = req.query;
 
-    // Always scoped to the current member's own conversations.
+    // this is the important bit. the base filter is always my own messages, so a
+    // search can never reach into somebody else's chat
     const filter = { $or: [{ from: meId }, { to: meId }] };
     const and = [];
 
@@ -134,7 +138,7 @@ async function search(req, res, next) {
   }
 }
 
-// PUT /api/messages/:id — a member may edit their own message.
+// PUT /api/messages/:id, you can only edit a message you sent
 async function update(req, res, next) {
   try {
     const message = await Message.findById(req.params.id);
@@ -152,7 +156,7 @@ async function update(req, res, next) {
   }
 }
 
-// DELETE /api/messages/:id — a member may delete their own message.
+// DELETE /api/messages/:id, you can only delete a message you sent
 async function remove(req, res, next) {
   try {
     const message = await Message.findById(req.params.id);

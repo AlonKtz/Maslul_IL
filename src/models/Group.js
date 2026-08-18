@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Categories used for group browsing and the advanced group search.
+// the categories a group can have. used in the create form and the search filter
 const GROUP_CATEGORIES = [
   'Brand',
   'Off-road',
@@ -12,11 +12,14 @@ const GROUP_CATEGORIES = [
   'General',
 ];
 
-/**
- * Group model — a community of car lovers (e.g. "BMW Israel", "Off-road IL").
- * `admin` is the member who manages the group (approve joins, moderate posts).
- * Private groups require approval to join and hide their posts from non-members.
- */
+/*
+  Group model. A group is a community, like "BMW Israel" or "Off-road IL".
+
+  The admin field is the member who runs the group. They are the only one who
+  can edit it, approve people who ask to join, or remove someone.
+  If a group is private then joining needs approval, and people who are not
+  members cannot see what is inside it.
+*/
 const groupSchema = new mongoose.Schema(
   {
     name: {
@@ -38,7 +41,7 @@ const groupSchema = new mongoose.Schema(
 
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    pendingRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // join requests to approve
+    pendingRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // people waiting for the admin to let them in
 
     isPrivate: { type: Boolean, default: false },
   },

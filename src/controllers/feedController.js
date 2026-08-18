@@ -4,29 +4,30 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const { paginate } = require('../utils/query');
 
-/**
- * Feed controller.
- *
- * The feed is what the member actually cares about rather than everything on
- * the site: things their friends posted, and things happening in the groups
- * they belong to — plus their own.
- *
- * Events and listings are fetched separately and then merged into one list
- * ordered by when they were posted, so the page reads as a single timeline.
- */
+/*
+  The feed page.
 
-// GET /feed — page shell; the timeline arrives over Ajax.
+  The idea is to show what you actually care about instead of everything on
+  the site. So that means your friends' stuff, whatever is happening in the
+  groups you joined, and your own.
+
+  Events and listings are two different collections, so I fetch them
+  separately and then merge them into one list sorted by date. That way the
+  page reads like a single timeline instead of two lists.
+*/
+
+// GET /feed. renders the page, the timeline loads after over ajax
 function showFeed(req, res) {
   res.render('pages/feed', { title: 'Feed' });
 }
 
-// Works out whose content belongs in this member's feed.
+// works out whose stuff should show up in my feed
 async function circleOf(user) {
   const groups = await Group.find({ members: user._id }).select('_id');
 
   return {
     groupIds: groups.map((g) => g._id),
-    // Me and my friends.
+    // me plus everyone I am friends with
     peopleIds: [user._id, ...user.friends],
   };
 }
@@ -42,12 +43,13 @@ async function feed(req, res, next) {
     const { groupIds, peopleIds } = await circleOf(me);
     const filter = req.query.filter || 'all';
 
-    // Which events count: hosted by me or a friend, or held by one of my groups.
+    // an event belongs in the feed if a friend is hosting it, or if it belongs to
+    // one of my groups
     const eventOr = [];
     if (filter === 'all' || filter === 'friends') eventOr.push({ host: { $in: peopleIds } });
     if (filter === 'all' || filter === 'groups') eventOr.push({ group: { $in: groupIds } });
 
-    // Listings have no group, so they only appear for me and my friends.
+    // listings do not belong to a group, so they only come from people
     const listingMatch = filter === 'groups' ? null : { seller: { $in: peopleIds } };
 
     const [events, listings] = await Promise.all([
@@ -66,7 +68,7 @@ async function feed(req, res, next) {
         : [],
     ]);
 
-    // Merge the two kinds into one timeline.
+    // put the events and the listings together and sort the lot by date
     const items = events
       .map((e) => ({ kind: 'event', createdAt: e.createdAt, data: e }))
       .concat(listings.map((l) => ({ kind: 'listing', createdAt: l.createdAt, data: l })))
@@ -79,7 +81,7 @@ async function feed(req, res, next) {
       total: items.length,
       page,
       hasMore: items.length > skip + limit,
-      // Shown on the page so an empty feed can explain itself.
+      // the page uses this to explain why the feed is empty for a brand new user
       circle: { friends: me.friends.length, groups: groupIds.length },
     });
   } catch (err) {
@@ -87,8 +89,8 @@ async function feed(req, res, next) {
   }
 }
 
-// GET /api/feed/suggestions — a few members to befriend.
-// Anyone who is not already a friend and is not the member themselves.
+// GET /api/feed/suggestions, a few people to add as friends.
+// anyone who is not me, not already a friend, and who I have not asked yet.
 async function suggestions(req, res, next) {
   try {
     const me = req.currentUser;

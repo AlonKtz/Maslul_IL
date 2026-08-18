@@ -2,15 +2,17 @@ const Listing = require('../models/Listing');
 const { CITIES, coordinatesOf } = require('../data/cities');
 const { contains, paginate, num } = require('../utils/query');
 
-/**
- * Listing controller — the local marketplace.
- * Full Create / Update / Delete / List / Search, plus mark-as-sold,
- * likes and comments.
- *
- * Rule: only the seller (or a site administrator) may edit or delete a listing.
- */
+/*
+  The marketplace. Everything to do with items people are selling.
 
-// GET /market — page shell
+  Full create, update, delete, list and search, plus marking something as sold,
+  likes and comments.
+
+  The rule is that only the seller can edit or delete their own listing.
+  Site admins can as well.
+*/
+
+// GET /market, renders the empty page
 function showMarket(req, res) {
   res.render('pages/market', {
     title: 'Marketplace',
@@ -20,7 +22,7 @@ function showMarket(req, res) {
   });
 }
 
-// GET /market/:id — single listing page
+// GET /market/:id, one item on its own page
 async function showListing(req, res, next) {
   try {
     const listing = await Listing.findById(req.params.id)
@@ -55,7 +57,7 @@ async function list(req, res, next) {
     if (req.query.mine === 'true') {
       filter.seller = req.currentUser._id;
     } else {
-      // Sold items are hidden from the public marketplace by default.
+      // things that already sold are hidden from the public list unless asked for
       if (req.query.includeSold !== 'true') filter.status = 'available';
     }
     if (req.query.seller) filter.seller = req.query.seller;
@@ -77,8 +79,8 @@ async function list(req, res, next) {
 
 // ---------------------------------------------------------------- SEARCH
 // GET /api/listings/search
-// Parameters: keyword, category, condition, city, priceMin, priceMax,
-//             make, model, yearFrom, yearTo.
+// takes keyword, category, condition, city, a price range, and make, model
+// and a year range for when the item is a whole car.
 async function search(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query);
@@ -114,7 +116,7 @@ async function search(req, res, next) {
       if (yTo !== null) filter.year.$lte = yTo;
     }
 
-    // Sorting: newest first by default, or by price when asked.
+    // newest first unless the user picked a price sort
     let sort = { createdAt: -1 };
     if (req.query.sort === 'price-asc') sort = { price: 1 };
     if (req.query.sort === 'price-desc') sort = { price: -1 };
@@ -135,8 +137,8 @@ async function search(req, res, next) {
 }
 
 // ---------------------------------------------------------------- AREA SEARCH
-// POST /api/listings/area — same idea as events: find items for sale inside
-// the polygon the member drew on the map.
+// POST /api/listings/area. exactly the same idea as the events one, it finds
+// items for sale inside the shape the user drew on the map.
 async function searchArea(req, res, next) {
   try {
     const { polygon, category, priceMax } = req.body;
@@ -259,7 +261,7 @@ async function remove(req, res, next) {
   }
 }
 
-// POST /api/listings/:id/sold — seller marks the item as sold (or back on sale).
+// POST /api/listings/:id/sold. the seller marks it sold, or puts it back on sale
 async function toggleSold(req, res, next) {
   try {
     const listing = await Listing.findById(req.params.id);

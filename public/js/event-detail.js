@@ -1,13 +1,14 @@
-/**
- * Single event page: RSVP, likes and comments — all over Ajax.
- */
+/*
+  One event's page. Saying you are going, likes and comments, all over ajax.
+*/
 (function ($) {
   'use strict';
 
   var eventId = $('main').data('event-id');
   var CURRENT_USER_ID = $('body').data('user-id') || '';
 
-  // The date is rendered on the client so it shows in the reader's own timezone.
+  // I format the date here rather than on the server, so it shows in whatever
+  // timezone the person reading it is in
   var $when = $('#event-when');
   $when.text(UI.formatDateTime($when.data('value')));
 
@@ -74,7 +75,7 @@
         $btn.text(res.attending ? 'Cancel attendance' : 'I am going');
         $('#attendee-count').text(res.count);
         UI.toast(res.attending ? 'You are going' : 'You are no longer going');
-        // Refresh the sidebar so the avatar list matches.
+        // reload so the list of faces in the sidebar matches the new count
         window.setTimeout(function () { window.location.reload(); }, 600);
       })
       .fail(function (jq) { UI.toast(API.errorMessage(jq), true); })
@@ -101,7 +102,8 @@
   });
 
   // ---------------------------------------------------------------- start
-  // The first set of comments is embedded in the page by the server.
+  // the server already put the comments in the page as json, so the first
+  // render needs no extra request
   var initial = [];
   try {
     initial = JSON.parse($('#event-comments').text());

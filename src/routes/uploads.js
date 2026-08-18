@@ -8,20 +8,23 @@ const router = express.Router();
 
 const CLIPS_FILE = path.join(__dirname, '..', '..', 'public', 'video', 'clips.json');
 
-/**
- * Image and video upload endpoints. The client uploads first, gets back a
- * URL, and then sends that URL as part of the event/listing/car it is saving.
- */
+/*
+  The upload endpoints for images and video.
+
+  It works in two steps. The browser uploads the file here first and gets a url
+  back, then it sends that url as part of the event or listing or car it is
+  saving. That way the file is already on disk before the record is created.
+*/
 
 router.use(requireLogin);
 
-// POST /api/upload — a single image (car photo, avatar, event cover)
+// POST /api/upload, one image. used for car photos, avatars and event covers
 router.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image was uploaded.' });
   res.status(201).json({ ok: true, url: '/uploads/' + req.file.filename });
 });
 
-// POST /api/upload/many — several images at once (listing photos)
+// POST /api/upload/many, several images at once. used for listing photos
 router.post('/api/upload/many', upload.array('images', 6), (req, res) => {
   if (!req.files || !req.files.length) {
     return res.status(400).json({ error: 'No images were uploaded.' });
@@ -29,8 +32,9 @@ router.post('/api/upload/many', upload.array('images', 6), (req, res) => {
   res.status(201).json({ ok: true, urls: req.files.map((f) => '/uploads/' + f.filename) });
 });
 
-// POST /api/upload/video — a recap clip for the video player.
-// The clip is also added to the playlist file the React player reads.
+// POST /api/upload/video, a clip for the video player.
+// it also writes the clip into the playlist file the React player reads,
+// so a new upload shows up in the player straight away.
 router.post('/api/upload/video', upload.video.single('video'), async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No video was uploaded.' });
@@ -38,7 +42,7 @@ router.post('/api/upload/video', upload.video.single('video'), async (req, res, 
     const url = '/video/' + req.file.filename;
     const title = (req.body.title || 'Recap clip').toString().slice(0, 80);
 
-    // Read the current playlist, add the new clip, write it back.
+    // read the playlist, add the new clip on the end, write it back out
     let clips = [];
     try {
       clips = JSON.parse(await fs.readFile(CLIPS_FILE, 'utf8'));

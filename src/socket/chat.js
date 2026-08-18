@@ -2,23 +2,25 @@ const { Server } = require('socket.io');
 const Message = require('../models/Message');
 const User = require('../models/User');
 
-/**
- * Real-time chat between two members, over WebSockets (Socket.io).
- *
- * Messages are delivered live to whoever is online and are also written to
- * MongoDB, so a conversation is still there after a reload.
- *
- * Authentication reuses the Express session: the same cookie that logs a
- * member into the site identifies them on the socket, so nobody can claim to
- * be somebody else by sending a different id from the client.
- */
+/*
+  The live chat between two members. This is the WebSocket side, using Socket.io.
+
+  Every message gets sent straight to the other person if they are online, and
+  it also gets saved to MongoDB so the conversation is still there after a
+  refresh.
+
+  For logging in I reuse the normal express session. The same cookie that logs
+  you into the site tells the socket who you are. That matters, because it
+  means the browser cannot just send me a different user id and pretend to be
+  somebody else.
+*/
 function attachChat(server, sessionMiddleware) {
   const io = new Server(server);
 
-  // Let Socket.io read the Express session from the handshake cookie.
+  // gives socket.io access to the express session from the cookie
   io.engine.use(sessionMiddleware);
 
-  // Reject any connection that does not carry a logged-in session.
+  // refuse any socket that does not come with a logged in session
   io.use(async (socket, next) => {
     const session = socket.request.session;
     if (!session || !session.userId) {
@@ -39,15 +41,15 @@ function attachChat(server, sessionMiddleware) {
   io.on('connection', (socket) => {
     const me = socket.user;
 
-    // Each member joins a room named after their own id, so a message can be
-    // delivered to every tab or device that member has open.
+    // every member joins a room named after their own id. that way a message
+    // reaches every tab or phone they have open, not just one of them.
     socket.join(String(me._id));
 
-    // Tell everyone this member is now online.
+    // let everyone else know this person just came online
     socket.broadcast.emit('presence', { userId: String(me._id), online: true });
 
     // ------------------------------------------------------------ history
-    // The client asks for the conversation with one other member.
+    // the browser asks for the whole conversation with one other person
     socket.on('history:load', async ({ withUserId }, ack) => {
       try {
         if (!withUserId) return ack && ack({ error: 'Choose somebody to talk to.' });
@@ -62,7 +64,7 @@ function attachChat(server, sessionMiddleware) {
           .limit(200)
           .populate('from', 'username displayName avatar');
 
-        // Anything they sent us is now read.
+        // they are looking at it now, so mark their messages as read
         await Message.updateMany({ from: withUserId, to: me._id, read: false }, { read: true });
 
         ack && ack({ messages });
@@ -77,8 +79,8 @@ function attachChat(server, sessionMiddleware) {
       try {
         const clean = typeof text === 'string' ? text.trim() : '';
 
-        // Validate here as well as in the model — a socket is just another
-        // door into the server and gets the same checks as the REST routes.
+        // I check the input here too, not just in the model. a socket is just
+        // another way into the server so it gets the same checks as the routes.
         if (!clean) return ack && ack({ error: 'Write something first.' });
         if (clean.length > 1000) return ack && ack({ error: 'Message is too long.' });
         if (!to) return ack && ack({ error: 'No recipient.' });
@@ -92,7 +94,7 @@ function attachChat(server, sessionMiddleware) {
         const message = await Message.create({ from: me._id, to, text: clean });
         await message.populate('from', 'username displayName avatar');
 
-        // Deliver to the recipient's room and back to the sender's own tabs.
+        // send it to the other person, and back to my own tabs so they all update
         io.to(String(to)).emit('message:new', message);
         io.to(String(me._id)).emit('message:new', message);
 

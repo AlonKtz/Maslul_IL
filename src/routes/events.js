@@ -35,7 +35,7 @@ router.use(requireLogin);
 router.get('/events', events.showEvents);
 router.get('/events/:id', validateObjectId(), events.showEvent);
 
-// API — /search and /area must come before /:id
+// again /search and /area go before /:id or express treats them as ids
 router.get('/api/events/search', events.search);
 router.post('/api/events/area', events.searchArea);
 router.get('/api/events', events.list);

@@ -2,13 +2,14 @@ const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');
 
-/**
- * Image uploads (car photos, event covers, listing photos, avatars).
- *
- * Files are written to /public/uploads with a random name — we never reuse
- * the name the browser sent, because it could contain path characters or
- * overwrite somebody else's file.
- */
+/*
+  Handles image uploads, so car photos, event covers, listing photos and avatars.
+
+  Files go into /public/uploads and I give every one a random name. I never
+  keep the name the browser sent. Two reasons: the name could contain slashes
+  and try to escape the folder, and two people uploading "car.jpg" would
+  overwrite each other.
+*/
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -21,7 +22,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// Only real image types are accepted.
+// the only file types I accept
 const ALLOWED_IMAGES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const ALLOWED_VIDEOS = ['video/mp4', 'video/webm', 'video/ogg'];
 
@@ -35,11 +36,11 @@ function filterBy(list, message) {
 const upload = multer({
   storage,
   fileFilter: filterBy(ALLOWED_IMAGES, 'Only JPG, PNG, GIF and WebP images are allowed.'),
-  limits: { fileSize: 2 * 1024 * 1024, files: 6 }, // 2MB each, 6 at most
+  limits: { fileSize: 2 * 1024 * 1024, files: 6 }, // 2MB per file, 6 files max
 });
 
-// Recap clips are bigger than photos, so they get their own limit and a
-// separate destination under /public/video.
+// video clips are much bigger than photos so they get their own settings
+// and go into /public/video instead.
 const uploadVideo = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
@@ -52,7 +53,7 @@ const uploadVideo = multer({
     },
   }),
   fileFilter: filterBy(ALLOWED_VIDEOS, 'Only MP4, WebM and Ogg video files are allowed.'),
-  limits: { fileSize: 25 * 1024 * 1024, files: 1 }, // 25MB
+  limits: { fileSize: 25 * 1024 * 1024, files: 1 }, // 25MB, one at a time
 });
 
 module.exports = upload;

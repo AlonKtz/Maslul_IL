@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
-/**
- * Comments are embedded inside events and listings — they have no meaning on
- * their own, so they are not a separate collection. The schema lives here so
- * both models share exactly the same shape and validation.
- */
+/*
+  Comments live inside events and listings instead of in their own collection.
+  A comment on its own does not mean anything, it always belongs to something.
+  I put the schema in its own file so both models use the exact same shape and
+  the same validation rules.
+*/
 const commentSchema = new mongoose.Schema(
   {
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

@@ -1,12 +1,14 @@
-/**
- * Shared Ajax helper built on jQuery.
- * Every call from the client to our own server goes through here, so error
- * handling and JSON headers live in one place instead of being repeated.
- */
+/*
+  My little ajax wrapper, built on jQuery.
+
+  Every call the browser makes to my server goes through this file. I did it
+  this way so the json headers and the error handling are written once instead
+  of being copy pasted into every page script.
+*/
 window.API = (function ($) {
   'use strict';
 
-  // Core request. Returns a jQuery promise that resolves with the JSON body.
+  // the actual request. gives back a jQuery promise with the json in it
   function request(method, url, data) {
     return $.ajax({
       url: url,
@@ -17,7 +19,8 @@ window.API = (function ($) {
     });
   }
 
-  // Pulls a readable message out of a failed jQuery Ajax response.
+  // digs the error message out of a failed request so I can show something
+  // useful instead of just "error"
   function errorMessage(jqXHR) {
     if (jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error) {
       return jqXHR.responseJSON.error;
@@ -43,7 +46,7 @@ window.API = (function ($) {
     },
     errorMessage: errorMessage,
 
-    // Shows an error string inside a given element (used by all forms).
+    // puts an error message into an element. every form on the site uses this
     showError: function (selector, message) {
       $(selector).text(message).show();
     },

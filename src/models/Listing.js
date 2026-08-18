@@ -14,12 +14,13 @@ const LISTING_CATEGORIES = [
 ];
 const CONDITIONS = ['New', 'Like new', 'Used', 'For parts'];
 
-/**
- * Listing model — an item for sale in the local marketplace.
- *
- * Like Event it carries a GeoJSON point (taken from the chosen city) so a
- * buyer can search for what is being sold inside an area of the map.
- */
+/*
+  Listing model. One item somebody is selling in the marketplace.
+
+  Same idea as Event, it also stores a GeoJSON point taken from the city the
+  seller picks. That way a buyer can draw an area on the map and see what is
+  for sale near them.
+*/
 const listingSchema = new mongoose.Schema(
   {
     seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -51,7 +52,7 @@ const listingSchema = new mongoose.Schema(
       default: 'Used',
     },
 
-    // Only filled in when selling a whole car.
+    // these three are only used when the thing being sold is a whole car
     make: { type: String, trim: true, maxlength: [40, 'Make is too long'], default: '' },
     model: { type: String, trim: true, maxlength: [40, 'Model is too long'], default: '' },
     year: {

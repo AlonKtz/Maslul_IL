@@ -1,6 +1,6 @@
-/**
- * Groups page — browse, search, create and join communities.
- */
+/*
+  The groups page. Browsing, searching, creating a group and joining one.
+*/
 (function ($) {
   'use strict';
 

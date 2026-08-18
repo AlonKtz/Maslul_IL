@@ -1,18 +1,19 @@
-/**
- * Shared UI helpers used by every page: escaping, toasts, dates, tabs and
- * image uploads. Written with jQuery, like the rest of the client code.
- */
+/*
+  Helper functions that all the pages share. Escaping text, the little popup
+  messages, formatting dates and prices, tabs, and uploading images.
+  All written with jQuery like the rest of the client code.
+*/
 window.UI = (function ($) {
   'use strict';
 
-  // Turns text that came from the database into something safe to drop into
-  // HTML. Everything a member typed goes through this before it is rendered,
-  // so a name like <script>… is shown as text instead of being executed.
+  // makes text from the database safe to put into html. everything a user
+  // typed goes through this before I render it. if somebody names their car
+  // <script>something</script> it shows up as plain text instead of running.
   function escape(value) {
     return $('<div>').text(value === undefined || value === null ? '' : value).html();
   }
 
-  // Small pop-up message in the corner.
+  // the little message that slides in at the bottom corner
   var toastTimer = null;
   function toast(message, isError) {
     var $t = $('#toast');

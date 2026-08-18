@@ -1,7 +1,8 @@
-/**
- * Search page — member and group search, plus the switch that tells the
- * React canvas map whether to look for events or for items on sale.
- */
+/*
+  The search page. The member search and the group search live here, plus the
+  dropdown that tells the React map whether to look for events or for things
+  on sale.
+*/
 (function ($) {
   'use strict';
 
@@ -78,7 +79,8 @@
   });
 
   // ---------------------------------------------------------------- map mode
-  // Re-renders the React map with the other mode when the dropdown changes.
+  // when the dropdown changes I re-render the React component with new props,
+  // rather than reloading the page
   $('#area-mode').on('change', function () {
     var node = document.getElementById('area-map');
     if (!node || !node._reactRoot) return;

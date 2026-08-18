@@ -1,17 +1,21 @@
-/**
- * Mounts the React components into the pages that ask for them.
- *
- * A page marks a spot with <div data-react="CanvasMap" data-props='…'></div>
- * and this file renders the matching component there. It is the equivalent of
- * the "use client" boundary in other frameworks: the rest of the site is
- * server-rendered EJS, and React is used only where it earns its place.
- */
+/*
+  This is what puts the React components onto the pages that want them.
+
+  A page marks the spot with a div carrying data-react="CanvasMap" and the
+  props as json, and this file finds those divs and renders the right
+  component into each one.
+
+  I did it this way because the rest of the site is normal EJS rendered on the
+  server. React is only used for the two bits that actually need it, the map
+  and the video player, rather than taking over the whole site.
+*/
 (function () {
   'use strict';
 
-  // Babel compiles the .jsx files in the background, so a component may not
-  // exist yet when this runs. Each placeholder waits for its component to
-  // appear rather than failing on the first try.
+  // Babel compiles the jsx files in the background, which means the component
+  // might not exist yet at the moment this runs. That was a real bug, the map
+  // just did not appear sometimes. So instead of giving up on the first try,
+  // each spot waits and keeps checking until its component shows up.
   function whenReady(name, callback, waited) {
     waited = waited || 0;
 
@@ -43,7 +47,8 @@
       whenReady(name, function (Component) {
         var root = ReactDOM.createRoot(node);
         root.render(React.createElement(Component, props));
-        // Kept so a page can re-render a component with new props later.
+        // I keep these so a page can re-render the component with different props
+        // later on. the search page uses it when you switch the dropdown.
         node._reactRoot = root;
         node._reactComponent = Component;
       });
