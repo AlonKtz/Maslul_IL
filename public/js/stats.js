@@ -1,5 +1,5 @@
 /*
-  The statistics page. Four charts, all drawn with D3.
+  The statistics page. Five charts, all drawn with D3.
 
   Each chart asks its own endpoint for data with jQuery ajax, then builds the
   svg with D3. None of the numbers are typed in. Add an event or a car, press
@@ -66,7 +66,7 @@
     Object.keys(to).forEach(function (key) { moving.attr(key, to[key]); });
   }
 
-  // one tooltip element shared by all four charts instead of one each
+  // one tooltip element shared by all the charts instead of one each
   var tooltip = d3.select('body').append('div').attr('class', 'chart-tooltip');
 
   function showTip(html, event) {
@@ -315,6 +315,61 @@
       });
   }
 
+  // ------------------------------------------------------------------ 5
+  // how many events each group runs per month. the server works the average
+  // out from how long the group has existed, so a group made last week does
+  // not look busier than one that has been going all year.
+  function drawGroupActivity(data) {
+    var sel = '#chart-group-activity';
+    if (!data.length) return message(sel, 'No groups yet.');
+
+    var height = Math.max(180, data.length * 30 + 46);
+    var margin = { top: 10, right: 46, bottom: 30, left: 130 };
+    var made = freshSvg(sel, height);
+    var innerW = made.width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+
+    var g = made.svg.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var y = d3.scaleBand().domain(data.map(function (d) { return d.name; }))
+      .range([0, innerH]).padding(0.22);
+
+    // if every group has zero events the max would be 0 and every bar would
+    // be full width, so keep the top of the scale at least 1
+    var top = d3.max(data, function (d) { return d.eventsPerMonth; }) || 1;
+    var x = d3.scaleLinear().domain([0, top]).nice().range([0, innerW]);
+
+    g.append('g').call(d3.axisLeft(y))
+      .selectAll('text').attr('fill', COLOURS.text).style('font-size', '11px');
+
+    g.append('g').attr('transform', 'translate(0,' + innerH + ')')
+      .call(d3.axisBottom(x).ticks(5))
+      .selectAll('text').attr('fill', COLOURS.muted);
+
+    var bars = g.selectAll('.bar').data(data).enter().append('rect')
+      .attr('y', function (d) { return y(d.name); })
+      .attr('height', y.bandwidth())
+      .attr('x', 0)
+      .attr('rx', 4)
+      .attr('fill', COLOURS.bar2)
+      .on('mousemove', function (event, d) {
+        showTip('<strong>' + d.name + '</strong><br>' +
+          d.eventsPerMonth + ' events per month<br>' +
+          d.events + ' events in total<br>' +
+          d.members + ' member' + (d.members === 1 ? '' : 's'), event);
+      })
+      .on('mouseleave', hideTip);
+
+    settle(bars, { width: 0 }, { width: function (d) { return x(d.eventsPerMonth); } });
+
+    g.selectAll('.value').data(data).enter().append('text')
+      .attr('y', function (d) { return y(d.name) + y.bandwidth() / 2 + 4; })
+      .attr('x', function (d) { return x(d.eventsPerMonth) + 6; })
+      .attr('fill', COLOURS.muted).style('font-size', '11px')
+      .text(function (d) { return d.eventsPerMonth; });
+  }
+
   // ------------------------------------------------------------------ loading
   function loadAll() {
     API.get('/api/stats/summary').done(function (res) {
@@ -342,6 +397,10 @@
     API.get('/api/stats/events-by-city')
       .done(function (res) { drawCities(res.data); })
       .fail(function () { message('#chart-cities', 'Could not load this chart.'); });
+
+    API.get('/api/stats/group-activity')
+      .done(function (res) { drawGroupActivity(res.data); })
+      .fail(function () { message('#chart-group-activity', 'Could not load this chart.'); });
   }
 
   $('#refresh-stats').on('click', function () {
