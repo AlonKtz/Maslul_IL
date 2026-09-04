@@ -13,6 +13,39 @@ const { contains, paginate, num, date } = require('../utils/query');
   Site admins can too.
 */
 
+/*
+  Works out which private groups this member is not allowed to look into.
+
+  I had this on the old Post model and lost it when I split posts into events
+  and listings. My own test caught it: somebody who was not in a private group
+  could still read its events by asking the api directly, even though the group
+  page itself blocked them. The page being blocked is not enough, the api has
+  to block it too.
+*/
+async function hiddenGroupIds(user) {
+  const privateGroups = await Group.find({ isPrivate: true }).select('_id members admin');
+
+  return privateGroups
+    .filter((g) => {
+      if (user.role === 'admin') return false;          // site admins see everything
+      if (g.admin.equals(user._id)) return false;       // the manager is obviously in
+      return !g.members.some((m) => m.equals(user._id));
+    })
+    .map((g) => g._id);
+}
+
+// Adds the private group rule to a filter that is about to be run.
+// Returns false when the member asked for one specific group they cannot see,
+// so the caller can answer 403 instead of quietly returning nothing.
+function applyPrivacy(filter, hidden, requestedGroup) {
+  if (requestedGroup) {
+    if (hidden.some((id) => id.equals(requestedGroup))) return false;
+    return true;
+  }
+  if (hidden.length) filter.group = { $nin: hidden };
+  return true;
+}
+
 // GET /events. renders the empty page, the events load after over ajax
 function showEvents(req, res) {
   res.render('pages/events', {
@@ -66,6 +99,12 @@ async function list(req, res, next) {
     if (req.query.group) filter.group = req.query.group;
     if (req.query.type && Event.EVENT_TYPES.includes(req.query.type)) filter.type = req.query.type;
 
+    // keep private groups out unless this member belongs to them
+    const hidden = await hiddenGroupIds(req.currentUser);
+    if (!applyPrivacy(filter, hidden, req.query.group)) {
+      return res.status(403).json({ error: 'This group is private.' });
+    }
+
     // unless you ask for past ones, only show events that are still coming up
     filter.startsAt = req.query.past === 'true' ? { $lt: new Date() } : { $gte: new Date() };
 
@@ -111,6 +150,12 @@ async function search(req, res, next) {
       if (to) filter.startsAt.$lte = new Date(to.getTime() + 24 * 60 * 60 * 1000 - 1);
     } else if (includePast !== 'true') {
       filter.startsAt = { $gte: new Date() };
+    }
+
+    // the search has to respect private groups just like the list does
+    const hidden = await hiddenGroupIds(req.currentUser);
+    if (!applyPrivacy(filter, hidden, req.query.group)) {
+      return res.status(403).json({ error: 'This group is private.' });
     }
 
     const [events, total] = await Promise.all([
@@ -177,6 +222,11 @@ async function searchArea(req, res, next) {
     } else if (includePast !== true && includePast !== 'true') {
       filter.startsAt = { $gte: new Date() };
     }
+
+    // and so does the map search, otherwise drawing a box over the right city
+    // would quietly reveal a private group's events
+    const hidden = await hiddenGroupIds(req.currentUser);
+    if (hidden.length) filter.group = { $nin: hidden };
 
     const events = await Event.find(filter)
       .populate('host', 'username displayName avatar')

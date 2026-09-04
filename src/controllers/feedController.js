@@ -52,9 +52,21 @@ async function feed(req, res, next) {
     // listings do not belong to a group, so they only come from people
     const listingMatch = filter === 'groups' ? null : { seller: { $in: peopleIds } };
 
+    // A friend of mine might be hosting something inside a private group that
+    // I am not in. Their event must not reach my feed just because we are
+    // friends, so pull those group ids out first and exclude them.
+    const privateGroups = await Group.find({ isPrivate: true }).select('_id members admin');
+    const hidden = privateGroups
+      .filter((g) => me.role !== 'admin'
+        && !g.admin.equals(me._id)
+        && !g.members.some((m) => m.equals(me._id)))
+      .map((g) => g._id);
+
     const [events, listings] = await Promise.all([
       eventOr.length
-        ? Event.find({ $or: eventOr })
+        ? Event.find(hidden.length
+            ? { $and: [{ $or: eventOr }, { group: { $nin: hidden } }] }
+            : { $or: eventOr })
             .populate('host', 'username displayName avatar')
             .populate('group', 'name')
             .sort({ createdAt: -1 })

@@ -73,6 +73,20 @@ Every seeded member uses the password **`secret123`**.
 | `alon` | Site administrator |
 | `noa`, `yossi`, `dana`, `itai`, `maya`, `omer`, `tamar`, `eitan`, `shira`, `gil`, `roni` | Regular members |
 
+### Running the tests
+
+With the server already running, in a second terminal:
+
+```bash
+npm test
+```
+
+The tests talk to the running server over http and websockets, the same way
+the browser does. They cover signing up and in, create update delete list and
+search on every model, all the permission rules, the map area search, the live
+chat, and what happens when somebody sends rubbish. They tidy up the accounts
+they create as they go.
+
 ---
 
 ## How it is put together
