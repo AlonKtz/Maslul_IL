@@ -6,51 +6,37 @@
   items for sale that sit inside it. Mongo does the actual work with
   $geoWithin.
 
-  Nothing here comes off the internet. The outline is just the list of
-  coordinates below, drawn by hand, so the map still works with no connection.
-  I went this way instead of using a map library because the project is only
-  allowed to use what we covered in class, and it also means nothing breaks if
-  the wifi in the lab is down.
+  The border, the neighbouring land and the two lakes come from Natural Earth,
+  which is public domain map data, and live in mapData.js next to this file.
+  Nothing is fetched off the internet while the page runs, so the map still
+  works with no connection. I went this way instead of using a map library
+  because the project is only allowed to use what we covered in class, and it
+  also means nothing breaks if the wifi in the lab is down.
 
   This is the component that covers the Canvas part of the React requirement.
 */
 
 const { useState, useRef, useEffect, useCallback } = React;
 
-/* A rough outline of Israel as [longitude, latitude] pairs. It is a
-   rough shape, just enough to recognise the country and place the cities. */
-const ISRAEL_OUTLINE = [
-  [35.10, 33.09], [35.55, 33.25], [35.60, 32.95], [35.55, 32.70],
-  [35.57, 32.38], [35.55, 32.10], [35.22, 31.90], [35.45, 31.50],
-  [35.40, 31.10], [35.20, 30.60], [35.15, 30.10], [34.97, 29.55],
-  [34.90, 29.49], [34.88, 30.10], [34.55, 30.65], [34.42, 31.10],
-  [34.49, 31.59], [34.65, 31.85], [34.75, 32.05], [34.85, 32.30],
-  [34.92, 32.55], [35.00, 32.83],
-];
+const DATA = window.MAP_DATA;
 
-const WIDTH = 340;
-const HEIGHT = 660;
-const PADDING = 16;
+const WIDTH = 420;
+const HEIGHT = 720;
 
 /* Longitude gets squashed by cos(latitude), otherwise the country comes out
-   too wide. This keeps it roughly the right
-   proportions instead of looking too wide. */
-const MEAN_LAT_RAD = (31.3 * Math.PI) / 180;
+   too wide. This keeps it roughly the right proportions. */
+const MEAN_LAT_RAD = (31.4 * Math.PI) / 180;
 const LNG_SCALE = Math.cos(MEAN_LAT_RAD);
 
-function computeProjection(points) {
-  const xs = points.map((p) => p[0] * LNG_SCALE);
-  const ys = points.map((p) => p[1]);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
+/* The projection is fixed to the window in mapData.view, so the whole region
+   always fits the canvas the same way no matter what is drawn on it. */
+function computeProjection([minLng, minLat, maxLng, maxLat]) {
+  const minX = minLng * LNG_SCALE;
+  const maxX = maxLng * LNG_SCALE;
+  const minY = minLat;
+  const maxY = maxLat;
 
-  const scale = Math.min(
-    (WIDTH - PADDING * 2) / (maxX - minX),
-    (HEIGHT - PADDING * 2) / (maxY - minY)
-  );
-
+  const scale = Math.min(WIDTH / (maxX - minX), HEIGHT / (maxY - minY));
   const offsetX = (WIDTH - (maxX - minX) * scale) / 2;
   const offsetY = (HEIGHT - (maxY - minY) * scale) / 2;
 
@@ -73,7 +59,18 @@ function computeProjection(points) {
   };
 }
 
-const PROJECTION = computeProjection(ISRAEL_OUTLINE);
+const PROJECTION = computeProjection(DATA.view);
+
+// traces a ring of [lng, lat] points as a path on the canvas
+function tracePath(ctx, ring) {
+  ctx.beginPath();
+  ring.forEach((point, i) => {
+    const [x, y] = PROJECTION.toCanvas(point);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+}
 
 function CanvasMap({ cities, mode }) {
   const canvasRef = useRef(null);
@@ -95,30 +92,49 @@ function CanvasMap({ cities, mode }) {
     ctx.fillStyle = '#0d1b26';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // the country itself
-    ctx.beginPath();
-    ISRAEL_OUTLINE.forEach((point, i) => {
-      const [x, y] = PROJECTION.toCanvas(point);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+    // the neighbouring land, one flat tone, no labels. it is only here so the
+    // country reads as a country instead of a shape floating in the water
+    DATA.surroundings.forEach((ring) => {
+      tracePath(ctx, ring);
+      ctx.fillStyle = '#1b2129';
+      ctx.fill();
+      ctx.strokeStyle = '#242c35';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
     });
-    ctx.closePath();
+
+    // the country itself, at full detail from the real border data
+    tracePath(ctx, DATA.israel);
     ctx.fillStyle = '#1f262e';
     ctx.fill();
-    ctx.strokeStyle = '#3b4653';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#4a5663';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
+
+    // the Sea of Galilee and the Dead Sea, drawn in the sea colour on top
+    DATA.lakes.forEach((lake) => {
+      tracePath(ctx, lake.ring);
+      ctx.fillStyle = '#0d1b26';
+      ctx.fill();
+      ctx.strokeStyle = '#2b3a48';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
 
     // a dot and a label for each city
     cities.forEach((city) => {
       const [x, y] = PROJECTION.toCanvas(city.coordinates);
       ctx.beginPath();
       ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#97a3b0';
+      ctx.fillStyle = city.major ? '#c5ced8' : '#6f7c89';
       ctx.fill();
-      ctx.fillStyle = '#6f7c89';
-      ctx.font = '9px Segoe UI, sans-serif';
-      ctx.fillText(city.name, x + 5, y + 3);
+      // only the bigger cities get a name, otherwise the centre of the
+      // country turns into a pile of overlapping labels
+      if (city.major) {
+        ctx.fillStyle = '#8b98a6';
+        ctx.font = '10px Segoe UI, sans-serif';
+        ctx.fillText(city.name, x + 5, y + 3);
+      }
     });
 
     // the things the search found, drawn as bigger markers

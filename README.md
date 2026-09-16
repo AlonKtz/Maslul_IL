@@ -126,6 +126,7 @@ src/
   middleware/          authentication, validation, uploads, error handling
   socket/chat.js       Socket.io handlers for the live chat
   data/cities.js       Israeli cities with their coordinates
+  data/circuits.js     the library of tracks a race can be held on
   utils/               small shared helpers
 
 views/                 View layer. EJS templates
@@ -135,7 +136,9 @@ views/                 View layer. EJS templates
 public/
   css/style.css        all the styling
   js/                  client-side jQuery, one file per page
-  components/          React components (.jsx)
+  components/          React components (.jsx) and the map outline data
+  img/cars/            car photos for the demo data, credits in CREDITS.md
+  img/avatars/         one avatar per seeded member
   vendor/              jQuery, React, Babel, D3 and Socket.io, served locally
   uploads/             member-uploaded images (gitignored)
   video/               recap clips and the playlist
@@ -179,11 +182,26 @@ friend requests are only ever readable by that member.
 ### Area search on a hand-drawn map
 
 The `/search` page draws a map of Israel on a `<canvas>` from stored
-coordinates. There is no map library and no map tiles, so it needs no
-internet at all. Click
-points to outline the area you are willing to travel to, and the shape is sent
-to the server, which answers with a MongoDB `$geoWithin` query against the
-coordinates saved on each event or listing.
+coordinates. The outline is the real border, taken from the public domain
+Natural Earth dataset and stored in `public/components/mapData.js` together
+with the neighbouring countries and the two lakes. There is no map library and
+no map tiles, so it needs no internet at all. Click points to outline the area
+you are willing to travel to, and the shape is sent to the server, which
+answers with a MongoDB `$geoWithin` query against the coordinates saved on
+each event or listing.
+
+### Race circuits
+
+A race is held on one of the tracks in `src/data/circuits.js`. Each track has a
+length, a layout and the race formats it suits, so the create form only offers
+tracks that fit the chosen format, and works out the total distance from the
+number of laps as you type. The event page draws the layout on a `<canvas>`
+with a car going round it.
+
+### Motorsport worldwide
+
+The `/motorsport` page holds the recap videos (the React video player) and a
+placeholder for a worldwide motorsport feed that is planned but not built.
 
 ### Real-time chat
 

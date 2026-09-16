@@ -9,16 +9,33 @@
   var currentPage = 1;
 
   // ---------------------------------------------------------------- rendering
-  function eventItem(ev) {
+
+  // the top of every feed item: avatar, name, where they are from and what they
+  // drive. Both events and listings use it, only the verb changes.
+  function posterBlock(person, car, verb, when) {
+    var name = person ? (person.displayName || person.username) : 'member';
+    var profile = person ? '/profile/' + UI.escape(person.username) : '#';
+    var details = [];
+    if (person && person.location) details.push(UI.escape(person.location));
+    if (car) {
+      details.push('drives a ' + UI.escape(car.year + ' ' + car.make + ' ' + car.model));
+    }
+    return '<a href="' + profile + '">' +
+        '<img src="' + UI.escape(person ? person.avatar : '/img/default-avatar.svg') + '" alt="">' +
+      '</a>' +
+      '<div>' +
+        '<a class="feed-name" href="' + profile + '"><strong>' + UI.escape(name) + '</strong></a>' +
+        '<span class="muted small"> ' + verb + '</span>' +
+        (details.length ? '<p class="feed-who small">' + details.join(' &middot; ') + '</p>' : '') +
+        '<p class="muted small" style="margin:0">' + UI.formatDateTime(when) + '</p>' +
+      '</div>';
+  }
+
+  function eventItem(ev, car) {
     return '<article class="card feed-item">' +
       '<div class="feed-head">' +
-        '<img src="' + UI.escape(ev.host ? ev.host.avatar : '/img/default-avatar.svg') + '" alt="">' +
-        '<div>' +
-          '<strong>' + UI.escape(ev.host ? (ev.host.displayName || ev.host.username) : 'member') + '</strong>' +
-          '<span class="muted small"> is hosting' +
-            (ev.group ? ' in ' + UI.escape(ev.group.name) : '') + '</span>' +
-          '<p class="muted small" style="margin:0">' + UI.formatDateTime(ev.createdAt) + '</p>' +
-        '</div>' +
+        posterBlock(ev.host, car,
+          'is hosting' + (ev.group ? ' in ' + UI.escape(ev.group.name) : ''), ev.createdAt) +
         '<span class="badge ' + (ev.type === 'race' ? 'badge-race' : 'badge-meet') + '">' +
           UI.escape(ev.type === 'race' ? (ev.raceType || 'Race') : 'Meet') + '</span>' +
       '</div>' +
@@ -33,16 +50,11 @@
     '</article>';
   }
 
-  function listingItem(li) {
+  function listingItem(li, car) {
     var photo = (li.photos && li.photos.length) ? li.photos[0] : '';
     return '<article class="card feed-item">' +
       '<div class="feed-head">' +
-        '<img src="' + UI.escape(li.seller ? li.seller.avatar : '/img/default-avatar.svg') + '" alt="">' +
-        '<div>' +
-          '<strong>' + UI.escape(li.seller ? (li.seller.displayName || li.seller.username) : 'member') + '</strong>' +
-          '<span class="muted small"> is selling</span>' +
-          '<p class="muted small" style="margin:0">' + UI.formatDateTime(li.createdAt) + '</p>' +
-        '</div>' +
+        posterBlock(li.seller, car, 'is selling', li.createdAt) +
         '<span class="badge">' + UI.escape(li.category) + '</span>' +
       '</div>' +
       (photo ? '<img class="item-image" src="' + UI.escape(photo) + '" alt="" ' +
@@ -56,7 +68,10 @@
 
   function render(items, append) {
     var html = items.map(function (item) {
-      return item.kind === 'event' ? eventItem(item.data) : listingItem(item.data);
+      // item.car is the poster's first car, the server adds it to every item
+      return item.kind === 'event'
+        ? eventItem(item.data, item.car)
+        : listingItem(item.data, item.car);
     }).join('');
 
     if (append) $('#feed-items').append(html);

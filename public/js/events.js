@@ -91,16 +91,43 @@
   // ---------------------------------------------------------------- create / edit
   UI.initToggle('#toggle-create', '#create-panel');
 
-  // the race format dropdown only makes sense if they picked race, so hide it
+  // the race format, circuit and laps only make sense for a race, so hide
+  // them for a meet
   $('#ev-type').on('change', function () {
-    $('#race-type-wrap').toggle($(this).val() === 'race');
+    var isRace = $(this).val() === 'race';
+    $('#race-type-wrap, .race-only').toggle(isRace);
   });
+
+  // when the format changes, only offer tracks that suit it. a drag race on
+  // a kart track makes no sense
+  $('#ev-racetype').on('change', function () {
+    var format = $(this).val();
+    $('#ev-circuit option').each(function () {
+      var types = ($(this).data('types') || '').split(',');
+      var fits = !format || !$(this).val() || types.indexOf(format) !== -1;
+      $(this).toggle(fits).prop('disabled', !fits);
+    });
+    if ($('#ev-circuit option:selected').prop('disabled')) $('#ev-circuit').val('');
+    updateLaps();
+  });
+
+  // shows "runs" instead of "laps" for point to point tracks, and works out
+  // the total distance from the lap count and the track length
+  function updateLaps() {
+    var $opt = $('#ev-circuit option:selected');
+    var unit = $opt.data('unit') || 'laps';
+    var len = Number($opt.data('length')) || 0;
+    var n = Number($('#ev-laps').val()) || 0;
+    $('#laps-label').text(unit.charAt(0).toUpperCase() + unit.slice(1));
+    $('#laps-total').text(len && n ? '(' + (len * n).toFixed(1) + ' km in total)' : '');
+  }
+  $('#ev-circuit, #ev-laps').on('change input', updateLaps);
 
   function resetForm() {
     var form = $('#event-form')[0];
     form.reset();
     $('#event-form input[name="id"]').val('');
-    $('#race-type-wrap').hide();
+    $('#race-type-wrap, .race-only').hide();
     API.clearError('#event-error');
     $('#event-form button[type="submit"]').text('Publish event');
   }
@@ -133,6 +160,12 @@
     }
     if (payload.type === 'race' && !payload.raceType) {
       return API.showError('#event-error', 'Choose the race format.');
+    }
+    if (payload.type === 'race' && !payload.circuit) {
+      return API.showError('#event-error', 'Choose the circuit the race is on.');
+    }
+    if (payload.type === 'race' && (!payload.laps || Number(payload.laps) < 1)) {
+      return API.showError('#event-error', 'How many laps or runs?');
     }
     payload.startsAt = new Date(payload.startsAt).toISOString();
     payload.maxAttendees = Number(payload.maxAttendees || 0);
@@ -200,7 +233,10 @@
       $('#event-form input[name="id"]').val(ev._id);
       $('#ev-title').val(ev.title);
       $('#ev-type').val(ev.type).trigger('change');
-      $('#ev-racetype').val(ev.raceType || '');
+      $('#ev-racetype').val(ev.raceType || '').trigger('change');
+      $('#ev-circuit').val(ev.circuit || '');
+      $('#ev-laps').val(ev.laps || 10);
+      updateLaps();
       $('#ev-city').val(ev.city);
       $('#ev-address').val(ev.address || '');
       $('#ev-desc').val(ev.description || '');

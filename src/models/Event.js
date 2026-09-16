@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const commentSchema = require('./commentSchema');
 const { CITY_NAMES } = require('../data/cities');
+const { CIRCUIT_IDS } = require('../data/circuits');
 
 const EVENT_TYPES = ['meet', 'race'];
 const RACE_TYPES = ['Drag', 'Track', 'Rally', 'Hillclimb', 'Drift', 'Time attack'];
@@ -29,12 +30,20 @@ const eventSchema = new mongoose.Schema(
       enum: { values: EVENT_TYPES, message: '{VALUE} is not a valid event type' },
       required: [true, 'Event type is required'],
     },
-    // this one only matters when the type is 'race'
+    // these three only matter when the type is 'race'
     raceType: {
       type: String,
       enum: { values: RACE_TYPES.concat(['']), message: '{VALUE} is not a valid race type' },
       default: '',
     },
+    // which track from src/data/circuits.js the race is on
+    circuit: {
+      type: String,
+      enum: { values: CIRCUIT_IDS.concat(['']), message: '{VALUE} is not a circuit I know' },
+      default: '',
+    },
+    // how many laps, or runs for a drag strip or hill climb
+    laps: { type: Number, min: [1, 'At least one lap'], max: [500, 'That is a lot of laps'], default: 1 },
 
     host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group', default: null },

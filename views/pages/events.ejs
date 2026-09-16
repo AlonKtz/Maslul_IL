@@ -50,6 +50,25 @@
             <% }); %>
           </select>
         </div>
+        <%# the track and lap count only show for a race. each option carries
+            its length and which formats it suits, so the script can filter
+            the list when the format changes and show the total distance %>
+        <div class="race-only" style="display:none">
+          <label for="ev-circuit">Circuit</label>
+          <select id="ev-circuit" name="circuit">
+            <option value="">Choose a track…</option>
+            <% circuits.forEach(function (c) { %>
+              <option value="<%= c.id %>"
+                      data-length="<%= c.lengthKm %>"
+                      data-unit="<%= c.unit %>"
+                      data-types="<%= c.raceTypes.join(',') %>"><%= c.name %> (<%= c.lengthKm %> km)</option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="race-only" style="display:none">
+          <label for="ev-laps"><span id="laps-label">Laps</span> <span id="laps-total" class="hint"></span></label>
+          <input id="ev-laps" name="laps" type="number" min="1" max="500" value="10">
+        </div>
         <div>
           <label for="ev-city">City</label>
           <select id="ev-city" name="city" required>
@@ -162,24 +181,6 @@
     <div id="events-going" class="grid"></div>
   </div>
 
-  <!-- ---------------------------------------------------------------- video -->
-  <section class="card">
-    <h2>Recaps</h2>
-    <p class="muted small">Clips from past meets and races.</p>
-
-    <%# React video player (see public/components/VideoShowcase.jsx). %>
-    <div id="video-showcase"
-         data-react="VideoShowcase"
-         data-props='<%- JSON.stringify({ youtubeId: youtubeId }) %>'></div>
-  </section>
-
 </main>
-
-<%# React and Babel come from /public/vendor so the page works offline. %>
-<script src="/vendor/react.development.js"></script>
-<script src="/vendor/react-dom.development.js"></script>
-<script src="/vendor/babel.min.js"></script>
-<script type="text/babel" src="/components/VideoShowcase.jsx"></script>
-<script src="/components/mount.js" defer></script>
 
 <%- include('../partials/footer') %>

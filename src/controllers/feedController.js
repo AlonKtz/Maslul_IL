@@ -2,6 +2,7 @@ const Event = require('../models/Event');
 const Listing = require('../models/Listing');
 const Group = require('../models/Group');
 const User = require('../models/User');
+const Car = require('../models/Car');
 const { paginate } = require('../utils/query');
 
 /*
@@ -67,14 +68,14 @@ async function feed(req, res, next) {
         ? Event.find(hidden.length
             ? { $and: [{ $or: eventOr }, { group: { $nin: hidden } }] }
             : { $or: eventOr })
-            .populate('host', 'username displayName avatar')
+            .populate('host', 'username displayName avatar location')
             .populate('group', 'name')
             .sort({ createdAt: -1 })
             .limit(skip + limit)
         : [],
       listingMatch
         ? Listing.find(Object.assign({ status: 'available' }, listingMatch))
-            .populate('seller', 'username displayName avatar')
+            .populate('seller', 'username displayName avatar location')
             .sort({ createdAt: -1 })
             .limit(skip + limit)
         : [],
@@ -88,8 +89,27 @@ async function feed(req, res, next) {
 
     const pageItems = items.slice(skip, skip + limit);
 
+    // Each item also shows what its poster drives, so look up one car per
+    // person. Only the people on this page, and only their first car, so it
+    // stays one small query no matter how long the feed gets.
+    const posterIds = pageItems
+      .map((item) => (item.kind === 'event' ? item.data.host : item.data.seller))
+      .filter(Boolean)
+      .map((person) => person._id);
+    const cars = await Car.find({ owner: { $in: posterIds } })
+      .select('owner make model year photo')
+      .sort({ createdAt: 1 });
+    const carOf = {};
+    cars.forEach((car) => {
+      if (!carOf[car.owner]) carOf[car.owner] = car;
+    });
+    const withCars = pageItems.map((item) => {
+      const person = item.kind === 'event' ? item.data.host : item.data.seller;
+      return Object.assign({}, item, { car: person ? carOf[person._id] || null : null });
+    });
+
     res.json({
-      items: pageItems,
+      items: withCars,
       total: items.length,
       page,
       hasMore: items.length > skip + limit,

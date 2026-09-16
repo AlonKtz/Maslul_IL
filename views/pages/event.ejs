@@ -53,6 +53,28 @@
           <div class="text-columns" style="margin-top:1rem"><p><%= event.description %></p></div>
         <% } %>
 
+        <%# a race gets its track drawn here. the layout points go to the
+            script as json and it draws them on a canvas, so I do not need a
+            picture file for every circuit %>
+        <% if (circuit) { %>
+          <div class="circuit-box">
+            <div class="circuit-head">
+              <div>
+                <h3 style="margin:0"><%= circuit.name %></h3>
+                <p class="muted small" style="margin:.2rem 0 0"><%= circuit.description %></p>
+              </div>
+            </div>
+            <canvas id="circuit-canvas" class="circuit-canvas" width="560" height="320"></canvas>
+            <div class="circuit-stats">
+              <div><strong class="glow"><%= circuit.lengthKm %> km</strong><br><span class="muted small">per <%= circuit.unit === 'laps' ? 'lap' : 'run' %></span></div>
+              <div><strong class="glow"><%= event.laps %></strong><br><span class="muted small"><%= circuit.unit %></span></div>
+              <div><strong class="glow"><%= (circuit.lengthKm * event.laps).toFixed(1) %> km</strong><br><span class="muted small">total distance</span></div>
+              <div><strong class="glow"><%= event.raceType || 'Race' %></strong><br><span class="muted small">format</span></div>
+            </div>
+            <script id="circuit-data" type="application/json"><%- JSON.stringify({ layout: circuit.layout, closed: circuit.closed }) %></script>
+          </div>
+        <% } %>
+
         <div class="form-actions">
           <% if (!isHost) { %>
             <button id="attend-btn" class="btn btn-primary" type="button">

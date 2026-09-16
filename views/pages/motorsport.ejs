@@ -1,0 +1,61 @@
+<%- include('../partials/head') %>
+<%- include('../partials/nav') %>
+
+<%#
+  Motorsport worldwide.
+
+  This page is about racing everywhere, not about our own meets, which is why
+  the recap videos moved here from the events page. The video player is the
+  React component in public/components/VideoShowcase.jsx.
+
+  The second section is deliberately empty for now. The plan is a feed of
+  worldwide motorsport picked by an algorithm, and that has not been designed
+  yet, so I would rather show an honest placeholder than something fake.
+%>
+
+<main class="container">
+
+  <div class="page-head">
+    <div>
+      <h1 class="glow">Motorsport worldwide</h1>
+      <p class="muted">Racing from everywhere. Recaps, results and what is coming up.</p>
+    </div>
+  </div>
+
+  <!-- ---------------------------------------------------------------- recaps -->
+  <section class="card">
+    <h2>Race recaps</h2>
+    <p class="muted small">Clips from recent races, and the weekly recap.</p>
+
+    <div id="video-showcase"
+         data-react="VideoShowcase"
+         data-props='<%- JSON.stringify({ youtubeId: youtubeId }) %>'></div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- worldwide -->
+  <section class="card">
+    <h2>Around the world</h2>
+    <p class="muted small">
+      A feed of motorsport news, results and highlights from championships
+      worldwide, chosen for you.
+    </p>
+
+    <div class="empty" style="margin-top:1rem">
+      <strong>Coming soon.</strong><br>
+      <span class="muted small">
+        This feed will be filled by a selection algorithm that is still being
+        designed. Until then, the recaps above are the motorsport section.
+      </span>
+    </div>
+  </section>
+
+</main>
+
+<%# React and Babel come from /public/vendor so the page works offline. %>
+<script src="/vendor/react.development.js"></script>
+<script src="/vendor/react-dom.development.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script type="text/babel" src="/components/VideoShowcase.jsx"></script>
+<script src="/components/mount.js" defer></script>
+
+<%- include('../partials/footer') %>

@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
 const Group = require('../models/Group');
 const { CITIES, coordinatesOf } = require('../data/cities');
+const { CIRCUITS, circuitById } = require('../data/circuits');
 const { contains, paginate, num, date } = require('../utils/query');
 
 /*
@@ -52,8 +53,7 @@ function showEvents(req, res) {
     title: 'Meets & races',
     cities: CITIES.map((c) => c.name),
     raceTypes: Event.RACE_TYPES,
-    // optional. if you put a youtube id in .env it shows up as the weekly recap
-    youtubeId: process.env.RECAP_YOUTUBE_ID || '',
+    circuits: CIRCUITS,
   });
 }
 
@@ -76,6 +76,8 @@ async function showEvent(req, res, next) {
     res.render('pages/event', {
       title: event.title,
       event,
+      // the full track details, or null for a meet
+      circuit: event.type === 'race' ? circuitById(event.circuit) : null,
       isHost: event.host._id.equals(req.currentUser._id),
       isAttending: event.attendees.some((a) => a._id.equals(req.currentUser._id)),
     });
@@ -243,7 +245,7 @@ async function searchArea(req, res, next) {
 // POST /api/events
 async function create(req, res, next) {
   try {
-    const { title, description, type, raceType, city, address, startsAt, group, maxAttendees, coverImage } = req.body;
+    const { title, description, type, raceType, city, address, startsAt, group, maxAttendees, coverImage, circuit, laps } = req.body;
 
     const coordinates = coordinatesOf(city);
     if (!coordinates) return res.status(400).json({ error: 'Pick a city from the list.' });
@@ -264,6 +266,8 @@ async function create(req, res, next) {
       description,
       type,
       raceType: type === 'race' ? raceType || '' : '',
+      circuit: type === 'race' ? circuit || '' : '',
+      laps: type === 'race' ? Number(laps) || 1 : 1,
       host: req.currentUser._id,
       group: group || null,
       city,
@@ -293,7 +297,7 @@ async function update(req, res, next) {
       return res.status(403).json({ error: 'Only the host can edit this event.' });
     }
 
-    ['title', 'description', 'type', 'raceType', 'address', 'startsAt', 'maxAttendees', 'coverImage'].forEach((f) => {
+    ['title', 'description', 'type', 'raceType', 'address', 'startsAt', 'maxAttendees', 'coverImage', 'circuit', 'laps'].forEach((f) => {
       if (req.body[f] !== undefined) event[f] = req.body[f];
     });
 
@@ -305,7 +309,12 @@ async function update(req, res, next) {
       event.location = { type: 'Point', coordinates };
     }
 
-    if (event.type !== 'race') event.raceType = '';
+    // a meet has no track, so clear the race only fields if the type changed
+    if (event.type !== 'race') {
+      event.raceType = '';
+      event.circuit = '';
+      event.laps = 1;
+    }
 
     await event.save();
     await event.populate('host', 'username displayName avatar');

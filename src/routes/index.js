@@ -16,6 +16,15 @@ router.get('/search', requireLogin, (req, res) => {
   res.render('pages/search', { title: 'Search', cities: CITIES });
 });
 
+// GET /motorsport. racing from around the world, plus the recap videos.
+// the youtube id is optional and comes from .env
+router.get('/motorsport', requireLogin, (req, res) => {
+  res.render('pages/motorsport', {
+    title: 'Motorsport',
+    youtubeId: process.env.RECAP_YOUTUBE_ID || '',
+  });
+});
+
 // /feed, /chat, /stats and /admin live in their own route files because those
 // pages need data from a controller. I had them here too at one point and it
 // broke the chat page, because whichever router express loads first wins and

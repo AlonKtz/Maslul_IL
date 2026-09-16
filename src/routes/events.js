@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const events = require('../controllers/eventController');
 const Event = require('../models/Event');
 const { CITY_NAMES } = require('../data/cities');
+const { CIRCUIT_IDS } = require('../data/circuits');
 const { requireLogin } = require('../middleware/auth');
 const { handleValidation, validateObjectId } = require('../middleware/validate');
 
@@ -22,6 +23,10 @@ const eventRules = [
   body('startsAt').isISO8601().withMessage('Pick a valid date and time'),
   body('maxAttendees').optional({ values: 'falsy' })
     .isInt({ min: 0, max: 10000 }).withMessage('Attendee limit must be a sensible number'),
+  body('circuit').optional({ values: 'falsy' })
+    .isIn(CIRCUIT_IDS).withMessage('Pick a circuit from the list'),
+  body('laps').optional({ values: 'falsy' })
+    .isInt({ min: 1, max: 500 }).withMessage('Laps must be between 1 and 500'),
 ];
 
 const commentRules = [
