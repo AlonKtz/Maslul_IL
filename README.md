@@ -87,6 +87,27 @@ search on every model, all the permission rules, the map area search, the live
 chat, and what happens when somebody sends rubbish. They tidy up the accounts
 they create as they go.
 
+### Putting it online
+
+The project runs fine on your own machine and that is all the course asks for.
+If you want a public address as well, it deploys to Render's free tier:
+
+1. Sign in to <https://render.com> with your GitHub account.
+2. New, then Blueprint, and pick this repository. Render reads `render.yaml`
+   and sets the service up.
+3. It will ask for `MONGO_URI`. Paste the same Atlas string you use in `.env`.
+   The session secret is generated for you.
+4. Deploy. The first build takes a couple of minutes.
+
+The hosted copy uses the same Atlas database as your local one, so the seeded
+members, groups and events are already there.
+
+Two things to know about the free tier: the service goes to sleep after
+fifteen minutes with no visitors and takes about half a minute to wake up on
+the next request, and the disk is wiped on every restart, so photos and clips
+people upload to the hosted copy do not survive a redeploy. Everything seeded
+or committed is fine.
+
 ---
 
 ## How it is put together

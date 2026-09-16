@@ -19,7 +19,13 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // ---------------------------------------------------------------- middleware
-app.use(morgan('dev'));
+// when the site is hosted, the host puts a proxy in front of it that handles
+// https. express has to be told to trust that proxy, otherwise it thinks every
+// request is plain http and secure cookies would never get sent back.
+const inProduction = process.env.NODE_ENV === 'production';
+if (inProduction) app.set('trust proxy', 1);
+
+app.use(morgan(inProduction ? 'combined' : 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -33,6 +39,7 @@ const sessionMiddleware = session({
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   cookie: {
     httpOnly: true, // not readable from JavaScript
+    secure: inProduction, // only over https when hosted, plain http is fine locally
     maxAge: 1000 * 60 * 60 * 24 * 7, // one week
   },
 });

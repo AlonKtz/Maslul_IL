@@ -1,0 +1,25 @@
+# Tells Render how to run Maslul. With this file in the repo, Render can set
+# the whole service up from the "New Blueprint" button instead of me filling in
+# every box by hand.
+#
+# The two secrets (the database string and the session secret) are NOT in this
+# file on purpose. sync: false means Render asks for them in its dashboard
+# when the service is created, so they never end up in git.
+
+services:
+  - type: web
+    name: maslul
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: RECAP_YOUTUBE_ID
+        value: ""
