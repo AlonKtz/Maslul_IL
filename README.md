@@ -203,10 +203,11 @@ with a car going round it.
 
 The `/motorsport` page holds the recap videos (the React video player) and a
 placeholder for a worldwide motorsport feed that is planned but not built.
-The YouTube tab always shows the newest upload from the GT World channel. The
-server reads the channel's RSS feed (no api key needed), saves the video id in
-the `settings` collection and checks for a newer one every three days. See
-`src/utils/recap.js`.
+It shows the newest full video (Shorts are skipped) from the GT World channel.
+The server reads the channel's RSS feed (no api key needed), saves the video
+id in the `settings` collection and checks for a newer one every three days.
+See `src/utils/recap.js`. The React player for our own clips is still in
+`VideoShowcase.jsx`, switched off on the page with `showClips: false`.
 
 ### Real-time chat
 

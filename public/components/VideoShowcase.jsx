@@ -11,6 +11,10 @@
 
   The clips come from /video/clips.json. Drop mp4 files into /public/video and
   add them to that file. It handles an empty list fine.
+
+  The local player is parked for now (showClips false on the motorsport page)
+  because the GT World video is the one people want. The code stays so it can
+  be switched back on with one attribute.
 */
 
 const { useState, useRef, useEffect } = React;
@@ -22,7 +26,7 @@ function formatTime(seconds) {
   return m + ':' + String(s).padStart(2, '0');
 }
 
-function VideoShowcase({ youtubeId, youtubeTitle }) {
+function VideoShowcase({ youtubeId, youtubeTitle, showClips = true }) {
   const videoRef = useRef(null);
 
   const [clips, setClips] = useState([]);
@@ -31,7 +35,7 @@ function VideoShowcase({ youtubeId, youtubeTitle }) {
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [tab, setTab] = useState('local');
+  const [tab, setTab] = useState(showClips ? 'local' : 'youtube');
   const [loadError, setLoadError] = useState(false);
 
   // grab the clip list once when the component first appears
@@ -80,13 +84,15 @@ function VideoShowcase({ youtubeId, youtubeTitle }) {
   return (
     <div className="video-showcase">
       <div className="tabs">
-        <button
-          type="button"
-          className={'tab' + (tab === 'local' ? ' is-active' : '')}
-          onClick={() => setTab('local')}
-        >
-          Our recaps
-        </button>
+        {showClips && (
+          <button
+            type="button"
+            className={'tab' + (tab === 'local' ? ' is-active' : '')}
+            onClick={() => setTab('local')}
+          >
+            Our recaps
+          </button>
+        )}
         <button
           type="button"
           className={'tab' + (tab === 'youtube' ? ' is-active' : '')}

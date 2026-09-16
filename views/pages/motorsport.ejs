@@ -6,7 +6,8 @@
 
   This page is about racing everywhere, not about our own meets, which is why
   the recap videos moved here from the events page. The video player is the
-  React component in public/components/VideoShowcase.jsx.
+  React component in public/components/VideoShowcase.jsx. Our own clips tab is
+  switched off with showClips: false, flip it to true to bring it back.
 
   The second section is deliberately empty for now. The plan is a feed of
   worldwide motorsport picked by an algorithm, and that has not been designed
@@ -26,14 +27,14 @@
   <section class="card">
     <h2>Race recaps</h2>
     <p class="muted small">
-      Clips from recent races, and the newest upload from
+      The newest full video from
       <a href="https://www.youtube.com/@GTWorld/videos" target="_blank" rel="noopener">GT World</a>.
       The site checks for a newer one every three days.
     </p>
 
     <div id="video-showcase"
          data-react="VideoShowcase"
-         data-props='<%- JSON.stringify({ youtubeId: youtubeId, youtubeTitle: youtubeTitle }) %>'></div>
+         data-props='<%- JSON.stringify({ youtubeId: youtubeId, youtubeTitle: youtubeTitle, showClips: false }) %>'></div>
   </section>
 
   <!-- ---------------------------------------------------------------- worldwide -->
