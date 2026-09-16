@@ -39,7 +39,7 @@ cp .env.example .env
 | `MONGO_URI` | Your MongoDB connection string |
 | `SESSION_SECRET` | Any long random string; it signs the session cookie |
 | `PORT` | Optional, defaults to `3000` |
-| `RECAP_YOUTUBE_ID` | Optional YouTube id for the weekly recap tab |
+| `RECAP_YOUTUBE_ID` | Optional fallback YouTube id, used only if the GT World feed cannot be reached |
 
 `.env` is listed in `.gitignore` and is never committed.
 
@@ -158,6 +158,7 @@ with no internet connection.
 | **Listing** | Marketplace items: price, category, condition, sold status |
 | **Car** | The cars in a member's garage |
 | **Message** | Chat history between two members |
+| **Setting** | Small key/value store, currently just the recap video and when it was last checked |
 
 All six support **create, update, delete, list and search** from the interface.
 
@@ -202,6 +203,10 @@ with a car going round it.
 
 The `/motorsport` page holds the recap videos (the React video player) and a
 placeholder for a worldwide motorsport feed that is planned but not built.
+The YouTube tab always shows the newest upload from the GT World channel. The
+server reads the channel's RSS feed (no api key needed), saves the video id in
+the `settings` collection and checks for a newer one every three days. See
+`src/utils/recap.js`.
 
 ### Real-time chat
 

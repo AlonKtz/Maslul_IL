@@ -544,6 +544,12 @@ a { color: var(--accent-2); }
   border: 0;
 }
 
+/* the name of the youtube video, under the embed */
+.video-title {
+  margin: 0.6rem 0 0;
+  font-weight: 600;
+}
+
 /* ---- chat --------------------------------------------------------------- */
 .chat-layout {
   display: grid;

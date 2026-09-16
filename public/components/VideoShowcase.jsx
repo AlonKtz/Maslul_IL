@@ -22,7 +22,7 @@ function formatTime(seconds) {
   return m + ':' + String(s).padStart(2, '0');
 }
 
-function VideoShowcase({ youtubeId }) {
+function VideoShowcase({ youtubeId, youtubeTitle }) {
   const videoRef = useRef(null);
 
   const [clips, setClips] = useState([]);
@@ -92,7 +92,7 @@ function VideoShowcase({ youtubeId }) {
           className={'tab' + (tab === 'youtube' ? ' is-active' : '')}
           onClick={() => setTab('youtube')}
         >
-          Weekly recap
+          Latest from GT World
         </button>
       </div>
 
@@ -186,14 +186,16 @@ function VideoShowcase({ youtubeId }) {
             <div className="video-embed">
               <iframe
                 src={'https://www.youtube.com/embed/' + youtubeId}
-                title="Weekly race recap"
+                title={youtubeTitle || 'Race recap'}
                 allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
             </div>
-          ) : (
+          ) : null}
+          {youtubeId && youtubeTitle && <p className="video-title">{youtubeTitle}</p>}
+          {!youtubeId && (
             <p className="empty">
-              No weekly recap linked yet. Add a YouTube video id to the page to show one here.
+              Could not reach YouTube to find the newest recap. Try again when you are online.
             </p>
           )}
           <p className="hint">

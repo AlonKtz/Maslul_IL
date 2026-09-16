@@ -25,11 +25,15 @@
   <!-- ---------------------------------------------------------------- recaps -->
   <section class="card">
     <h2>Race recaps</h2>
-    <p class="muted small">Clips from recent races, and the weekly recap.</p>
+    <p class="muted small">
+      Clips from recent races, and the newest upload from
+      <a href="https://www.youtube.com/@GTWorld/videos" target="_blank" rel="noopener">GT World</a>.
+      The site checks for a newer one every three days.
+    </p>
 
     <div id="video-showcase"
          data-react="VideoShowcase"
-         data-props='<%- JSON.stringify({ youtubeId: youtubeId }) %>'></div>
+         data-props='<%- JSON.stringify({ youtubeId: youtubeId, youtubeTitle: youtubeTitle }) %>'></div>
   </section>
 
   <!-- ---------------------------------------------------------------- worldwide -->

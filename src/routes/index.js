@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireLogin } = require('../middleware/auth');
 const { CITIES } = require('../data/cities');
+const { latestRecap } = require('../utils/recap');
 
 const router = express.Router();
 
@@ -17,12 +18,19 @@ router.get('/search', requireLogin, (req, res) => {
 });
 
 // GET /motorsport. racing from around the world, plus the recap videos.
-// the youtube id is optional and comes from .env
-router.get('/motorsport', requireLogin, (req, res) => {
-  res.render('pages/motorsport', {
-    title: 'Motorsport',
-    youtubeId: process.env.RECAP_YOUTUBE_ID || '',
-  });
+// the youtube video is the newest upload on the GT World channel, see
+// utils/recap.js for how it is found and how often it is checked
+router.get('/motorsport', requireLogin, async (req, res, next) => {
+  try {
+    const recap = await latestRecap();
+    res.render('pages/motorsport', {
+      title: 'Motorsport',
+      youtubeId: recap.id,
+      youtubeTitle: recap.title,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // /feed, /chat, /stats and /admin live in their own route files because those
