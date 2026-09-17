@@ -37,6 +37,23 @@ def set_cell_fill(cell, hex_fill):
     tc_pr.append(shd)
 
 
+def make_rtl(paragraph):
+    """Marks a paragraph as right to left, for the Hebrew text."""
+    p_pr = paragraph._p.get_or_add_pPr()
+    bidi = OxmlElement('w:bidi')
+    bidi.set(qn('w:val'), '1')
+    p_pr.append(bidi)
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+
+def make_table_rtl(table):
+    """Flips a table so its first column sits on the right."""
+    tbl_pr = table._tbl.tblPr
+    bidi = OxmlElement('w:bidiVisual')
+    bidi.set(qn('w:val'), '1')
+    tbl_pr.append(bidi)
+
+
 def add_field(paragraph, instr):
     """Adds a Word field (TOC, PAGE) to a paragraph."""
     run = paragraph.add_run()
@@ -48,7 +65,7 @@ def add_field(paragraph, instr):
     fld_sep = OxmlElement('w:fldChar')
     fld_sep.set(qn('w:fldCharType'), 'separate')
     placeholder = OxmlElement('w:t')
-    placeholder.text = 'Right-click and choose Update Field to build the table of contents.'
+    placeholder.text = 'לחיצה ימנית ואז Update Field בונה את תוכן העניינים.'
     fld_end = OxmlElement('w:fldChar')
     fld_end.set(qn('w:fldCharType'), 'end')
     for el in (fld_begin, instr_el, fld_sep, placeholder, fld_end):
@@ -69,6 +86,7 @@ INLINE = re.compile(r'(\*\*[^*]+\*\*|`[^`]+`)')
 def add_inline(target, text, base_bold=False, size=None):
     """Writes text into a paragraph (or a table cell), handling **bold** and `code`."""
     paragraph = target.paragraphs[0] if hasattr(target, 'paragraphs') else target
+    make_rtl(paragraph)
     for piece in INLINE.split(text):
         if not piece:
             continue
@@ -84,6 +102,9 @@ def add_inline(target, text, base_bold=False, size=None):
             run = paragraph.add_run(piece)
             if base_bold:
                 run.bold = True
+            rtl = OxmlElement('w:rtl')
+            rtl.set(qn('w:val'), '1')
+            run._element.get_or_add_rPr().append(rtl)
         if size:
             run.font.size = size
 
@@ -99,6 +120,7 @@ def add_table(doc, rows):
     table = doc.add_table(rows=1, cols=cols)
     table.style = 'Table Grid'
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    make_table_rtl(table)
 
     for i, text in enumerate(header):
         cell = table.rows[0].cells[i]
@@ -120,13 +142,19 @@ def add_table(doc, rows):
     # description column does not get squeezed to the same size as an id column
     usable = Cm(17)
     longest = [max([len(header[i])] + [len(r[i]) for r in body_cells]) for i in range(cols)]
+    # how much text each column holds in total, each cell counted up to a cap so
+    # one huge cell does not decide everything
+    amount = [sum(min(len(r[i]), 160) for r in body_cells) or 1 for i in range(cols)]
     # short columns (ids, one word values) get a fixed width, the rest share what is left
     widths = [Cm(2.3) if n <= 12 else None for n in longest]
     remaining = usable - sum(w for w in widths if w)
-    flexible = [min(longest[i], 60) for i in range(cols) if widths[i] is None]
-    for i in range(cols):
-        if widths[i] is None:
-            widths[i] = int(remaining * min(longest[i], 60) / sum(flexible))
+    flexible = [i for i in range(cols) if widths[i] is None]
+    # a flexible column never drops under 3cm, the others share the rest
+    floor = Cm(3)
+    pool = remaining - floor * len(flexible)
+    total = sum(amount[i] for i in flexible) or 1
+    for i in flexible:
+        widths[i] = int(floor + pool * amount[i] / total)
     table.autofit = False
     for i in range(cols):
         for row in table.rows:
@@ -149,11 +177,11 @@ def build():
     section.bottom_margin = Cm(2)
 
     styles = doc.styles
-    styles['Normal'].font.name = 'Calibri'
+    styles['Normal'].font.name = 'Arial'
     styles['Normal'].font.size = Pt(10.5)
     for name, size in (('Heading 1', 18), ('Heading 2', 14), ('Heading 3', 12)):
         st = styles[name]
-        st.font.name = 'Calibri'
+        st.font.name = 'Arial'
         st.font.size = Pt(size)
         st.font.bold = True
         st.font.color.rgb = ACCENT if name == 'Heading 1' else RGBColor(0x22, 0x26, 0x2B)
@@ -161,7 +189,7 @@ def build():
     # page number in the footer
     footer_p = section.footer.paragraphs[0]
     footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = footer_p.add_run('Maslul SRS    ')
+    r = footer_p.add_run('מסלול, מסמך דרישות    ')
     r.font.size = Pt(8)
     r.font.color.rgb = GREY
     add_field(footer_p, 'PAGE')
@@ -199,6 +227,7 @@ def build():
         i += 1
     table = doc.add_table(rows=0, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    make_table_rtl(table)
     for row in meta[2:]:
         k, v = split_row(row)[:2]
         cells = table.add_row().cells
@@ -208,7 +237,8 @@ def build():
 
     # ---- table of contents
     h = doc.add_paragraph()
-    r = h.add_run('Contents')
+    r = h.add_run('תוכן עניינים')
+    make_rtl(h)
     r.bold = True
     r.font.size = Pt(16)
     r.font.color.rgb = ACCENT
@@ -240,13 +270,11 @@ def build():
             continue
 
         if stripped.startswith('#### '):
-            doc.add_heading(stripped[5:], level=3)
+            make_rtl(doc.add_heading(stripped[5:], level=3))
         elif stripped.startswith('### '):
-            doc.add_heading(stripped[4:], level=2)
+            make_rtl(doc.add_heading(stripped[4:], level=2))
         elif stripped.startswith('## '):
-            # every top level chapter starts on a new page
-            doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
-            doc.add_heading(stripped[3:], level=1)
+            make_rtl(doc.add_heading(stripped[3:], level=1))
         elif stripped.startswith('- '):
             p = doc.add_paragraph(style='List Bullet')
             add_inline(p, stripped[2:])
