@@ -1453,3 +1453,56 @@ html[lang="he"]:not(.i18n-ready) body { visibility: hidden; }
 
 /* breathing room above a full-width submit button */
 form .btn-block { margin-top: var(--space-5); }
+
+/* ---- light / dark switch ---------------------------------------------------- */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--on-carbon-muted);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--on-carbon);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s ease;
+}
+.theme-toggle:hover { background: var(--on-carbon); color: var(--carbon); }
+.theme-toggle:active { transform: rotate(-25deg); }
+/* show the mode you would switch to: a moon in light, a sun in dark */
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* native controls (date pickers, scrollbars) follow the theme too */
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* the switch fades the colours instead of snapping */
+/* (only on elements with no hover animation of their own, so none get overridden) */
+body, .site-header, .site-footer, .search-panel, input, select, textarea {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+/* ---- smooth switching (language and theme) ---------------------------------
+   public/js/i18n.js runs both switches through the View Transitions API.
+   By default the old page fades into the new one. With .vt-reveal (the theme
+   button) the new page grows out of the button in a circle instead.        */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: ease;
+}
+.vt-reveal::view-transition-old(root) {
+  animation: none;
+}
+.vt-reveal::view-transition-new(root) {
+  animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes theme-reveal {
+  from { clip-path: circle(0 at var(--reveal-x) var(--reveal-y)); }
+  to { clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

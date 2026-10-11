@@ -50,10 +50,14 @@ app.use(attachUser);
 
 // the language the page is shown in, from the cookie the language button
 // sets. the head partial uses it for lang and dir, public/js/i18n.js does
-// the translating
+// the translating. the theme works the same way, see public/js/theme.js
 app.use((req, res, next) => {
   const match = /(?:^|;\s*)lang=(he|en)\b/.exec(req.headers.cookie || '');
   res.locals.lang = match ? match[1] : 'en';
+  // and the light or dark theme from the theme button. empty means nobody has
+  // chosen yet, and the page follows the device setting instead
+  const theme = /(?:^|;\s*)theme=(light|dark)\b/.exec(req.headers.cookie || '');
+  res.locals.theme = theme ? theme[1] : '';
   next();
 });
 

@@ -10,19 +10,24 @@
 
   // the chart colours come from the design tokens in style.css, so the charts
   // follow the light or dark theme. the second value is the fallback.
-  var css = getComputedStyle(document.documentElement);
+  // they are read again whenever the theme button is used, see the bottom
   function token(name, fallback) {
+    var css = getComputedStyle(document.documentElement);
     return (css.getPropertyValue(name) || '').trim() || fallback;
   }
-  var COLOURS = {
-    meet: token('--ok', '#2a9d8f'),
-    race: token('--brand', '#e63946'),
-    bar: token('--amber', '#f4a261'),
-    bar2: token('--info', '#457b9d'),
-    text: token('--ink', '#15151e'),
-    muted: token('--ink-muted', '#5b5b66'),
-    grid: token('--line', '#d6d6de'),
-  };
+  var COLOURS = {};
+  function readColours() {
+    COLOURS = {
+      meet: token('--ok', '#2a9d8f'),
+      race: token('--brand', '#e63946'),
+      bar: token('--amber', '#f4a261'),
+      bar2: token('--info', '#457b9d'),
+      text: token('--ink', '#15151e'),
+      muted: token('--ink-muted', '#5b5b66'),
+      grid: token('--line', '#d6d6de'),
+    };
+  }
+  readColours();
 
   // clears out the old chart and gives me back a clean svg to draw into.
   // without the clear, redrawing stacks a second chart on top of the first.
@@ -436,6 +441,12 @@
   $(window).on('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(loadAll, 250);
+  });
+
+  // light or dark was switched: pick up the new colours and draw again
+  $(document).on('theme:change', function () {
+    readColours();
+    loadAll();
   });
 
   loadAll();

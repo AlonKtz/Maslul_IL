@@ -38,6 +38,8 @@
     'Sign in': 'התחברות',
     'Join Maslul': 'הצטרפות ל-Maslul',
     'Demo User': 'משתמש דמו',
+    'Dark mode': 'מצב כהה',
+    'Light mode': 'מצב בהיר',
     'Opening the demo...': 'פותח את הדמו...',
     'Maslul — Israel\'s first social network for car lovers.': 'Maslul — הרשת החברתית הראשונה בישראל לחובבי רכב.',
     'Home': 'דף הבית',
@@ -812,6 +814,42 @@
     document.dispatchEvent(new CustomEvent('i18n:change', { detail: { lang: lang } }));
   }
 
+  // runs a change to the whole page as a smooth animation. the browser takes
+  // a picture of the page, makes the change, then animates from the picture
+  // to the new page (the View Transitions API). browsers without it, and
+  // people who asked their system for less motion, just get the change.
+  // origin is a click point: given one, the new page grows out of it in a
+  // circle, otherwise the two simply cross fade. theme.js uses this too.
+  // clicks that arrive while an animation is still running are ignored, so a
+  // double click on the theme button does not switch it straight back
+  var switching = false;
+
+  window.smoothSwitch = function (update, origin) {
+    if (switching) return;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // a tab in the background cannot animate, so it just changes
+    if (!document.startViewTransition || reduced || document.hidden) return update();
+
+    var html = document.documentElement;
+    if (origin) {
+      // how far the circle has to grow to cover the far corner
+      var r = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y));
+      html.style.setProperty('--reveal-x', origin.x + 'px');
+      html.style.setProperty('--reveal-y', origin.y + 'px');
+      html.style.setProperty('--reveal-r', r + 'px');
+      html.classList.add('vt-reveal');
+    }
+    switching = true;
+    var t = document.startViewTransition(update);
+    // if the browser gives up on the animation the change itself still
+    // happens, so a skipped animation is nothing to report
+    t.ready.catch(function () {});
+    t.finished.catch(function () {}).then(function () {
+      html.classList.remove('vt-reveal');
+      switching = false;
+    });
+  };
+
   // the switch in the top bar. the cookie is for the next page the server
   // renders, the page you are on changes straight away
   document.addEventListener('click', function (e) {
@@ -819,8 +857,10 @@
     if (!btn) return;
     var lang = btn.getAttribute('data-set-lang');
     if (lang === LANG) return;
-    document.cookie = 'lang=' + lang + '; path=/; max-age=31536000; SameSite=Lax';
-    apply(lang);
+    window.smoothSwitch(function () {
+      document.cookie = 'lang=' + lang + '; path=/; max-age=31536000; SameSite=Lax';
+      apply(lang);
+    });
   });
 
   window.I18N = { lang: LANG, t: function (s) { return LANG === 'he' ? translate(s) : s; } };
