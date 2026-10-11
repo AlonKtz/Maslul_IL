@@ -1,4 +1,4 @@
-﻿/*
+/*
   Fills the database with enough content that the site looks like a real
   network instead of an empty shell.
 
@@ -104,7 +104,7 @@ const MEMBERS = [
     bio: 'Supercar spotter, Ferrari 296 dreamer.' },
   { username: 'barak', displayName: 'Barak Zur', location: 'Eilat',
     bio: 'Drift practice in the south. Two sets of tyres minimum.' },
-  // the account behind the 'Try the demo' button on the login page
+  // the account behind the 'Demo User' button on the login page
   { username: 'demo', displayName: 'Demo Driver', location: 'Tel Aviv',
     bio: 'The demo account. Look around, everything here is test data.' },
 ];
@@ -197,6 +197,30 @@ const EVENT_TEMPLATES = [
     description: 'Gravel stage for Group A Imprezas, Evos and anything brave enough. Co-driver mandatory.' },
   { title: 'Track day', coverImage: '/img/events/track-day.jpg', type: 'race', raceType: 'Track', circuit: 'port-street', laps: 20, city: 'Eilat', address: 'Southern circuit',
     description: 'Novice and open groups, GT cars welcome. Instruction available for the first session and the pit lane is family friendly.' },
+  { title: 'Supercar Sunday', coverImage: '/img/events/car-meet.jpg', type: 'meet', city: 'Herzliya', address: 'Arena mall upper lot',
+    description: 'Exotics up front, everything else around them. Bring the camera, leave the launch control at home.' },
+  { title: 'Galilee loop', coverImage: '/img/events/sunday-drive.jpg', type: 'meet', city: 'Karmiel', address: 'Big Fashion car park',
+    description: 'Mountain roads around Karmiel and Safed, lunch stop by the Kinneret. Around 180 km.' },
+  { title: 'Late night tunnel run', coverImage: '/img/events/friday-night-cruise.jpg', type: 'meet', city: 'Haifa', address: 'Carmel Tunnels north entrance',
+    description: 'Short run through the tunnels and up to the Carmel lookout. Quiet exhausts, please.' },
+  { title: 'Off-road recovery training', coverImage: '/img/events/negev-desert.jpg', type: 'meet', city: 'Mitzpe Ramon', address: 'Crater visitor centre',
+    description: 'Snatch straps, tyre pressures and how not to roll it. Instructor led, bring gloves.' },
+  { title: 'Classic car show', coverImage: '/img/events/classic-meet.jpg', type: 'meet', city: 'Zichron Yaakov', address: 'Founders park',
+    description: 'Judged show with three classes: pre-1970, 70s and 80s. Entry is free for spectators.' },
+  { title: 'Tesla owners meetup', coverImage: '/img/events/ev-charging.jpg', type: 'meet', city: 'Hadera', address: 'Supercharger station',
+    description: 'Software updates, range tips and a short convoy to the beach. Any EV is welcome.' },
+  { title: 'Drag strip test and tune', coverImage: '/img/events/drag-race.jpg', type: 'race', raceType: 'Drag', circuit: 'drag-strip', laps: 6, city: 'Beer Sheva', address: 'Airfield strip',
+    description: 'Unlimited runs, slip after every pass. Good night to try new launch settings.' },
+  { title: 'Night drift session', coverImage: '/img/events/drift-race.jpg', type: 'race', raceType: 'Drift', circuit: 'industrial-loop', laps: 12, city: 'Haifa', address: 'Bay industrial loop',
+    description: 'Under the lights, tandem pairs from nine. Judges on the last hour for a bit of fun.' },
+  { title: 'Rally school', coverImage: '/img/events/rally-sprint.jpg', type: 'race', raceType: 'Rally', circuit: 'forest-stage', laps: 3, city: 'Beit Shemesh', address: 'Forest service road 2',
+    description: 'Pace notes, left foot braking and a timed run at the end. Co-drivers welcome.' },
+  { title: 'Touring car sprint', coverImage: '/img/events/time-attack.jpg', type: 'race', raceType: 'Time attack', circuit: 'kart-track', laps: 15, city: 'Ashdod', address: 'Circuit south paddock',
+    description: 'Short sprint sessions for hatchbacks and saloons. Tyre limit of one set.' },
+  { title: 'Mountain hill climb', coverImage: '/img/events/hill-climb.jpg', type: 'race', raceType: 'Hillclimb', circuit: 'mountain-hillclimb', laps: 4, city: 'Kiryat Shmona', address: 'Hermon road closure',
+    description: 'The northern round. Four runs each, best time counts.' },
+  { title: 'Desert oval race', coverImage: '/img/events/track-day.jpg', type: 'race', raceType: 'Track', circuit: 'desert-oval', laps: 30, city: 'Dimona', address: 'Desert oval',
+    description: 'Wheel to wheel on the oval, two heats and a final. Full face helmets required.' },
 ];
 
 const LISTINGS = [
@@ -216,7 +240,7 @@ const LISTINGS = [
     description: 'Pulled from an M3 E46 when it went to carbon ceramics. Calipers, discs and lines included.' },
   { title: 'E30 front bumper, original', photos: ['/img/cars/bmw-m3-e30.jpg'], price: 1200, category: 'Body & exterior', condition: 'Used',
     description: 'Straight, small scuff underneath. No cracks.' },
-  { title: 'Carbon bonnet, universal fit', price: 2900, category: 'Body & exterior', condition: 'New',
+  { title: 'Carbon bonnet with vents', photos: ['/img/parts/carbon-bonnet.jpg'], price: 2900, category: 'Body & exterior', condition: 'New',
     description: 'Never fitted, still wrapped. Pins included.' },
   { title: 'Bucket seat with rails', photos: ['/img/cars/bucket-seat.jpg'], price: 1800, category: 'Interior', condition: 'Used',
     description: 'FIA date expired, fine for road and practice use.' },
@@ -245,6 +269,34 @@ const LISTINGS = [
     description: 'Red top twin cam, runs sweet, comes out with the T50 box. Sold with the loom.' },
   { title: 'Assorted E36 spares', photos: ['/img/cars/bmw-e36.jpg'], price: 300, category: 'Other parts', condition: 'For parts',
     description: 'Box of trim, brackets and clips. Take the lot.' },
+  { title: 'Turbo cutaway, workshop display', photos: ['/img/parts/turbocharger.jpg'], price: 850, category: 'Engine & drivetrain', condition: 'Like new',
+    description: 'Sectioned turbocharger on a wooden stand. Great for the garage wall or teaching how boost works.' },
+  { title: 'Bucket seat with 6 point harness', photos: ['/img/parts/harness-seat.jpg'], price: 3600, category: 'Interior', condition: 'Used',
+    description: 'Out of a GT3 RS, harness dated 2024. Side mounts included.' },
+  { title: 'AMG 20" wheels with Michelin PS5', photos: ['/img/parts/alloy-wheel.jpg'], price: 11500, category: 'Wheels & tires', condition: 'Like new',
+    description: 'Forged, matte black, tyres at 80%. Fits most Mercedes with 5x112.' },
+  { title: 'Car battery 70Ah, AGM', photos: ['/img/parts/car-battery.jpg'], price: 520, category: 'Audio & electronics', condition: 'New',
+    description: 'Bought for a car I sold before fitting it. Still sealed, two year warranty.' },
+  { title: 'Short shifter with leather knob', photos: ['/img/parts/gear-stick.jpg'], price: 690, category: 'Interior', condition: 'Used',
+    description: 'Cuts the throw by about a third. Boot included, fits most front wheel drive hatches.' },
+  { title: 'Socket set, 94 pieces', photos: ['/img/parts/socket-set.jpg'], price: 380, category: 'Tools', condition: 'Like new',
+    description: 'Two ratchets, metric and imperial, metal case. Nothing missing.' },
+  { title: 'LED headlight units, pair', photos: ['/img/parts/led-headlights.jpg'], price: 2400, category: 'Body & exterior', condition: 'Used',
+    description: 'Original LED units, both working, no condensation. Clips intact.' },
+  { title: 'Nissan Silvia S15, drift spec', photos: ['/img/cars/nissan-s15.jpg', '/img/cars/engine-sr20.jpg'], price: 145000, category: 'Whole car', condition: 'Used',
+    make: 'Nissan', model: 'Silvia', year: 2000,
+    description: 'SR20DET, hydro handbrake, coilovers. Two sets of spare wheels go with it.' },
+  { title: 'Mitsubishi Lancer Evo IX', photos: ['/img/cars/mitsubishi-evo9.jpg'], price: 168000, category: 'Whole car', condition: 'Used',
+    make: 'Mitsubishi', model: 'Lancer Evolution', year: 2006,
+    description: 'Unmodified, full history, timing belt done last year.' },
+  { title: 'Land Rover Defender 90 300Tdi', photos: ['/img/cars/defender-90.jpg'], price: 89000, category: 'Whole car', condition: 'Used',
+    make: 'Land Rover', model: 'Defender', year: 1998,
+    description: 'Galvanised chassis, winch, snorkel. Ready for the desert.' },
+  { title: 'Porsche 944, project', photos: ['/img/cars/porsche-944.jpg'], price: 52000, category: 'Whole car', condition: 'For parts',
+    make: 'Porsche', model: '944', year: 1986,
+    description: 'Runs, needs a clutch and some love. Interior is good.' },
+  { title: 'Volk TE37 wheels and coilover combo', photos: ['/img/cars/wheels-te37.jpg', '/img/cars/coilovers.jpg'], price: 11800, category: 'Wheels & tires', condition: 'Used',
+    description: 'Both off my S15, sold together only. 5x114.3.' },
 ];
 
 const CONVERSATIONS = [
@@ -401,10 +453,13 @@ async function seed() {
   // spread the events over the last few months and the next couple, otherwise
   // the per month chart is just one tall bar and looks like nothing.
   const events = [];
-  const offsets = [-118, -105, -97, -92, -81, -74, -66, -61, -52, -45, -38, -33, -26, -20, -16,
-    -12, -8, -5, -2, 3, 6, 9, 13, 16, 20, 23, 27, 30, 34, 38, 43, 47, 55, 62];
-  // the demo hosts one past and two upcoming events
-  const demoHosts = [7, 21, 27];
+  // every template once, plus a second round of the popular ones, so each
+  // kind of meet and race shows up and none repeats back to back
+  const offsets = [-118, -112, -105, -101, -97, -92, -86, -81, -77, -74, -70, -66, -61, -57,
+    -52, -48, -45, -41, -38, -33, -29, -26, -23, -20, -16, -12, -10, -8, -5, -2,
+    1, 3, 5, 6, 9, 11, 13, 16, 18, 20, 23, 25, 27, 30, 34, 38, 43, 47, 55, 62];
+  // the demo hosts a couple of past events and a few upcoming ones
+  const demoHosts = [7, 21, 33, 40, 45];
 
   for (let i = 0; i < offsets.length; i++) {
     const template = EVENT_TEMPLATES[i % EVENT_TEMPLATES.length];
@@ -435,6 +490,21 @@ async function seed() {
     }));
   }
   console.log(`[seed] ${events.length} events`);
+
+  // everything above was created in the same second, which makes the feed a
+  // flat list. give each event a posting date a week or two before it starts
+  // (never in the future) and each car the day it was added to the garage.
+  // this goes straight to the collection because mongoose would overwrite
+  // createdAt with now.
+  const DAY = 24 * 60 * 60 * 1000;
+  for (const ev of events) {
+    const posted = Math.min(Date.now() - between(2, 360) * 60 * 60 * 1000, ev.startsAt.getTime() - between(6, 18) * DAY);
+    await Event.collection.updateOne({ _id: ev._id }, { $set: { createdAt: new Date(posted) } });
+  }
+  for (const car of cars) {
+    const added = Date.now() - between(0, 20) * DAY - between(1, 23) * 60 * 60 * 1000;
+    await Car.collection.updateOne({ _id: car._id }, { $set: { createdAt: new Date(added) } });
+  }
 
   // ---- listings -------------------------------------------------------
   const cities = ['Tel Aviv', 'Haifa', 'Beer Sheva', 'Netanya', 'Jerusalem', 'Ashdod', 'Herzliya', 'Modiin'];
@@ -493,7 +563,7 @@ async function seed() {
   console.log('\n  Seeding complete.');
   console.log('  Sign in with any member, the password is always "secret123":');
   console.log('    alon   (site administrator)');
-  console.log('    demo   (or just press "Try the demo" on the login page)');
+  console.log('    demo   (or just press "Demo User" on the login page)');
   console.log('    ' + others.filter((u) => u.username !== 'alon').map((u) => u.username).join(', ') + '\n');
 
   await mongoose.disconnect();

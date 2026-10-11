@@ -71,3 +71,11 @@ Paths below are relative to public/img.
 - `parts/brembo-caliper.jpg` : Brembo Caliper.jpg, by https://www.flickr.com/people/poppingseed/, CC BY-SA 2.0. https://commons.wikimedia.org/wiki/File:Brembo_Caliper.jpg
 - `parts/engine-4age.jpg` : 4A-GE redtop.jpg, by TheJosh, Public domain. https://commons.wikimedia.org/wiki/File:4A-GE_redtop.jpg
 - `parts/cold-air-intake.jpg` : Cool-Air-intake.jpg, by Gearheadgirl, CC BY 3.0. https://commons.wikimedia.org/wiki/File:Cool-Air-intake.jpg
+- `parts/turbocharger.jpg` : Turbocharger.jpg, by Quentin Schwinn (NASA), Public domain. https://commons.wikimedia.org/wiki/File:Turbocharger.jpg
+- `parts/carbon-bonnet.jpg` : 2006 Ford Mustang GT, carbon‑fiber hood with vents, Golden Super Cruise 2026-05-02.jpg, by Xnatedawgx, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:2006_Ford_Mustang_GT,_carbon%E2%80%91fiber_hood_with_vents,_Golden_Super_Cruise_2026-05-02.jpg
+- `parts/harness-seat.jpg` : Bucket seat with Schroth six-point harness in a 2010 Porsche 997 GT3 RS 3.8.jpg, by The Car Spy, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Bucket_seat_with_Schroth_six-point_harness_in_a_2010_Porsche_997_GT3_RS_3.8.jpg
+- `parts/car-battery.jpg` : Car battery.jpg, by Azorbli, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Car_battery.jpg
+- `parts/gear-stick.jpg` : Manual gear stick.jpg, by Pommeau, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Manual_gear_stick.jpg
+- `parts/socket-set.jpg` : Socket set with two ratchets in metal box.jpeg, by Pittigrilli~commonswiki, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Socket_set_with_two_ratchets_in_metal_box.jpeg
+- `parts/led-headlights.jpg` : Light-emitting diode (LED) Lexus hybrid headlights.jpg, by https://www.flickr.com/photos/8363028@N08/, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Light-emitting_diode_(LED)_Lexus_hybrid_headlights.jpg
+- `parts/alloy-wheel.jpg` : Wheel, IAA 2017, Frankfurt (1Y7A3040).jpg, by Matti Blume, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Wheel,_IAA_2017,_Frankfurt_(1Y7A3040).jpg

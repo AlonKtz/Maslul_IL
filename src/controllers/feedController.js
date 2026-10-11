@@ -1,5 +1,4 @@
 const Event = require('../models/Event');
-const Listing = require('../models/Listing');
 const Group = require('../models/Group');
 const User = require('../models/User');
 const Car = require('../models/Car');
@@ -10,11 +9,12 @@ const { paginate } = require('../utils/query');
 
   The idea is to show what you actually care about instead of everything on
   the site. So that means your friends' stuff, whatever is happening in the
-  groups you joined, and your own.
+  groups you joined, and your own. The marketplace stays on its own page, so
+  listings are not part of the feed.
 
-  Events and listings are two different collections, so I fetch them
-  separately and then merge them into one list sorted by date. That way the
-  page reads like a single timeline instead of two lists.
+  Events and new cars in people's garages are two different collections, so I
+  fetch them separately and then merge them into one list sorted by date. That
+  way the page reads like a single timeline instead of two lists.
 */
 
 // GET /feed. renders the page, the timeline loads after over ajax
@@ -50,8 +50,8 @@ async function feed(req, res, next) {
     if (filter === 'all' || filter === 'friends') eventOr.push({ host: { $in: peopleIds } });
     if (filter === 'all' || filter === 'groups') eventOr.push({ group: { $in: groupIds } });
 
-    // listings do not belong to a group, so they only come from people
-    const listingMatch = filter === 'groups' ? null : { seller: { $in: peopleIds } };
+    // cars do not belong to a group, so they only come from people
+    const carMatch = filter === 'groups' ? null : { owner: { $in: peopleIds } };
 
     // A friend of mine might be hosting something inside a private group that
     // I am not in. Their event must not reach my feed just because we are
@@ -63,7 +63,7 @@ async function feed(req, res, next) {
         && !g.members.some((m) => m.equals(me._id)))
       .map((g) => g._id);
 
-    const [events, listings] = await Promise.all([
+    const [events, garageCars] = await Promise.all([
       eventOr.length
         ? Event.find(hidden.length
             ? { $and: [{ $or: eventOr }, { group: { $nin: hidden } }] }
@@ -73,18 +73,18 @@ async function feed(req, res, next) {
             .sort({ createdAt: -1 })
             .limit(skip + limit)
         : [],
-      listingMatch
-        ? Listing.find(Object.assign({ status: 'available' }, listingMatch))
-            .populate('seller', 'username displayName avatar location')
+      carMatch
+        ? Car.find(carMatch)
+            .populate('owner', 'username displayName avatar location')
             .sort({ createdAt: -1 })
             .limit(skip + limit)
         : [],
     ]);
 
-    // put the events and the listings together and sort the lot by date
+    // put the events and the cars together and sort the lot by date
     const items = events
       .map((e) => ({ kind: 'event', createdAt: e.createdAt, data: e }))
-      .concat(listings.map((l) => ({ kind: 'listing', createdAt: l.createdAt, data: l })))
+      .concat(garageCars.map((c) => ({ kind: 'car', createdAt: c.createdAt, data: c })))
       .sort((a, b) => b.createdAt - a.createdAt);
 
     const pageItems = items.slice(skip, skip + limit);
@@ -92,8 +92,9 @@ async function feed(req, res, next) {
     // Each item also shows what its poster drives, so look up one car per
     // person. Only the people on this page, and only their first car, so it
     // stays one small query no matter how long the feed gets.
+    const posterOf = (item) => (item.kind === 'event' ? item.data.host : item.data.owner);
     const posterIds = pageItems
-      .map((item) => (item.kind === 'event' ? item.data.host : item.data.seller))
+      .map(posterOf)
       .filter(Boolean)
       .map((person) => person._id);
     const cars = await Car.find({ owner: { $in: posterIds } })
@@ -104,7 +105,7 @@ async function feed(req, res, next) {
       if (!carOf[car.owner]) carOf[car.owner] = car;
     });
     const withCars = pageItems.map((item) => {
-      const person = item.kind === 'event' ? item.data.host : item.data.seller;
+      const person = posterOf(item);
       return Object.assign({}, item, { car: person ? carOf[person._id] || null : null });
     });
 

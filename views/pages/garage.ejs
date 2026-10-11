@@ -9,7 +9,7 @@
   colour, a year range and a horsepower range.
 %>
 
-<main class="container">
+<main class="container garage-page">
 
   <div class="page-head">
     <div>
@@ -18,6 +18,9 @@
     </div>
     <button id="toggle-create" class="btn btn-primary" type="button">Add a car</button>
   </div>
+
+  <%# filled in by garage.js with the most powerful car in my garage %>
+  <section id="garage-showroom" class="showroom"></section>
 
   <!-- ---------------------------------------------------------------- create -->
   <section id="create-panel" class="card collapse">
@@ -84,7 +87,7 @@
   </div>
 
   <div id="panel-mine" class="tab-panel is-active">
-    <div id="cars-mine" class="grid"></div>
+    <div id="cars-mine" class="grid bays"></div>
   </div>
 
   <div id="panel-browse" class="tab-panel">
@@ -138,7 +141,7 @@
       </form>
     </section>
 
-    <div id="cars-all" class="grid"></div>
+    <div id="cars-all" class="grid bays"></div>
   </div>
 
 </main>

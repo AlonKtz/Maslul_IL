@@ -8,21 +8,42 @@
   var CURRENT_USER_ID = $('body').data('user-id') || '';
 
   // ---------------------------------------------------------------- rendering
-  function carCard(car) {
-    var isOwner = car.owner && String(car.owner._id) === String(CURRENT_USER_ID);
-    var spec = [car.engine, car.horsepower ? car.horsepower + ' hp' : '', car.color]
-      .filter(Boolean).join(' &middot; ');
 
-    return '<article class="item-card" data-id="' + car._id + '">' +
-      '<img class="item-image" src="' + UI.escape(car.photo || '/img/default-car.svg') + '" alt="">' +
-      '<div class="item-body">' +
-        '<span class="badge">' + UI.escape(car.category) + '</span>' +
+  // a made up Israeli style plate number (12-345-67) worked out from the car
+  // id, so the same car always gets the same plate
+  function plateFor(car) {
+    // ids made around the same time look almost the same, so hash the whole
+    // id into seven digits to get plates that look properly different
+    var id = String(car._id || '');
+    var hash = 0;
+    for (var i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) % 10000000;
+    var digits = String(hash).padStart(7, '0');
+    return digits.slice(0, 2) + '-' + digits.slice(2, 5) + '-' + digits.slice(5, 7);
+  }
+
+  // every car is parked in its own numbered bay
+  function carCard(car, index) {
+    var isOwner = car.owner && String(car.owner._id) === String(CURRENT_USER_ID);
+    var chips = [
+      car.engine ? UI.escape(car.engine) : '',
+      car.horsepower ? car.horsepower + ' hp' : '',
+      car.color ? UI.escape(car.color) : '',
+    ].filter(Boolean).map(function (c) { return '<span class="chip">' + c + '</span>'; }).join('');
+
+    return '<article class="item-card bay-card" data-id="' + car._id + '">' +
+      '<div class="bay-photo">' +
+        '<img src="' + UI.escape(car.photo || '/img/default-car.svg') + '" alt="">' +
+        '<span class="bay-number">Bay ' + String(index + 1).padStart(2, '0') + '</span>' +
+        '<span class="badge bay-type">' + UI.escape(car.category) + '</span>' +
+      '</div>' +
+      '<div class="bay-body">' +
+        '<div class="plate"><span class="plate-il">IL</span>' + plateFor(car) + '</div>' +
         '<h3 class="item-title">' + UI.escape(car.year + ' ' + car.make + ' ' + car.model) + '</h3>' +
-        (spec ? '<p class="item-meta">' + spec + '</p>' : '') +
+        (chips ? '<div class="chips">' + chips + '</div>' : '') +
         (car.description ? '<p class="item-meta">' + UI.escape(car.description) + '</p>' : '') +
-        '<p class="item-meta">' +
+        '<p class="item-meta bay-owner">' +
           (car.owner
-            ? '<a href="/profile/' + UI.escape(car.owner.username) + '">' +
+            ? 'Parked by <a href="/profile/' + UI.escape(car.owner.username) + '">' +
               UI.escape(car.owner.displayName || car.owner.username) + '</a>'
             : 'unknown owner') +
         '</p>' +
@@ -44,10 +65,51 @@
     $target.html(cars.map(carCard).join(''));
   }
 
+  // the spotlight at the top: the most powerful car in my garage, with a
+  // horsepower dial and a few numbers about the whole garage
+  function renderShowroom(cars) {
+    var $s = $('#garage-showroom');
+    if (!cars.length) {
+      $s.html('<div class="showroom-empty"><h2>Your showroom is empty</h2>' +
+        '<p class="muted">Add your first car and it takes the spotlight here.</p></div>');
+      return;
+    }
+    var star = cars.slice().sort(function (a, b) { return (b.horsepower || 0) - (a.horsepower || 0); })[0];
+    var totalHp = cars.reduce(function (sum, c) { return sum + (c.horsepower || 0); }, 0);
+    var oldest = Math.min.apply(null, cars.map(function (c) { return c.year; }));
+    // the dial goes round to 1000 hp
+    var dial = Math.min(100, Math.round(((star.horsepower || 0) / 1000) * 100));
+
+    $s.html(
+      '<div class="showroom-photo"><img src="' + UI.escape(star.photo || '/img/default-car.svg') + '" alt=""></div>' +
+      '<div class="showroom-info">' +
+        '<p class="showroom-kicker">In the spotlight</p>' +
+        '<h2>' + UI.escape(star.year + ' ' + star.make + ' ' + star.model) + '</h2>' +
+        '<div class="plate"><span class="plate-il">IL</span>' + plateFor(star) + '</div>' +
+        '<div class="showroom-gauges">' +
+          '<div class="dial" style="--dial:' + dial + '"><div><strong>' + (star.horsepower || 0) + '</strong><span>hp</span></div></div>' +
+          '<ul class="showroom-specs">' +
+            '<li><span>Engine</span>' + UI.escape(star.engine || 'unknown') + '</li>' +
+            '<li><span>Colour</span>' + UI.escape(star.color || 'unknown') + '</li>' +
+            '<li><span>Body</span>' + UI.escape(star.category || '') + '</li>' +
+          '</ul>' +
+        '</div>' +
+        '<div class="showroom-stats">' +
+          '<div><strong>' + cars.length + '</strong><span>car' + (cars.length === 1 ? '' : 's') + '</span></div>' +
+          '<div><strong>' + totalHp.toLocaleString('en-US') + '</strong><span>total hp</span></div>' +
+          '<div><strong>' + oldest + '</strong><span>oldest</span></div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
   function loadMine() {
     var $t = $('#cars-mine').html('<p class="loading">Loading…</p>');
     API.get('/api/cars', { mine: 'true' })
-      .done(function (res) { render($t, res.cars, 'Your garage is empty. Add your first car.'); })
+      .done(function (res) {
+        renderShowroom(res.cars);
+        render($t, res.cars, 'Your garage is empty. Add your first car.');
+      })
       .fail(function (jq) { $t.html('<p class="empty">' + UI.escape(API.errorMessage(jq)) + '</p>'); });
   }
 

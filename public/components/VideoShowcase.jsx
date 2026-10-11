@@ -26,7 +26,7 @@ function formatTime(seconds) {
   return m + ':' + String(s).padStart(2, '0');
 }
 
-function VideoShowcase({ youtubeId, youtubeTitle, showClips = true }) {
+function VideoShowcase({ videos = [], showClips = true }) {
   const videoRef = useRef(null);
 
   const [clips, setClips] = useState([]);
@@ -98,7 +98,7 @@ function VideoShowcase({ youtubeId, youtubeTitle, showClips = true }) {
           className={'tab' + (tab === 'youtube' ? ' is-active' : '')}
           onClick={() => setTab('youtube')}
         >
-          Latest from GT World
+          Latest race videos
         </button>
       </div>
 
@@ -188,22 +188,42 @@ function VideoShowcase({ youtubeId, youtubeTitle, showClips = true }) {
         </div>
       ) : (
         <div className="video-panel">
-          {youtubeId ? (
-            <div className="video-embed">
-              <iframe
-                src={'https://www.youtube.com/embed/' + youtubeId}
-                title={youtubeTitle || 'Race recap'}
-                allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          ) : null}
-          {youtubeId && youtubeTitle && <p className="video-title">{youtubeTitle}</p>}
-          {!youtubeId && (
-            <p className="empty">
-              Could not reach YouTube to find the newest recap. Try again when you are online.
-            </p>
-          )}
+          {/* one card per series, newest video in each */}
+          <div className="video-grid">
+            {videos.map((v) => (
+              <div className="video-card" key={v.series}>
+                <div className="video-card-head">
+                  <span className="badge badge-race">{v.series}</span>
+                  <a className="small" href={v.channelUrl} target="_blank" rel="noopener">More videos</a>
+                </div>
+                {v.id && v.embed === false ? (
+                  /* this channel does not allow its videos inside other sites,
+                     so show the thumbnail and open the video on YouTube */
+                  <a className="video-embed video-thumb" href={'https://www.youtube.com/watch?v=' + v.id}
+                     target="_blank" rel="noopener" title={v.title}>
+                    <img src={'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg'} alt={v.title || v.series} />
+                    <span className="video-play" aria-hidden="true">▶</span>
+                    <span className="video-thumb-note">Watch on YouTube</span>
+                  </a>
+                ) : v.id ? (
+                  <div className="video-embed">
+                    <iframe
+                      src={'https://www.youtube.com/embed/' + v.id}
+                      title={v.title || v.series + ' recap'}
+                      loading="lazy"
+                      allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <p className="empty">
+                    Could not reach YouTube to find the newest {v.series} video. Try again when you are online.
+                  </p>
+                )}
+                {v.id && v.title && <p className="video-title">{v.title}</p>}
+              </div>
+            ))}
+          </div>
           <p className="hint">
             The embed needs an internet connection. The player in the other tab
             plays from your own machine.

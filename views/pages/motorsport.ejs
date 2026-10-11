@@ -27,14 +27,13 @@
   <section class="card">
     <h2>Race recaps</h2>
     <p class="muted small">
-      The newest full video from
-      <a href="https://www.youtube.com/@GTWorld/videos" target="_blank" rel="noopener">GT World</a>.
-      The site checks for a newer one every three days.
+      The newest full video from GT World, Formula 1 and NASCAR.
+      The site checks each channel for a newer one every three days.
     </p>
 
     <div id="video-showcase"
          data-react="VideoShowcase"
-         data-props='<%- JSON.stringify({ youtubeId: youtubeId, youtubeTitle: youtubeTitle, showClips: false }) %>'></div>
+         data-props='<%- JSON.stringify({ videos: videos, showClips: false }).replace(/'/g, "&#39;") %>'></div>
   </section>
 
   <!-- ---------------------------------------------------------------- worldwide -->

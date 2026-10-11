@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireLogin } = require('../middleware/auth');
 const { CITIES } = require('../data/cities');
-const { latestRecap } = require('../utils/recap');
+const { latestRecaps } = require('../utils/recap');
 
 const router = express.Router();
 
@@ -18,15 +18,13 @@ router.get('/search', requireLogin, (req, res) => {
 });
 
 // GET /motorsport. racing from around the world, plus the recap videos.
-// the youtube video is the newest upload on the GT World channel, see
-// utils/recap.js for how it is found and how often it is checked
+// the videos are the newest uploads from GT World, Formula 1 and NASCAR, see
+// utils/recap.js for how they are found and how often they are checked
 router.get('/motorsport', requireLogin, async (req, res, next) => {
   try {
-    const recap = await latestRecap();
     res.render('pages/motorsport', {
       title: 'Motorsport',
-      youtubeId: recap.id,
-      youtubeTitle: recap.title,
+      videos: await latestRecaps(),
     });
   } catch (err) {
     next(err);

@@ -61,6 +61,37 @@ function computeProjection([minLng, minLat, maxLng, maxLat]) {
 
 const PROJECTION = computeProjection(DATA.view);
 
+/* Satellite background. The photos are Esri World Imagery tiles, the usual
+   256px squares in the web mercator grid. Each tile is drawn into the
+   rectangle its corners land on in our projection, which is close enough
+   at this zoom that the coast lines up with the border data. If the tiles
+   cannot load (no internet) the map just keeps its plain drawn look. */
+const TILE_ZOOM = 9;
+const TILE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/';
+
+const lngToTileX = (lng, n) => Math.floor(((lng + 180) / 360) * n);
+const latToTileY = (lat, n) => {
+  const r = (lat * Math.PI) / 180;
+  return Math.floor(((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * n);
+};
+const tileXToLng = (x, n) => (x / n) * 360 - 180;
+const tileYToLat = (y, n) => (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / n))) * 180) / Math.PI;
+
+// every tile that covers the map window, with where it goes on the canvas
+function satelliteTiles() {
+  const n = 2 ** TILE_ZOOM;
+  const [minLng, minLat, maxLng, maxLat] = DATA.view;
+  const tiles = [];
+  for (let x = lngToTileX(minLng, n); x <= lngToTileX(maxLng, n); x++) {
+    for (let y = latToTileY(maxLat, n); y <= latToTileY(minLat, n); y++) {
+      const [x0, y0] = PROJECTION.toCanvas([tileXToLng(x, n), tileYToLat(y, n)]);
+      const [x1, y1] = PROJECTION.toCanvas([tileXToLng(x + 1, n), tileYToLat(y + 1, n)]);
+      tiles.push({ src: `${TILE_URL}${TILE_ZOOM}/${y}/${x}`, x0, y0, w: x1 - x0, h: y1 - y0 });
+    }
+  }
+  return tiles;
+}
+
 // traces a ring of [lng, lat] points as a path on the canvas
 function tracePath(ctx, ring) {
   ctx.beginPath();
@@ -79,6 +110,22 @@ function CanvasMap({ cities, mode }) {
   const [results, setResults] = useState(null); // what the server sent back
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [satellite, setSatellite] = useState(null); // loaded tiles, null until all are in
+
+  // load the satellite tiles once. the map draws without them until they are ready
+  useEffect(() => {
+    const tiles = satelliteTiles();
+    let alive = true;
+    Promise.all(tiles.map((t) => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(Object.assign({ img }, t));
+      img.onerror = reject;
+      img.src = t.src;
+    })))
+      .then((loaded) => { if (alive) setSatellite(loaded); })
+      .catch(() => { /* offline, stay with the drawn map */ });
+    return () => { alive = false; };
+  }, []);
 
   // ------------------------------------------------------------------ drawing
   const draw = useCallback(() => {
@@ -92,50 +139,82 @@ function CanvasMap({ cities, mode }) {
     ctx.fillStyle = '#0d1b26';
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // the neighbouring land, one flat tone, no labels. it is only here so the
-    // country reads as a country instead of a shape floating in the water
-    DATA.surroundings.forEach((ring) => {
-      tracePath(ctx, ring);
-      ctx.fillStyle = '#1b2129';
-      ctx.fill();
-      ctx.strokeStyle = '#242c35';
-      ctx.lineWidth = 0.8;
+    if (satellite) {
+      // the satellite photos, then the neighbours dimmed so Israel stands out
+      satellite.forEach((t) => ctx.drawImage(t.img, t.x0, t.y0, t.w, t.h));
+      DATA.surroundings.forEach((ring) => {
+        tracePath(ctx, ring);
+        ctx.fillStyle = 'rgba(8, 10, 14, 0.5)';
+        ctx.fill();
+      });
+      tracePath(ctx, DATA.israel);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
-    });
+    } else {
+      // the neighbouring land, one flat tone, no labels. it is only here so the
+      // country reads as a country instead of a shape floating in the water
+      DATA.surroundings.forEach((ring) => {
+        tracePath(ctx, ring);
+        ctx.fillStyle = '#1b2129';
+        ctx.fill();
+        ctx.strokeStyle = '#242c35';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      });
 
-    // the country itself, at full detail from the real border data
-    tracePath(ctx, DATA.israel);
-    ctx.fillStyle = '#1f262e';
-    ctx.fill();
-    ctx.strokeStyle = '#4a5663';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // the Sea of Galilee and the Dead Sea, drawn in the sea colour on top
-    DATA.lakes.forEach((lake) => {
-      tracePath(ctx, lake.ring);
-      ctx.fillStyle = '#0d1b26';
+      // the country itself, at full detail from the real border data
+      tracePath(ctx, DATA.israel);
+      ctx.fillStyle = '#1f262e';
       ctx.fill();
-      ctx.strokeStyle = '#2b3a48';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#4a5663';
+      ctx.lineWidth = 1.2;
       ctx.stroke();
-    });
 
-    // a dot and a label for each city
+      // the Sea of Galilee and the Dead Sea, drawn in the sea colour on top
+      DATA.lakes.forEach((lake) => {
+        tracePath(ctx, lake.ring);
+        ctx.fillStyle = '#0d1b26';
+        ctx.fill();
+        ctx.strokeStyle = '#2b3a48';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+    }
+
+    // a dot and a label for each city. on the photo they get a dark outline
+    // so they stay readable over sand and sea alike
     cities.forEach((city) => {
       const [x, y] = PROJECTION.toCanvas(city.coordinates);
       ctx.beginPath();
-      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = city.major ? '#c5ced8' : '#6f7c89';
+      ctx.arc(x, y, city.major ? 3 : 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = city.major ? '#ffffff' : '#c5ced8';
       ctx.fill();
+      if (satellite) {
+        ctx.strokeStyle = '#0f1216';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
       // only the bigger cities get a name, otherwise the centre of the
       // country turns into a pile of overlapping labels
       if (city.major) {
-        ctx.fillStyle = '#8b98a6';
-        ctx.font = '10px Segoe UI, sans-serif';
-        ctx.fillText(city.name, x + 5, y + 3);
+        ctx.font = '600 11px Segoe UI, sans-serif';
+        if (satellite) {
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+          ctx.strokeText(city.name, x + 5, y + 4);
+        }
+        ctx.fillStyle = satellite ? '#ffffff' : '#8b98a6';
+        ctx.fillText(city.name, x + 5, y + 4);
       }
     });
+
+    if (satellite) {
+      // the imagery licence asks for credit on the map itself
+      ctx.font = '9px Segoe UI, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillText('Imagery © Esri', WIDTH - 72, HEIGHT - 6);
+    }
 
     // the things the search found, drawn as bigger markers
     if (results && results.points) {
@@ -179,7 +258,7 @@ function CanvasMap({ cities, mode }) {
         ctx.fill();
       });
     }
-  }, [polygon, hover, results, cities]);
+  }, [polygon, hover, results, cities, satellite]);
 
   useEffect(() => { draw(); }, [draw]);
 

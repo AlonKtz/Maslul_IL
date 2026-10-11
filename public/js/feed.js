@@ -1,6 +1,7 @@
 /*
-  The feed page. One timeline that mixes events and marketplace listings
-  together, from your friends and from the groups you are in.
+  The feed page. One timeline that mixes events and new garage cars
+  together, from your friends and from the groups you are in. Market listings
+  live on the market page only.
 */
 (function ($) {
   'use strict';
@@ -11,7 +12,7 @@
   // ---------------------------------------------------------------- rendering
 
   // the top of every feed item: avatar, name, where they are from and what they
-  // drive. Both events and listings use it, only the verb changes.
+  // drive. Both events and cars use it, only the verb changes.
   function posterBlock(person, car, verb, when) {
     var name = person ? (person.displayName || person.username) : 'member';
     var profile = person ? '/profile/' + UI.escape(person.username) : '#';
@@ -50,19 +51,23 @@
     '</article>';
   }
 
-  function listingItem(li, car) {
-    var photo = (li.photos && li.photos.length) ? li.photos[0] : '';
+  // somebody parked a new car in their garage
+  function carItem(c, car) {
+    var specs = [];
+    if (c.engine) specs.push(UI.escape(c.engine));
+    if (c.horsepower) specs.push(c.horsepower + ' hp');
+    if (c.color) specs.push(UI.escape(c.color));
     return '<article class="card feed-item">' +
       '<div class="feed-head">' +
-        posterBlock(li.seller, car, 'is selling', li.createdAt) +
-        '<span class="badge">' + UI.escape(li.category) + '</span>' +
+        posterBlock(c.owner, car, 'added to their garage', c.createdAt) +
+        '<span class="badge badge-meet">' + UI.escape(c.category || 'Car') + '</span>' +
       '</div>' +
-      (photo ? '<img class="item-image" src="' + UI.escape(photo) + '" alt="" ' +
-        'style="margin-top:.6rem;border-radius:var(--radius-sm)">' : '') +
+      '<img class="item-image" src="' + UI.escape(c.photo || '/img/default-car.svg') + '" alt="" ' +
+        'style="margin-top:.6rem;border-radius:var(--radius-sm)">' +
       '<h3 style="margin:.6rem 0 .2rem">' +
-        '<a href="/market/' + li._id + '">' + UI.escape(li.title) + '</a></h3>' +
-      '<p class="price">' + UI.formatPrice(li.price) + '</p>' +
-      '<p class="item-meta">' + UI.escape(li.condition) + ' &middot; ' + UI.escape(li.city) + '</p>' +
+        '<a href="/profile/' + UI.escape(c.owner ? c.owner.username : '') + '">' +
+        UI.escape(c.year + ' ' + c.make + ' ' + c.model) + '</a></h3>' +
+      (specs.length ? '<p class="item-meta">' + specs.join(' &middot; ') + '</p>' : '') +
     '</article>';
   }
 
@@ -71,7 +76,7 @@
       // item.car is the poster's first car, the server adds it to every item
       return item.kind === 'event'
         ? eventItem(item.data, item.car)
-        : listingItem(item.data, item.car);
+        : carItem(item.data, item.car);
     }).join('');
 
     if (append) $('#feed-items').append(html);
@@ -85,7 +90,7 @@
         '<a href="/search">Find people</a> or <a href="/groups">browse groups</a> to get started.</p>';
     }
     return '<p class="empty">Nothing here yet. When your friends host an event or ' +
-      'list something for sale, it shows up here.</p>';
+      'add a car to their garage, it shows up here.</p>';
   }
 
   // ---------------------------------------------------------------- loading

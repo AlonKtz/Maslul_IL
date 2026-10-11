@@ -373,13 +373,29 @@
   // ------------------------------------------------------------------ loading
   function loadAll() {
     API.get('/api/stats/summary').done(function (res) {
+      // one coloured tile per number, each with its own icon
       $('#summary').html([
-        ['members', res.members], ['groups', res.groups], ['events', res.events],
-        ['listings', res.listings], ['cars', res.cars], ['messages', res.messages],
-      ].map(function (pair) {
-        return '<div><strong style="font-size:1.7rem" class="glow">' + pair[1] + '</strong>' +
-          '<br><span class="muted small">' + pair[0] + '</span></div>';
+        ['members', res.members, '👥', 'tile-blue'], ['groups', res.groups, '🏁', 'tile-green'],
+        ['events', res.events, '📅', 'tile-red'], ['listings', res.listings, '🏷️', 'tile-amber'],
+        ['cars', res.cars, '🏎️', 'tile-purple'], ['messages', res.messages, '💬', 'tile-teal'],
+      ].map(function (t) {
+        return '<div class="stat-tile ' + t[3] + '">' +
+          '<span class="stat-icon" aria-hidden="true">' + t[2] + '</span>' +
+          '<strong class="stat-number" data-target="' + t[1] + '">0</strong>' +
+          '<span class="stat-label">' + t[0] + '</span></div>';
       }).join(''));
+
+      // the numbers count up from zero like a rev counter
+      $('#summary .stat-number').each(function () {
+        var $n = $(this);
+        var target = Number($n.data('target')) || 0;
+        $({ v: 0 }).animate({ v: target }, {
+          duration: 900,
+          easing: 'swing',
+          step: function (now) { $n.text(Math.round(now).toLocaleString('en-US')); },
+          complete: function () { $n.text(target.toLocaleString('en-US')); },
+        });
+      });
     });
 
     API.get('/api/stats/events-per-month')
