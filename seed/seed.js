@@ -9,6 +9,17 @@
 */
 require('dotenv').config();
 
+// npm run seed:live fills the hosted database instead of the local one. it
+// needs ATLAS_URI in .env, the same connection string Render uses.
+if (process.argv.includes('live')) {
+  if (!process.env.ATLAS_URI) {
+    console.error('[seed] Add ATLAS_URI=<your Atlas connection string> to .env first.');
+    process.exit(1);
+  }
+  process.env.MONGO_URI = process.env.ATLAS_URI;
+  console.log('[seed] seeding the LIVE database');
+}
+
 const mongoose = require('mongoose');
 const connectDB = require('../config/db');
 
