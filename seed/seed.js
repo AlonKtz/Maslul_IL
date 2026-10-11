@@ -64,6 +64,46 @@ const MEMBERS = [
     bio: 'Southern routes and long convoys.' },
   { username: 'roni', displayName: 'Roni Katz', location: 'Kfar Saba',
     bio: 'Wrenching on a budget. Parts always wanted.' },
+  { username: 'avi', displayName: 'Avi Ben David', location: 'Petah Tikva',
+    bio: 'M3 E46 owner, two track days a year and a lot of polishing in between.' },
+  { username: 'lior', displayName: 'Lior Friedman', location: 'Haifa',
+    bio: 'Carmel roads every Saturday morning. MX-5 forever.' },
+  { username: 'yael', displayName: 'Yael Biton', location: 'Tel Aviv',
+    bio: 'Photographer. I shoot the meets, you buy me coffee.' },
+  { username: 'ido', displayName: 'Ido Ashkenazi', location: 'Rehovot',
+    bio: 'Mechanical engineering student, building an AE86 one bolt at a time.' },
+  { username: 'michal', displayName: 'Michal Dahan', location: 'Ashkelon',
+    bio: 'Rally fan. Gravel, mud, anything but asphalt.' },
+  { username: 'nadav', displayName: 'Nadav Segal', location: 'Hod Hasharon',
+    bio: 'Porsche air cooled and water cooled, no arguments please.' },
+  { username: 'hila', displayName: 'Hila Ohana', location: 'Beer Sheva',
+    bio: 'Land Cruiser 78, roof tent, Negev every second weekend.' },
+  { username: 'daniel', displayName: 'Daniel Kaplan', location: 'Raanana',
+    bio: 'Tesla Model 3 Performance. Yes it is fast, no I will not race you.' },
+  { username: 'noam', displayName: 'Noam Elbaz', location: 'Holon',
+    bio: 'Drag strip regular. Quarter mile is life.' },
+  { username: 'tal', displayName: 'Tal Weiss', location: 'Zichron Yaakov',
+    bio: 'Classic Beetles and a garage that smells like oil.' },
+  { username: 'ron', displayName: 'Ron Malka', location: 'Kiryat Gat',
+    bio: 'Evo IX owner. The 4G63 is the best engine ever made, fight me.' },
+  { username: 'sapir', displayName: 'Sapir Levy', location: 'Netanya',
+    bio: 'GTI Mk7 daily, stage one and a lot of brake dust.' },
+  { username: 'amit', displayName: 'Amit Hadad', location: 'Afula',
+    bio: 'Off-road in the Galilee. Defender 90, lift kit, no regrets.' },
+  { username: 'gal', displayName: 'Gal Mor', location: 'Ramat Hasharon',
+    bio: 'Hill climbs and canyon roads. Smooth is fast.' },
+  { username: 'shani', displayName: 'Shani Azulay', location: 'Bat Yam',
+    bio: 'Detailing and ceramic coating. Ask me about swirl marks.' },
+  { username: 'erez', displayName: 'Erez Gabay', location: 'Tiberias',
+    bio: 'EV road trips around the Kinneret. Charging map nerd.' },
+  { username: 'adi', displayName: 'Adi Yosef', location: 'Rosh HaAyin',
+    bio: 'Civic Type R and every Honda before it.' },
+  { username: 'yoav', displayName: 'Yoav Sharabi', location: 'Kfar Saba',
+    bio: 'Muscle cars. Mustang now, Challenger next.' },
+  { username: 'keren', displayName: 'Keren Nachum', location: 'Givatayim',
+    bio: 'Supercar spotter, Ferrari 296 dreamer.' },
+  { username: 'barak', displayName: 'Barak Zur', location: 'Eilat',
+    bio: 'Drift practice in the south. Two sets of tyres minimum.' },
   // the account behind the 'Try the demo' button on the login page
   { username: 'demo', displayName: 'Demo Driver', location: 'Tel Aviv',
     bio: 'The demo account. Look around, everything here is test data.' },
@@ -218,6 +258,47 @@ const CONVERSATIONS = [
    'Perfect, count us in.'],
   ['What pressures do you run on track?', 'Start at 2.0 cold and let them come up to about 2.4.',
    'That is lower than I expected, thanks.'],
+  ['Saw your car at the marina meet, the colour is unreal.', 'Thanks! Factory paint, just a lot of polishing.',
+   'Which product do you use?', 'Ceramic spray every two months. I will send you the link.'],
+  ['Anyone you trust for an alignment in the centre?', 'The shop in Holon, ask for Moshe.',
+   'Does he do track setups?', 'Yes, tell him what tyres you run and he sorts it.'],
+  ['Did you get the times from the drag night?', 'Twelve point eight on the best run.',
+   'Not bad for street tyres.', 'Next time on slicks, watch this space.'],
+  ['Is the Negev run still on with the heat?', 'Yes, we leave at five to beat it.',
+   'Ok, I will bring the compressor.', 'Great, we always need one.'],
+  ['Thinking of selling the bucket seats, interested?', 'Maybe, what rails are they on?',
+   'Universal, fits most hatchbacks.', 'Send me photos and a price.'],
+];
+
+// the demo member's inbox. the other person writes first.
+const DEMO_CONVERSATIONS = [
+  ['Hey, welcome to Maslul! Saw the Supra in your garage, is it the 2JZ-GTE?', 'Yes, stock turbos for now.',
+   'Keep it that way as long as you can, they are getting rare.', 'That is the plan. Are you at the Friday cruise?',
+   'Wouldn\'t miss it. See you at nine.'],
+  ['Are you still selling the bucket seat?', 'Yes, still available.',
+   'Would you do 1500 if I pick it up this week?', 'Make it 1650 and it is yours.',
+   'Deal. Thursday evening ok?'],
+  ['Your E46 is coming to the track day right?', 'Booked in the open group.',
+   'Nice, we can share a pit box.', 'Perfect, I will bring the tyre warmers.'],
+  ['Can I join the drift group? I have been practising on the skid pad.', 'Sure, request it and I will approve you.',
+   'Done, just sent the request.'],
+  ['Got any spare GR86 parts? Looking for the stock exhaust.', 'I still have it in the garage actually.',
+   'How much?', 'Free if you collect, it is just taking up space.', 'Legend, thank you!'],
+  ['Photos from the cars and coffee are up!', 'Amazing shots, can I use one as my cover?',
+   'Of course, tag me.'],
+];
+
+const EVENT_COMMENTS = [
+  'Count me in.', 'Is there parking nearby?', 'Bringing a friend if that is fine.',
+  'What time does it finish?', 'Been waiting for this one.', 'Is there a fee?',
+  'Last one was great, see you there.', 'Can I bring the kids?', 'Coming straight from work, might be late.',
+  'Any rain plan?', 'Who is bringing coffee?', 'First time, any tips?',
+];
+
+const LISTING_COMMENTS = [
+  'Is this still available?', 'Would you take less for a quick sale?',
+  'Any photos of the back?', 'Can you post it?', 'Does it fit an E46?', 'Sent you a message.',
+  'Great price.', 'Interested if the other buyer falls through.',
 ];
 
 // ---------------------------------------------------------------- seeding
@@ -247,18 +328,32 @@ async function seed() {
   console.log(`[seed] ${users.length} members`);
 
   // ---- friendships ----------------------------------------------------
-  // give everyone three to six friends. it has to go both ways or the feed
+  // the demo member is the one people actually click around as, so it is
+  // connected to everybody and takes part in everything below
+  const demo = users.find((u) => u.username === 'demo');
+  const others = users.filter((u) => !u._id.equals(demo._id));
+  const isFriend = (a, b) => a.friends.some((f) => f.equals(b._id));
+  const befriend = (a, b) => {
+    if (a._id.equals(b._id) || isFriend(a, b)) return;
+    a.friends.push(b._id);
+    b.friends.push(a._id);
+  };
+
+  // give everyone four to nine friends. it has to go both ways or the feed
   // looks wrong from one side.
-  for (const user of users) {
-    const others = users.filter((u) => !u._id.equals(user._id));
-    for (const friend of pickSome(others, between(3, 6))) {
-      if (!user.friends.some((f) => f.equals(friend._id))) {
-        user.friends.push(friend._id);
-        friend.friends.push(user._id);
-      }
+  for (const user of others) {
+    for (const friend of pickSome(others.filter((u) => !u._id.equals(user._id)), between(4, 9))) {
+      befriend(user, friend);
     }
   }
-  // leave a couple of requests pending so the profile page has something to show
+  // the demo is friends with everybody except the last two, who have sent it
+  // a friend request so the accept button has something to do
+  const requesters = others.slice(-2);
+  for (const user of others) {
+    if (!requesters.includes(user)) befriend(demo, user);
+  }
+  requesters.forEach((u) => demo.friendRequests.push(u._id));
+  // and a couple of pending requests between other members
   users[1].friendRequests.push(users[9]._id);
   users[2].friendRequests.push(users[10]._id);
   await Promise.all(users.map((u) => u.save()));
@@ -267,15 +362,22 @@ async function seed() {
   // ---- groups ---------------------------------------------------------
   const groups = [];
   for (let i = 0; i < GROUPS.length; i++) {
-    const admin = users[i % users.length];
-    const members = pickSome(users.filter((u) => !u._id.equals(admin._id)), between(4, 9));
+    // the demo runs the private drift group, so it gets the approve button
+    const admin = GROUPS[i].isPrivate ? demo : others[i % others.length];
+    const members = pickSome(others.filter((u) => !u._id.equals(admin._id)), between(8, 18));
+    // and it belongs to every group
+    if (!admin._id.equals(demo._id)) members.push(demo);
+
+    const waiting = GROUPS[i].isPrivate
+      ? others.filter((u) => !members.includes(u) && !u._id.equals(admin._id)).slice(0, 3)
+      : [];
 
     const group = await Group.create(Object.assign({}, GROUPS[i], {
       admin: admin._id,
       members: [admin._id, ...members.map((m) => m._id)],
-      // put somebody in the queue for the private group so the approve button
-      // has something to do when I demo it
-      pendingRequests: GROUPS[i].isPrivate ? [users[11]._id] : [],
+      // put a few people in the queue for the private group so the approve
+      // button has something to do when I demo it
+      pendingRequests: waiting.map((u) => u._id),
     }));
     groups.push(group);
   }
@@ -283,9 +385,13 @@ async function seed() {
 
   // ---- cars -----------------------------------------------------------
   const cars = [];
+  // the demo garage gets a few specific cars, everyone else shares the rest
+  const DEMO_CARS = ['M3 E46', 'Supra MK4', 'GR86'];
+  let next = 0;
   for (let i = 0; i < CARS.length; i++) {
+    const owner = DEMO_CARS.includes(CARS[i].model) ? demo : others[next++ % others.length];
     cars.push(await Car.create(Object.assign({}, CARS[i], {
-      owner: users[i % users.length]._id,
+      owner: owner._id,
       description: '',
     })));
   }
@@ -295,12 +401,17 @@ async function seed() {
   // spread the events over the last few months and the next couple, otherwise
   // the per month chart is just one tall bar and looks like nothing.
   const events = [];
-  const offsets = [-105, -92, -74, -61, -45, -33, -20, -12, -5, 3, 9, 16, 23, 30, 38, 47, 55];
+  const offsets = [-118, -105, -97, -92, -81, -74, -66, -61, -52, -45, -38, -33, -26, -20, -16,
+    -12, -8, -5, -2, 3, 6, 9, 13, 16, 20, 23, 27, 30, 34, 38, 43, 47, 55, 62];
+  // the demo hosts one past and two upcoming events
+  const demoHosts = [7, 21, 27];
 
   for (let i = 0; i < offsets.length; i++) {
     const template = EVENT_TEMPLATES[i % EVENT_TEMPLATES.length];
-    const host = users[i % users.length];
-    const attendees = pickSome(users.filter((u) => !u._id.equals(host._id)), between(3, 9));
+    const host = demoHosts.includes(i) ? demo : others[i % others.length];
+    const attendees = pickSome(others.filter((u) => !u._id.equals(host._id)), between(5, 16));
+    // and goes to most of the rest
+    if (!host._id.equals(demo._id) && Math.random() < 0.6) attendees.push(demo);
 
     events.push(await Event.create({
       title: template.title,
@@ -316,15 +427,11 @@ async function seed() {
       city: template.city,
       address: template.address,
       location: point(template.city),
-      maxAttendees: Math.random() > 0.6 ? between(10, 40) : 0,
+      // when there is a limit, keep it above the people already going
+      maxAttendees: Math.random() > 0.6 ? attendees.length + 1 + between(2, 20) : 0,
       attendees: [host._id, ...attendees.map((a) => a._id)],
-      likes: pickSome(users, between(0, 7)).map((u) => u._id),
-      comments: Math.random() > 0.5
-        ? [{ author: pick(users)._id, text: pick([
-            'Count me in.', 'Is there parking nearby?', 'Bringing a friend if that is fine.',
-            'What time does it finish?', 'Been waiting for this one.',
-          ]) }]
-        : [],
+      likes: pickSome(users, between(2, 14)).map((u) => u._id),
+      comments: pickSome(users, between(0, 4)).map((u) => ({ author: u._id, text: pick(EVENT_COMMENTS) })),
     }));
   }
   console.log(`[seed] ${events.length} events`);
@@ -333,50 +440,61 @@ async function seed() {
   const cities = ['Tel Aviv', 'Haifa', 'Beer Sheva', 'Netanya', 'Jerusalem', 'Ashdod', 'Herzliya', 'Modiin'];
   const listings = [];
 
+  // the demo is selling a couple of things too
+  const DEMO_LISTINGS = ['Bucket seat with rails', 'Torque wrench set'];
   for (let i = 0; i < LISTINGS.length; i++) {
     const city = cities[i % cities.length];
+    const seller = DEMO_LISTINGS.includes(LISTINGS[i].title) ? demo : others[(i * 3 + 1) % others.length];
     listings.push(await Listing.create(Object.assign({}, LISTINGS[i], {
-      seller: users[(i + 3) % users.length]._id,
+      seller: seller._id,
       city,
       location: point(city),
       // mark a few as already sold so the sold badge shows up
       status: i % 9 === 0 ? 'sold' : 'available',
-      likes: pickSome(users, between(0, 5)).map((u) => u._id),
-      comments: Math.random() > 0.6
-        ? [{ author: pick(users)._id, text: pick([
-            'Is this still available?', 'Would you take less for a quick sale?',
-            'Any photos of the back?', 'Can you post it?',
-          ]) }]
-        : [],
+      likes: pickSome(users, between(1, 9)).map((u) => u._id),
+      comments: pickSome(users.filter((u) => !u._id.equals(seller._id)), between(0, 3))
+        .map((u) => ({ author: u._id, text: pick(LISTING_COMMENTS) })),
     })));
   }
   console.log(`[seed] ${listings.length} listings`);
 
   // ---- messages -------------------------------------------------------
   let messageCount = 0;
-  for (let i = 0; i < CONVERSATIONS.length; i++) {
-    const a = users[i];
-    const b = users[(i + 1) % users.length];
-    const lines = CONVERSATIONS[i];
-
+  async function talk(a, b, lines) {
+    // keep each conversation in order, a few minutes apart
+    const start = daysFromNow(-between(1, 25), between(9, 21));
     for (let j = 0; j < lines.length; j++) {
       await Message.create({
         from: j % 2 === 0 ? a._id : b._id,
         to: j % 2 === 0 ? b._id : a._id,
         text: lines[j],
         read: j < lines.length - 1,
-        createdAt: daysFromNow(-between(1, 20), between(9, 22)),
+        createdAt: new Date(start.getTime() + j * between(2, 15) * 60000),
       });
       messageCount++;
     }
+  }
+
+  // conversations between members, spread over everyone
+  for (let i = 0; i < CONVERSATIONS.length * 2; i++) {
+    const a = others[(i * 2) % others.length];
+    const b = others[(i * 2 + 5) % others.length];
+    await talk(a, b, CONVERSATIONS[i % CONVERSATIONS.length]);
+  }
+  // and the demo has chats going with a handful of people. they open the
+  // conversation, so the demo inbox has unread messages waiting
+  const demoChats = pickSome(others, DEMO_CONVERSATIONS.length);
+  for (let i = 0; i < DEMO_CONVERSATIONS.length; i++) {
+    await talk(demoChats[i], demo, DEMO_CONVERSATIONS[i]);
   }
   console.log(`[seed] ${messageCount} chat messages`);
 
   // ---- done -----------------------------------------------------------
   console.log('\n  Seeding complete.');
-  console.log('  Sign in with any of these, the password is always "secret123":');
+  console.log('  Sign in with any member, the password is always "secret123":');
   console.log('    alon   (site administrator)');
-  console.log('    noa, yossi, dana, itai, maya, omer, tamar, eitan, shira, gil, roni\n');
+  console.log('    demo   (or just press "Try the demo" on the login page)');
+  console.log('    ' + others.filter((u) => u.username !== 'alon').map((u) => u.username).join(', ') + '\n');
 
   await mongoose.disconnect();
 }
