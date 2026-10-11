@@ -1506,3 +1506,80 @@ body, .site-header, .site-footer, .search-panel, input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+/* ---- phone menu ---------------------------------------------------------------
+   On a computer .nav-menu is display: contents, so its children sit in the bar
+   exactly as before and the three line button is hidden. Under 900px the
+   links fold away behind the button and open as a panel under the bar
+   (public/js/nav.js adds .menu-open to the header).                           */
+.nav-menu { display: contents; }
+.nav-burger { display: none; }
+
+@media (max-width: 900px) {
+  .nav { flex-wrap: nowrap; min-height: 60px; }
+
+  .nav-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    margin-inline-start: auto;
+    background: transparent;
+    border: 1px solid var(--on-carbon-muted);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .nav-burger span {
+    display: block;
+    height: 2px;
+    background: var(--on-carbon);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  /* the three lines turn into an X while the menu is open */
+  .menu-open .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-open .nav-burger span:nth-child(2) { opacity: 0; }
+  .menu-open .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: var(--space-3) var(--space-4) var(--space-5);
+    background: var(--carbon);
+    border-bottom: 3px solid var(--brand);
+    max-height: calc(100vh - 63px);
+    overflow-y: auto;
+    /* folded away until the button is pressed */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+  .menu-open .nav-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  /* one link per row, big enough to tap */
+  .nav-menu .nav-links { flex-direction: column; align-items: stretch; gap: 0; flex-wrap: nowrap; }
+  .nav-menu .nav-links li { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .nav-menu .nav-links a { padding: 14px 4px; font-size: 0.9rem; }
+  /* the section you are in gets a red bar at the start of the row */
+  .nav-menu .nav-links a.is-active::after { inset: 10px auto 10px -12px; width: 4px; height: auto; background: var(--brand); }
+  .nav-menu .nav-links a.btn { justify-content: center; margin-top: var(--space-3); }
+
+  /* avatar, log out, language and theme share one row under the links */
+  .nav-menu .nav-user { display: grid; grid-template-columns: auto auto; justify-content: start; align-items: center; gap: var(--space-3) var(--space-4); }
+  .nav-menu .nav-avatar span { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .nav-menu .lang-switch, .nav-menu .theme-toggle { align-self: flex-start; }
+}
+
+[dir="rtl"] .nav-menu .nav-links a.is-active::after { inset: 10px -12px 10px auto; }

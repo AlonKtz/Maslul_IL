@@ -39,6 +39,8 @@
     'Join Maslul': 'הצטרפות ל-Maslul',
     'Demo User': 'משתמש דמו',
     'Dark mode': 'מצב כהה',
+    'Menu': 'תפריט',
+    'Close menu': 'סגירת התפריט',
     'Light mode': 'מצב בהיר',
     'Opening the demo...': 'פותח את הדמו...',
     'Maslul — Israel\'s first social network for car lovers.': 'Maslul — הרשת החברתית הראשונה בישראל לחובבי רכב.',
