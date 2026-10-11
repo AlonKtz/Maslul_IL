@@ -1214,3 +1214,50 @@ a { color: var(--accent-2); }
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
 }
+/* ---- motorsport: partner wanted banner ------------------------------------ */
+.partner-banner {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 1.5rem 1.75rem 1.5rem 7rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(230, 57, 70, 0.45);
+  background:
+    radial-gradient(500px 200px at 100% 50%, rgba(244, 162, 97, 0.16), transparent 70%),
+    linear-gradient(120deg, rgba(230, 57, 70, 0.22), rgba(15, 18, 22, 0.9) 55%);
+}
+/* a chequered strip down the left side */
+.partner-flag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5.5rem;
+  background-image:
+    linear-gradient(45deg, #11151a 25%, transparent 25%, transparent 75%, #11151a 75%),
+    linear-gradient(45deg, #11151a 25%, transparent 25%, transparent 75%, #11151a 75%);
+  background-color: #e8edf2;
+  background-size: 22px 22px;
+  background-position: 0 0, 11px 11px;
+  -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent);
+  mask-image: linear-gradient(90deg, #000 40%, transparent);
+  opacity: 0.85;
+}
+.partner-text { flex: 1; }
+.partner-text h3 { margin: 0.1rem 0 0.4rem; font-size: 1.35rem; }
+.partner-text p { margin: 0; color: var(--muted); }
+.partner-kicker {
+  color: var(--accent-2) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  .partner-banner { flex-direction: column; align-items: flex-start; padding-left: 1.5rem; padding-top: 5rem; }
+  .partner-flag { width: auto; right: 0; bottom: auto; height: 3.5rem;
+    -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent); mask-image: linear-gradient(180deg, #000 40%, transparent); }
+}
