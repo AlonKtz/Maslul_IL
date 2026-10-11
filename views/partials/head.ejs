@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<% var pageLang = typeof lang !== 'undefined' ? lang : 'en'; %>
+<html lang="<%= pageLang %>" dir="<%= pageLang === 'he' ? 'rtl' : 'ltr' %>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

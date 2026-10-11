@@ -27,7 +27,10 @@ window.UI = (function ($) {
   function formatDateTime(value) {
     var d = new Date(value);
     if (isNaN(d.getTime())) return '';
-    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // the page language decides the month names, see public/js/i18n.js
+    var months = document.documentElement.lang === 'he'
+      ? ['ינו׳', 'פבר׳', 'מרץ', 'אפר׳', 'מאי', 'יוני', 'יולי', 'אוג׳', 'ספט׳', 'אוק׳', 'נוב׳', 'דצמ׳']
+      : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     var hh = String(d.getHours()).padStart(2, '0');
     var mm = String(d.getMinutes()).padStart(2, '0');
     return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ', ' + hh + ':' + mm;

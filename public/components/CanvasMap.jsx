@@ -198,14 +198,16 @@ function CanvasMap({ cities, mode }) {
       // only the bigger cities get a name, otherwise the centre of the
       // country turns into a pile of overlapping labels
       if (city.major) {
+        // the canvas is not part of the page text, so ask i18n.js directly
+        const label = window.I18N ? window.I18N.t(city.name) : city.name;
         ctx.font = '600 11px Segoe UI, sans-serif';
         if (satellite) {
           ctx.lineWidth = 3;
           ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
-          ctx.strokeText(city.name, x + 5, y + 4);
+          ctx.strokeText(label, x + 5, y + 4);
         }
         ctx.fillStyle = satellite ? '#ffffff' : '#8b98a6';
-        ctx.fillText(city.name, x + 5, y + 4);
+        ctx.fillText(label, x + 5, y + 4);
       }
     });
 

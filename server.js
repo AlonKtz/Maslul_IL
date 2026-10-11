@@ -48,6 +48,15 @@ app.use(sessionMiddleware);
 // puts the logged in user on every request and every page
 app.use(attachUser);
 
+// the language the page is shown in, from the cookie the language button
+// sets. the head partial uses it for lang and dir, public/js/i18n.js does
+// the translating
+app.use((req, res, next) => {
+  const match = /(?:^|;\s*)lang=(he|en)\b/.exec(req.headers.cookie || '');
+  res.locals.lang = match ? match[1] : 'en';
+  next();
+});
+
 // ---------------------------------------------------------------- routes
 app.use(require('./src/routes/index'));
 app.use(require('./src/routes/auth'));

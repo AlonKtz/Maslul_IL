@@ -7,7 +7,7 @@
 %>
 <header class="site-header">
   <nav class="nav container">
-    <a class="brand" href="/">
+    <a class="brand" href="/" data-no-i18n>
       <%# a waving chequered flag, drawn in svg: a grid of squares cut to a wavy flag shape %>
       <svg class="brand-mark" viewBox="0 0 40 32" width="50" height="40" aria-hidden="true">
         <defs>
@@ -55,12 +55,25 @@
           <span><%= currentUser.displayName || currentUser.username %></span>
         </a>
         <button id="logout-btn" class="btn btn-ghost" type="button">Log out</button>
-      </div>
+      <%# the language switch. data-no-i18n keeps the two labels as they are, so
+          each one is always written in its own language %>
+      <% var navLang = typeof lang !== 'undefined' ? lang : 'en'; %>
+      <div class="lang-switch" data-no-i18n role="group" aria-label="Language">
+        <button type="button" data-set-lang="he" class="<%= navLang === 'he' ? 'is-active' : '' %>" lang="he">עב</button>
+        <button type="button" data-set-lang="en" class="<%= navLang === 'en' ? 'is-active' : '' %>" lang="en">EN</button>
+      </div>      </div>
     <% } else { %>
       <ul class="nav-links">
         <li><a href="/login"<%- active('/login') %>>Sign in</a></li>
         <li><a class="btn btn-primary" href="/register">Join Maslul</a></li>
       </ul>
+      <%# the language switch. data-no-i18n keeps the two labels as they are, so
+          each one is always written in its own language %>
+      <% var navLang = typeof lang !== 'undefined' ? lang : 'en'; %>
+      <div class="lang-switch" data-no-i18n role="group" aria-label="Language">
+        <button type="button" data-set-lang="he" class="<%= navLang === 'he' ? 'is-active' : '' %>" lang="he">עב</button>
+        <button type="button" data-set-lang="en" class="<%= navLang === 'en' ? 'is-active' : '' %>" lang="en">EN</button>
+      </div>
     <% } %>
   </nav>
 </header>

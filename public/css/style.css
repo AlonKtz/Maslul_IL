@@ -1262,3 +1262,63 @@ a { color: var(--accent-2); }
     -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent); mask-image: linear-gradient(180deg, #000 40%, transparent); }
 }.partner-text .partner-contact { margin-top: 0.6rem; color: var(--text); font-size: 0.9rem; }
 .partner-contact a { color: var(--accent-2); font-weight: 600; }
+/* ---- language switch ------------------------------------------------------ */
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+  direction: ltr;               /* same order in both languages */
+}
+.lang-switch button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.lang-switch button:hover { color: var(--text); }
+.lang-switch button.is-active { background: var(--accent); color: #fff; }
+
+/* in Hebrew the page waits for i18n.js before it shows, so the English
+   never flashes up first */
+html[lang="he"]:not(.i18n-ready) body { visibility: hidden; }
+
+/* ---- right to left fixes for Hebrew --------------------------------------- */
+[dir="rtl"] body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; }
+[dir="rtl"] .conversation { text-align: right; }
+[dir="rtl"] .showroom-photo img {
+  -webkit-mask-image: linear-gradient(270deg, #000 70%, transparent);
+  mask-image: linear-gradient(270deg, #000 70%, transparent);
+}
+[dir="rtl"] .showroom-specs span { margin-left: 0.5rem; }
+[dir="rtl"] .bay-card { border-left-width: 3px; border-right-width: 3px; }
+[dir="rtl"] .bay-number { left: auto; right: 0.6rem; }
+[dir="rtl"] .bay-type { right: auto; left: 0.6rem; }
+[dir="rtl"] .partner-banner { padding: 1.5rem 7rem 1.5rem 1.75rem; }
+[dir="rtl"] .partner-flag {
+  left: auto;
+  right: 0;
+  -webkit-mask-image: linear-gradient(270deg, #000 40%, transparent);
+  mask-image: linear-gradient(270deg, #000 40%, transparent);
+}
+[dir="rtl"] .stat-tile::before { left: auto; right: 0; }
+[dir="rtl"] .chat-page .chat-header::after { background: linear-gradient(270deg, var(--accent), var(--accent-2), transparent); }
+[dir="rtl"] .chat-page .bubble.is-mine { border-bottom-right-radius: 18px; border-bottom-left-radius: 4px; }
+[dir="rtl"] .chat-page .bubble.is-theirs { border-bottom-left-radius: 18px; border-bottom-right-radius: 4px; }
+[dir="rtl"] .photo-tile figcaption { text-align: right; }
+/* plates, prices and the map keep their left to right order */
+[dir="rtl"] .plate, [dir="rtl"] .price, [dir="rtl"] .area-canvas { direction: ltr; }
+[dir="rtl"] .brand { direction: ltr; }
+/* car names like "2003 BMW M3 E46" keep their own order in Hebrew, otherwise
+   the year jumps to the end of the line */
+[dir="rtl"] .item-title, [dir="rtl"] .showroom-info h2, [dir="rtl"] .feed-item h3,
+[dir="rtl"] .photo-tile figcaption, [dir="rtl"] .chip, [dir="rtl"] .feed-who {
+  unicode-bidi: plaintext;
+  text-align: right;
+}
