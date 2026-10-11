@@ -75,7 +75,8 @@ app.use(errorHandler);
 // ---------------------------------------------------------------- start
 const PORT = process.env.PORT || 3000;
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  await require('./src/utils/defaultPhotos')();
   server.listen(PORT, () => {
     console.log(`[server] Maslul running on http://localhost:${PORT}`);
   });
