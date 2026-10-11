@@ -18,6 +18,7 @@
 (function () {
   'use strict';
 
+  // not a const: the switch in the top bar changes it without a reload
   var LANG = document.documentElement.lang === 'he' ? 'he' : 'en';
 
   // ---------------------------------------------------------------- dictionary
@@ -648,7 +649,7 @@
     [/^is hosting in (.+)$/, 'מארח/ת ב-$1'],
     [/^Hosted by:? (.+)$/, 'מארח/ת: $1'],
     [/^managed by$/, 'בניהול'],
-    [/^Managed by (.+)$/, 'בניהול '],
+    [/^Managed by (.+)$/, 'בניהול $1'],
     [/^Based in (.+)$/, 'גר/ה ב-$1'],
     [/^joined (.+)$/, 'הצטרף/ה ב-$1'],
     [/^New message from (.+)$/, 'הודעה חדשה מ$1'],
@@ -687,35 +688,62 @@
     return text;
   }
 
+  // dates are written in English by ui.js ("14 Oct 2026, 19:30"), wherever
+  // they sit in a line, so the month name is swapped on its own
+  var MONTHS = { Jan: 'ינו׳', Feb: 'פבר׳', Mar: 'מרץ', Apr: 'אפר׳', May: 'מאי', Jun: 'יוני',
+    Jul: 'יולי', Aug: 'אוג׳', Sep: 'ספט׳', Oct: 'אוק׳', Nov: 'נוב׳', Dec: 'דצמ׳' };
+  var DATE = /\b(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4})\b/g;
+  function translateDates(text) {
+    return text.replace(DATE, function (m, d, mon, y) { return d + ' ' + MONTHS[mon] + ' ' + y; });
+  }
+
   var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, CODE: 1, NOSCRIPT: 1 };
   var ATTRS = ['placeholder', 'title', 'aria-label'];
 
+  // every change is written down with the English it replaced, so switching
+  // back to English puts the page back exactly as it was, with no reload
+  var changes = [];
+
   function translateText(node) {
+    if (LANG !== 'he') return;
     var raw = node.nodeValue;
     var trimmed = raw.trim();
     if (!trimmed || !/[A-Za-z]/.test(trimmed)) return;
     // paragraphs in the templates are wrapped over several lines, so look
     // them up with the spacing squashed down to single spaces
-    var done = translate(trimmed.replace(/\s+/g, ' '));
-    if (done !== trimmed.replace(/\s+/g, ' ')) node.nodeValue = raw.replace(trimmed, done);
+    var squashed = trimmed.replace(/\s+/g, ' ');
+    var done = translateDates(translate(squashed));
+    if (done === squashed) return;
+    var value = raw.replace(trimmed, done);
+    changes.push({ node: node, from: raw, to: value });
+    node.nodeValue = value;
   }
 
   function translateElement(el) {
+    if (LANG !== 'he') return;
     // a textarea's own text is what the user typed, but its placeholder is ours
     if ((SKIP[el.tagName] && el.tagName !== 'TEXTAREA') || el.closest('[data-no-i18n]')) return;
     ATTRS.forEach(function (a) {
       var v = el.getAttribute && el.getAttribute(a);
       if (v && /[A-Za-z]/.test(v)) {
         var t = translate(v.trim());
-        if (t !== v.trim()) el.setAttribute(a, t);
+        if (t !== v.trim()) {
+          changes.push({ el: el, attr: a, from: v, to: t });
+          el.setAttribute(a, t);
+        }
       }
     });
     if (el.tagName === 'INPUT' && (el.type === 'submit' || el.type === 'button') && el.value) {
-      el.value = translate(el.value);
+      var t = translate(el.value);
+      if (t !== el.value) {
+        changes.push({ el: el, prop: 'value', from: el.value, to: t });
+        el.value = t;
+      }
     }
   }
 
   function translateTree(root) {
+    if (LANG !== 'he') return;
     if (root.nodeType === 3) {
       if (root.parentNode && !SKIP[root.parentNode.tagName] && !root.parentNode.closest('[data-no-i18n]')) translateText(root);
       return;
@@ -736,41 +764,89 @@
       if (n.nodeType === 1) translateElement(n);
       else translateText(n);
     }
+    // forget about things that have left the page so the list does not grow forever
+    if (changes.length > 4000) {
+      changes = changes.filter(function (c) { return (c.node || c.el).isConnected; });
+    }
+  }
+
+  // puts back the English, but only where the page still shows our Hebrew.
+  // if a script has written something new there since, that stays
+  function restoreEnglish() {
+    for (var i = changes.length - 1; i >= 0; i--) {
+      var c = changes[i];
+      if (c.node) {
+        if (c.node.nodeValue === c.to) c.node.nodeValue = c.from;
+      } else if (c.prop) {
+        if (c.el[c.prop] === c.to) c.el[c.prop] = c.from;
+      } else if (c.el.getAttribute(c.attr) === c.to) {
+        c.el.setAttribute(c.attr, c.from);
+      }
+    }
+    changes = [];
   }
 
   // ---------------------------------------------------------------- switching
-  function setLanguage(lang) {
-    document.cookie = 'lang=' + lang + '; path=/; max-age=31536000; SameSite=Lax';
-    window.location.reload();
+  var englishTitle = document.title;
+
+  function apply(lang) {
+    LANG = lang;
+    window.I18N.lang = lang;
+    var html = document.documentElement;
+    html.lang = lang;
+    html.dir = lang === 'he' ? 'rtl' : 'ltr';
+
+    if (lang === 'he') {
+      englishTitle = document.title;
+      document.title = translate(document.title);
+      translateTree(document.body);
+    } else {
+      restoreEnglish();
+      document.title = englishTitle;
+    }
+
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+      b.classList.toggle('is-active', b.getAttribute('data-set-lang') === lang);
+    });
+    // anything drawn on a canvas (the search map) redraws itself on this
+    document.dispatchEvent(new CustomEvent('i18n:change', { detail: { lang: lang } }));
   }
 
+  // the switch in the top bar. the cookie is for the next page the server
+  // renders, the page you are on changes straight away
   document.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest('[data-set-lang]');
-    if (btn) setLanguage(btn.getAttribute('data-set-lang'));
+    if (!btn) return;
+    var lang = btn.getAttribute('data-set-lang');
+    if (lang === LANG) return;
+    document.cookie = 'lang=' + lang + '; path=/; max-age=31536000; SameSite=Lax';
+    apply(lang);
   });
 
   window.I18N = { lang: LANG, t: function (s) { return LANG === 'he' ? translate(s) : s; } };
 
-  if (LANG !== 'he') return;
-
-  // ---------------------------------------------------------------- run
   // the browser's own popups show text too
   var nativeConfirm = window.confirm.bind(window);
   var nativeAlert = window.alert.bind(window);
   var nativePrompt = window.prompt.bind(window);
-  window.confirm = function (msg) { return nativeConfirm(translate(String(msg))); };
-  window.alert = function (msg) { return nativeAlert(translate(String(msg))); };
-  window.prompt = function (msg, def) { return nativePrompt(translate(String(msg)), def); };
+  window.confirm = function (msg) { return nativeConfirm(window.I18N.t(String(msg))); };
+  window.alert = function (msg) { return nativeAlert(window.I18N.t(String(msg))); };
+  window.prompt = function (msg, def) { return nativePrompt(window.I18N.t(String(msg)), def); };
 
+  // ---------------------------------------------------------------- run
   try {
-    document.title = translate(document.title);
-    translateTree(document.body);
+    if (LANG === 'he') {
+      document.title = translate(document.title);
+      translateTree(document.body);
+    }
   } finally {
     document.documentElement.classList.add('i18n-ready');
   }
 
-  // everything the page scripts add afterwards
+  // everything the page scripts add afterwards. it is always watching, so a
+  // switch to Hebrew halfway through still catches what loads later
   new MutationObserver(function (mutations) {
+    if (LANG !== 'he') return;
     mutations.forEach(function (m) {
       if (m.type === 'characterData') translateTree(m.target);
       else if (m.type === 'attributes') translateElement(m.target);

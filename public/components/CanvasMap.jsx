@@ -111,6 +111,15 @@ function CanvasMap({ cities, mode }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [satellite, setSatellite] = useState(null); // loaded tiles, null until all are in
+  const [lang, setLang] = useState(window.I18N ? window.I18N.lang : 'en');
+
+  // the city names are drawn on the canvas, so redraw them when the
+  // language switch in the top bar is used
+  useEffect(() => {
+    const onChange = (e) => setLang(e.detail.lang);
+    document.addEventListener('i18n:change', onChange);
+    return () => document.removeEventListener('i18n:change', onChange);
+  }, []);
 
   // load the satellite tiles once. the map draws without them until they are ready
   useEffect(() => {
@@ -260,7 +269,7 @@ function CanvasMap({ cities, mode }) {
         ctx.fill();
       });
     }
-  }, [polygon, hover, results, cities, satellite]);
+  }, [polygon, hover, results, cities, satellite, lang]);
 
   useEffect(() => { draw(); }, [draw]);
 
