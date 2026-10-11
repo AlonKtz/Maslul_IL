@@ -294,6 +294,7 @@
     'The newest full video from GT World, Formula 1 and NASCAR. The site checks each channel for a newer one every three days.':
       'הסרטון המלא האחרון מ-GT World, מ-Formula 1 ומ-NASCAR. האתר בודק כל ערוץ לסרטון חדש כל שלושה ימים.',
     'Latest race videos': 'סרטוני המרוצים האחרונים',
+    'Our recaps': 'הסיכומים שלנו',
     'More videos': 'עוד סרטונים',
     'Watch on YouTube': 'צפייה ב-YouTube',
     'The embed needs an internet connection. The player in the other tab plays from your own machine.':

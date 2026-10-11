@@ -39,7 +39,8 @@ function VideoShowcase({
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [tab, setTab] = useState(showClips ? 'local' : 'youtube');
+  // the race videos open first, our own player is the second tab
+  const [tab, setTab] = useState(videos.length || !showClips ? 'youtube' : 'local');
   const [loadError, setLoadError] = useState(false);
 
   // grab the clip list once when the component first appears
