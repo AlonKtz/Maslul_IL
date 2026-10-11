@@ -1,0 +1,37 @@
+# Keeps the hosted site from being shut down for inactivity.
+#
+# The free MongoDB Atlas database is paused after 30 days with no
+# connections, and then the site has no data until someone resumes it by hand.
+# Once a week this job opens the site: that wakes the Render server (it
+# sleeps after 15 minutes, which is fine) and the server talks to the
+# database, so the 30 days never run out.
+#
+# It can also be run by hand from the Actions tab ("Run workflow").
+
+name: Keep the site awake
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # every Monday at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake the site and touch the database
+        run: |
+          # a sleeping Render site takes about a minute to start, so allow
+          # a few tries with a pause between them
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent --show-error --max-time 120 \
+                 "https://maslul-msi4.onrender.com/healthz?db=1"; then
+              echo
+              echo "Site and database are awake."
+              exit 0
+            fi
+            echo "Attempt $attempt failed, trying again in 30 seconds"
+            sleep 30
+          done
+          echo "The site did not answer"
+          exit 1

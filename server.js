@@ -30,6 +30,22 @@ if (inProduction) app.set('trust proxy', 1);
 // to about a third, which matters a lot on a phone
 app.use(compression());
 
+// a tiny "are you awake" answer for Render's health check. it sits before the
+// logger and the session, so it costs almost nothing.
+// /healthz?db=1 also talks to the database. the weekly GitHub job
+// (.github/workflows/keep-awake.yml) uses that one, because the free Atlas
+// database is paused after 30 days with no connections at all
+app.get('/healthz', async (req, res) => {
+  res.set('Cache-Control', 'no-store').type('text');
+  if (!req.query.db) return res.send('ok');
+  try {
+    await require('mongoose').connection.db.admin().ping();
+    res.send('ok, database ok');
+  } catch (err) {
+    res.status(503).send('database not reachable');
+  }
+});
+
 app.use(morgan(inProduction ? 'combined' : 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
