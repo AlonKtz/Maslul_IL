@@ -41,7 +41,12 @@ async function feed(req, res, next) {
   try {
     const { page, limit, skip } = paginate(req.query, 12, 40);
     const me = req.currentUser;
-    const { groupIds, peopleIds } = await circleOf(me);
+    // these two lookups do not depend on each other, so ask for both at once
+    // instead of waiting for one database trip and then the next
+    const [{ groupIds, peopleIds }, privateGroups] = await Promise.all([
+      circleOf(me),
+      Group.find({ isPrivate: true }).select('_id members admin'),
+    ]);
     const filter = req.query.filter || 'all';
 
     // an event belongs in the feed if a friend is hosting it, or if it belongs to
@@ -56,7 +61,6 @@ async function feed(req, res, next) {
     // A friend of mine might be hosting something inside a private group that
     // I am not in. Their event must not reach my feed just because we are
     // friends, so pull those group ids out first and exclude them.
-    const privateGroups = await Group.find({ isPrivate: true }).select('_id members admin');
     const hidden = privateGroups
       .filter((g) => me.role !== 'admin'
         && !g.admin.equals(me._id)
