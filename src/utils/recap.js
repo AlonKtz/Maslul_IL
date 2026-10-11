@@ -70,23 +70,37 @@ async function fetchLatest(channelId) {
   throw new Error('only shorts in the feed');
 }
 
+// asks YouTube for the newest video and saves it. returns null if it failed
+async function refresh(series) {
+  try {
+    const latest = await fetchLatest(series.channelId);
+    await Setting.findOneAndUpdate(
+      { key: series.key },
+      { value: JSON.stringify(latest) },
+      { upsert: true }
+    );
+    console.log('[recap] latest ' + series.name + ' video is ' + latest.id + ' (' + latest.title + ')');
+    return latest;
+  } catch (err) {
+    console.log('[recap] could not check YouTube for ' + series.name + ': ' + err.message);
+    return null;
+  }
+}
+
 // returns { id, title } for one series
 async function latestFor(series) {
   const saved = await Setting.findOne({ key: series.key });
   const fresh = saved && Date.now() - saved.updatedAt.getTime() < THREE_DAYS;
 
   if (!fresh) {
-    try {
-      const latest = await fetchLatest(series.channelId);
-      await Setting.findOneAndUpdate(
-        { key: series.key },
-        { value: JSON.stringify(latest) },
-        { upsert: true }
-      );
-      console.log('[recap] latest ' + series.name + ' video is ' + latest.id + ' (' + latest.title + ')');
-      return latest;
-    } catch (err) {
-      console.log('[recap] could not check YouTube for ' + series.name + ': ' + err.message);
+    // checking YouTube takes a few seconds. if there is a saved video, show
+    // that one straight away and look for a newer one in the background, so
+    // nobody has to wait for YouTube. only the very first visit has to wait
+    if (saved && saved.value) {
+      refresh(series);
+    } else {
+      const latest = await refresh(series);
+      if (latest) return latest;
     }
   }
 

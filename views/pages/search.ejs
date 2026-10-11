@@ -135,11 +135,12 @@
 </main>
 
 <%# React and Babel are served from /public/vendor so the page works offline. %>
-<script src="/vendor/react.development.js"></script>
-<script src="/vendor/react-dom.development.js"></script>
-<script src="/vendor/babel.min.js"></script>
-<script src="/components/mapData.js"></script>
-<script type="text/babel" src="/components/CanvasMap.jsx"></script>
-<script src="/components/mount.js" defer></script>
+<%# CanvasMap.jsx is compiled to CanvasMap.js ahead of time
+    (npm run build:components), so no Babel in the browser %>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/components/mapData.js?v=<%= assetVersion %>"></script>
+<script src="/components/CanvasMap.js?v=<%= assetVersion %>"></script>
+<script src="/components/mount.js?v=<%= assetVersion %>" defer></script>
 
 <%- include('../partials/footer') %>

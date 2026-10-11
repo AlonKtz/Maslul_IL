@@ -66,10 +66,12 @@
 </main>
 
 <%# React and Babel come from /public/vendor so the page works offline. %>
-<script src="/vendor/react.development.js"></script>
-<script src="/vendor/react-dom.development.js"></script>
-<script src="/vendor/babel.min.js"></script>
-<script type="text/babel" src="/components/VideoShowcase.jsx"></script>
-<script src="/components/mount.js" defer></script>
+<%# the component is written in VideoShowcase.jsx and compiled to plain
+    VideoShowcase.js ahead of time (npm run build:components), so the browser
+    does not have to download Babel and compile it on every visit %>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/components/VideoShowcase.js?v=<%= assetVersion %>"></script>
+<script src="/components/mount.js?v=<%= assetVersion %>" defer></script>
 
 <%- include('../partials/footer') %>

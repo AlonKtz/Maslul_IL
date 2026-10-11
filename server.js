@@ -6,6 +6,7 @@ const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const morgan = require('morgan');
+const compression = require('compression');
 
 const connectDB = require('./config/db');
 const { attachUser } = require('./src/middleware/auth');
@@ -25,10 +26,23 @@ app.set('views', path.join(__dirname, 'views'));
 const inProduction = process.env.NODE_ENV === 'production';
 if (inProduction) app.set('trust proxy', 1);
 
+// gzip everything that is text (pages, css, js, json). the big scripts shrink
+// to about a third, which matters a lot on a phone
+app.use(compression());
+
 app.use(morgan(inProduction ? 'combined' : 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// the version of the site, added to the css and js links as ?v=. on Render it
+// is the commit being deployed, locally it changes every time the server
+// starts. a new version means a new link, so browsers can keep the files for
+// a week without ever showing an old one after a deploy
+app.locals.assetVersion = (process.env.RENDER_GIT_COMMIT || Date.now().toString(36)).slice(0, 8);
+
+// the static files can be kept by the browser for a week instead of being
+// asked for again on every page
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d' }));
 
 // sessions go in mongo rather than memory, so restarting the server does not
 // log everybody out
@@ -36,7 +50,9 @@ const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || 'maslul-dev-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  // touchAfter: only write the session back to the database once a day
+  // instead of on every request, one less round trip per page
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, touchAfter: 24 * 60 * 60 }),
   cookie: {
     httpOnly: true, // not readable from JavaScript
     secure: inProduction, // only over https when hosted, plain http is fine locally

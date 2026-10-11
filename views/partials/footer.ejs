@@ -9,18 +9,20 @@
   <%# jQuery itself is loaded in the <head> (see partials/head.ejs).
       i18n.js goes first so it is already watching when the other scripts
       start filling the page. %>
-  <script src="/js/i18n.js"></script>
-  <script src="/js/theme.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/ui.js"></script>
-  <script src="/js/auth.js"></script>
+  <%# ?v= is the version of the site. browsers keep these files for a week,
+      and a new deploy changes the number, which makes them fetch fresh ones %>
+  <script src="/js/i18n.js?v=<%= assetVersion %>"></script>
+  <script src="/js/theme.js?v=<%= assetVersion %>"></script>
+  <script src="/js/api.js?v=<%= assetVersion %>"></script>
+  <script src="/js/ui.js?v=<%= assetVersion %>"></script>
+  <script src="/js/auth.js?v=<%= assetVersion %>"></script>
 
   <%# Each page sets a pageScripts variable at the very top with the extra
       files it needs, and this loop adds a script tag for each one. That way
       the garage page does not download the chat code and so on. %>
   <% if (typeof pageScripts !== 'undefined' && pageScripts.length) { %>
     <% pageScripts.forEach(function (src) { %>
-      <script src="<%= src %>"></script>
+      <script src="<%= src %>?v=<%= assetVersion %>"></script>
     <% }); %>
   <% } %>
 </body>
