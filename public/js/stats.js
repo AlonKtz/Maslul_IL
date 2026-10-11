@@ -8,14 +8,20 @@
 (function ($, d3) {
   'use strict';
 
+  // the chart colours come from the design tokens in style.css, so the charts
+  // follow the light or dark theme. the second value is the fallback.
+  var css = getComputedStyle(document.documentElement);
+  function token(name, fallback) {
+    return (css.getPropertyValue(name) || '').trim() || fallback;
+  }
   var COLOURS = {
-    meet: '#2a9d8f',
-    race: '#e63946',
-    bar: '#f4a261',
-    bar2: '#8ecae6',
-    text: '#e8edf2',
-    muted: '#97a3b0',
-    grid: '#2b343d',
+    meet: token('--ok', '#2a9d8f'),
+    race: token('--brand', '#e63946'),
+    bar: token('--amber', '#f4a261'),
+    bar2: token('--info', '#457b9d'),
+    text: token('--ink', '#15151e'),
+    muted: token('--ink-muted', '#5b5b66'),
+    grid: token('--line', '#d6d6de'),
   };
 
   // clears out the old chart and gives me back a clean svg to draw into.
