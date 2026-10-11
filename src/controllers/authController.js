@@ -66,6 +66,31 @@ async function login(req, res, next) {
   }
 }
 
+// POST /auth/demo, one click sign in as the shared demo member so a visitor
+// (or the lecturer) can look around without making an account. the seed gives
+// this member a garage, friends and groups. if the database was never seeded
+// the account is made here with a random password nobody knows.
+const DEMO_USERNAME = 'demo';
+
+async function demoLogin(req, res, next) {
+  try {
+    let user = await User.findOne({ username: DEMO_USERNAME });
+    if (!user) {
+      user = await User.create({
+        username: DEMO_USERNAME,
+        password: require('crypto').randomBytes(24).toString('hex'),
+        displayName: 'Demo Driver',
+        location: 'Tel Aviv',
+        bio: 'The demo account. Look around, everything here is test data.',
+      });
+    }
+    req.session.userId = user._id;
+    return res.json({ ok: true, redirect: '/feed' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // POST /auth/logout, kills the session
 function logout(req, res) {
   req.session.destroy(() => {
@@ -74,4 +99,4 @@ function logout(req, res) {
   });
 }
 
-module.exports = { showRegister, showLogin, register, login, logout };
+module.exports = { showRegister, showLogin, register, login, demoLogin, logout };

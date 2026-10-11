@@ -15,6 +15,8 @@ const wantsJson = require('../utils/wantsJson');
 async function attachUser(req, res, next) {
   res.locals.currentUser = null;
   req.currentUser = null;
+  // the nav uses this to highlight the section you are in
+  res.locals.currentPath = req.path;
 
   if (!req.session || !req.session.userId) return next();
 

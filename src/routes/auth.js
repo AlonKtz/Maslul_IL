@@ -34,6 +34,7 @@ router.get('/login', requireGuest, auth.showLogin);
 // the actual actions. the forms call these with ajax
 router.post('/auth/register', requireGuest, registerRules, handleValidation, auth.register);
 router.post('/auth/login', requireGuest, loginRules, handleValidation, auth.login);
+router.post('/auth/demo', requireGuest, auth.demoLogin);
 router.post('/auth/logout', requireLogin, auth.logout);
 
 module.exports = router;

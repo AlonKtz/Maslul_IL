@@ -55,3 +55,19 @@ These were added by the team, the source and license are not recorded. Replace t
 
 - cars: bmw-m2-2025, bmw-m3-cs-2023, bmw-m3-e46-2003, bmw-m4-competition-2024, ferrari-296-gtb-2023
 - ../events: car-meet, drift-race, friday-night-cruise, hill-climb, rally-sprint, sunday-drive, track-day
+
+## Events and parts
+
+Paths below are relative to public/img.
+
+- `events/drag-race.jpg` : KoorlongDragStrip Staging.jpg, by Longhair, CC BY 3.0. https://commons.wikimedia.org/wiki/File:KoorlongDragStrip_Staging.jpg
+- `events/negev-desert.jpg` : Makhtesh Ramon Crater, peak of Mount Negev in Israel's Negev desert, some 85km south of Beersheba. Activities like Jeep 4X4 tours, hiking, cycling, RZRs, ATVs trips, abseiling, hot air balloons & camel Safari.jpg, by Mohammad Shad Siddiqui, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Makhtesh_Ramon_Crater,_peak_of_Mount_Negev_in_Israel%27s_Negev_desert,_some_85km_south_of_Beersheba._Activities_like_Jeep_4X4_tours,_hiking,_cycling,_RZRs,_ATVs_trips,_abseiling,_hot_air_balloons_%26_camel_Safari.jpg
+- `events/classic-meet.jpg` : Blenheim Palace Classic Car Show (6092762295).jpg, by Simon Q from United Kingdom, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Blenheim_Palace_Classic_Car_Show_(6092762295).jpg
+- `events/ev-charging.jpg` : Tesla superchargers in Fort William, Scotland.jpg, by Lucas Kendall, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Tesla_superchargers_in_Fort_William,_Scotland.jpg
+- `events/time-attack.jpg` : Chris Smiley BTCC Race 3 Thruxton 2026.jpg, by BWard 1997, CC BY 4.0. https://commons.wikimedia.org/wiki/File:Chris_Smiley_BTCC_Race_3_Thruxton_2026.jpg
+- `parts/tyres-michelin.jpg` : Toyota Wheel with Michelin Pilot Sport 4 Tire.jpg, by TaurusEmerald, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Toyota_Wheel_with_Michelin_Pilot_Sport_4_Tire.jpg
+- `parts/steering-wheel.jpg` : Caterham Roadsport building - 011 - Momo removable steering wheel - Flickr - exfordy.jpg, by Brian Snelson from Hockley, Essex, England, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Caterham_Roadsport_building_-_011_-_Momo_removable_steering_wheel_-_Flickr_-_exfordy.jpg
+- `parts/trolley-jack.jpg` : Car on trolley jack.JPG, by Vitaly Barsov, CC BY-SA 3.0. https://commons.wikimedia.org/wiki/File:Car_on_trolley_jack.JPG
+- `parts/brembo-caliper.jpg` : Brembo Caliper.jpg, by https://www.flickr.com/people/poppingseed/, CC BY-SA 2.0. https://commons.wikimedia.org/wiki/File:Brembo_Caliper.jpg
+- `parts/engine-4age.jpg` : 4A-GE redtop.jpg, by TheJosh, Public domain. https://commons.wikimedia.org/wiki/File:4A-GE_redtop.jpg
+- `parts/cold-air-intake.jpg` : Cool-Air-intake.jpg, by Gearheadgirl, CC BY 3.0. https://commons.wikimedia.org/wiki/File:Cool-Air-intake.jpg

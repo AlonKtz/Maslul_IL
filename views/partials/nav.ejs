@@ -12,23 +12,31 @@
       <span class="brand-name">Maslul</span>
     </a>
 
+    <%
+      // a link is active on its own page and on anything under it, so
+      // /events/123 still lights up "Meets & races"
+      var path = typeof currentPath === 'string' ? currentPath : '';
+      function active(href) {
+        return (path === href || path.indexOf(href + '/') === 0) ? ' class="is-active" aria-current="page"' : '';
+      }
+    %>
     <% if (currentUser) { %>
       <ul class="nav-links">
-        <li><a href="/feed">Feed</a></li>
-        <li><a href="/events">Meets &amp; races</a></li>
-        <li><a href="/market">Market</a></li>
-        <li><a href="/motorsport">Motorsport</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/groups">Groups</a></li>
-        <li><a href="/garage">Garage</a></li>
-        <li><a href="/chat">Chat</a></li>
-        <li><a href="/stats">Stats</a></li>
+        <li><a href="/feed"<%- active('/feed') %>>Feed</a></li>
+        <li><a href="/events"<%- active('/events') %>>Meets &amp; races</a></li>
+        <li><a href="/market"<%- active('/market') %>>Market</a></li>
+        <li><a href="/motorsport"<%- active('/motorsport') %>>Motorsport</a></li>
+        <li><a href="/search"<%- active('/search') %>>Search</a></li>
+        <li><a href="/groups"<%- active('/groups') %>>Groups</a></li>
+        <li><a href="/garage"<%- active('/garage') %>>Garage</a></li>
+        <li><a href="/chat"<%- active('/chat') %>>Chat</a></li>
+        <li><a href="/stats"<%- active('/stats') %>>Stats</a></li>
         <% if (currentUser.role === 'admin') { %>
-          <li><a href="/admin">Admin</a></li>
+          <li><a href="/admin"<%- active('/admin') %>>Admin</a></li>
         <% } %>
       </ul>
       <div class="nav-user">
-        <a class="nav-avatar" href="/profile/<%= currentUser.username %>">
+        <a class="nav-avatar<%= path === '/profile/' + currentUser.username ? ' is-active' : '' %>" href="/profile/<%= currentUser.username %>">
           <img src="<%= currentUser.avatar %>" alt="" width="32" height="32">
           <span><%= currentUser.displayName || currentUser.username %></span>
         </a>
@@ -36,7 +44,7 @@
       </div>
     <% } else { %>
       <ul class="nav-links">
-        <li><a href="/login">Sign in</a></li>
+        <li><a href="/login"<%- active('/login') %>>Sign in</a></li>
         <li><a class="btn btn-primary" href="/register">Join Maslul</a></li>
       </ul>
     <% } %>

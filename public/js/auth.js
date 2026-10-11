@@ -73,6 +73,20 @@ jQuery(function ($) {
       });
   });
 
+  // ---------------------------------------------------------------- demo
+  // the "Try the demo" buttons on the landing and login pages
+  $('.js-demo-login').on('click', function () {
+    var $button = $(this).prop('disabled', true).text('Opening the demo...');
+    API.post('/auth/demo')
+      .done(function (res) {
+        window.location.href = res.redirect || '/feed';
+      })
+      .fail(function (jqXHR) {
+        $button.prop('disabled', false).text('Try the demo');
+        alert(API.errorMessage(jqXHR));
+      });
+  });
+
   // ---------------------------------------------------------------- logout
   $('#logout-btn').on('click', function () {
     API.post('/auth/logout').always(function () {

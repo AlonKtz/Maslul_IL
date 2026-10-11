@@ -1,4 +1,4 @@
-// gives a real photo to events and groups that are still on the grey default
+﻿// gives a real photo to events and groups that are still on the grey default
 // picture. runs once when the server starts, so a database that was seeded
 // before the photos existed (like the hosted one) picks them up without being
 // wiped. anything with a photo of its own is never touched.
@@ -13,12 +13,14 @@ const EVENT_BY_TITLE = {
   'Friday night cruise': 'friday-night-cruise',
   'Haifa port meet': 'car-meet',
   'Cars and coffee': 'car-meet',
-  'Classic breakfast run': 'car-meet',
+  'Classic breakfast run': 'classic-meet',
   'Supercar breakfast meet': 'car-meet',
-  'Negev desert run': 'sunday-drive',
+  'Negev desert run': 'negev-desert',
   'Negev scenic run': 'sunday-drive',
   'Sunday canyon drive': 'sunday-drive',
-  'EV road trip north': 'sunday-drive',
+  'EV road trip north': 'ev-charging',
+  'Drag night': 'drag-race',
+  'Time attack round': 'time-attack',
   'Drift practice': 'drift-race',
   'Hill climb': 'hill-climb',
   'Rally sprint': 'rally-sprint',
@@ -26,6 +28,8 @@ const EVENT_BY_TITLE = {
 
 // for events members made themselves, go by the race format
 const EVENT_BY_RACE_TYPE = {
+  Drag: 'drag-race',
+  'Time attack': 'time-attack',
   Drift: 'drift-race',
   Hillclimb: 'hill-climb',
   Rally: 'rally-sprint',
