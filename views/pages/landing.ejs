@@ -8,18 +8,58 @@
 %>
 
 <main>
-  <section class="hero">
+  <section class="hero hero-photo">
     <div class="container">
       <h1 class="hero-title glow">Maslul</h1>
       <p class="hero-sub">Israel's first social network for car lovers.</p>
       <p class="hero-text">
-        Build your virtual garage, join brand and off-road communities,
-        share builds and road trips, and talk cars in real time.
+        Park your dream car in a virtual garage, join the meets and races,
+        find parts for your build, and talk cars in real time.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary btn-lg" href="/register">Join Maslul</a>
         <a class="btn btn-ghost btn-lg" href="/login">Sign in</a>
       </div>
+    </div>
+  </section>
+
+  <section class="container showcase">
+    <h2 class="glow">From the community garages</h2>
+    <p class="muted">Everything from a 1971 Beetle to a Ferrari 296 GTB, parked side by side.</p>
+    <div class="photo-grid">
+      <% [
+        ['/img/cars/bmw-m3-e46-2003.jpg', 'BMW M3 E46'],
+        ['/img/cars/ferrari-296-gtb-2023.jpg', 'Ferrari 296 GTB'],
+        ['/img/cars/toyota-supra-mk4.jpg', 'Toyota Supra MK4'],
+        ['/img/cars/nissan-r34.jpg', 'Nissan Skyline R34'],
+        ['/img/cars/lamborghini-huracan.jpg', 'Lamborghini Huracan'],
+        ['/img/cars/toyota-ae86.jpg', 'Toyota AE86 Trueno']
+      ].forEach(function (c) { %>
+        <figure class="photo-tile">
+          <img src="<%= c[0] %>" alt="<%= c[1] %>" loading="lazy">
+          <figcaption><%= c[1] %></figcaption>
+        </figure>
+      <% }); %>
+    </div>
+  </section>
+
+  <section class="container showcase">
+    <h2 class="glow">Meets &amp; races</h2>
+    <p class="muted">Night cruises, canyon drives, drift days and rally stages, all hosted by members.</p>
+    <div class="photo-grid photo-grid-wide">
+      <% [
+        ['/img/events/friday-night-cruise.jpg', 'Friday night cruise'],
+        ['/img/events/sunday-drive.jpg', 'Sunday canyon drive'],
+        ['/img/events/drift-race.jpg', 'Drift practice'],
+        ['/img/events/rally-sprint.jpg', 'Rally sprint'],
+        ['/img/events/hill-climb.jpg', 'Hill climb'],
+        ['/img/events/car-meet.jpg', 'Cars and coffee']
+      ].forEach(function (c) { %>
+        <figure class="photo-tile">
+          <img src="<%= c[0] %>" alt="<%= c[1] %>" loading="lazy">
+          <figcaption><%= c[1] %></figcaption>
+        </figure>
+      <% }); %>
     </div>
   </section>
 

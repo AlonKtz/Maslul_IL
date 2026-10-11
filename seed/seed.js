@@ -1,4 +1,4 @@
-/*
+﻿/*
   Fills the database with enough content that the site looks like a real
   network instead of an empty shell.
 
@@ -68,20 +68,20 @@ const MEMBERS = [
 
 const GROUPS = [
   { name: 'BMW Israel', category: 'Brand', brand: 'BMW',
-    description: 'Everything from the E30 to the current cars. Meets, technical help and parts.' },
+    description: 'Everything from the E30 and E46 M3 to the new M2, M3 CS and M4. Meets, technical help and parts.', coverImage: '/img/cars/bmw-m3-cs-2023.jpg' },
   { name: 'JDM Israel', category: 'JDM', brand: 'Toyota',
-    description: 'Japanese cars of every era. Supras, Skylines, Silvias and the daily Civics too.' },
+    description: 'Japanese cars of every era. Supras, Skylines, AE86s, Silvias and the daily Civics too.', coverImage: '/img/cars/nissan-r34.jpg' },
   { name: 'Negev Off-road', category: 'Off-road', brand: 'Land Rover',
-    description: 'Desert routes, recovery practice and convoys every month.' },
+    description: 'Desert routes, recovery practice and convoys every month. Land Cruisers, Defenders, Patrols and Wranglers welcome.', coverImage: '/img/cars/defender-90.jpg' },
   { name: 'Classic Cars IL', category: 'Classic', brand: '',
-    description: 'Anything over thirty years old and still moving under its own power.' },
+    description: 'Anything over thirty years old and still moving under its own power. Beetles, Giulias, F40s and everything between.', coverImage: '/img/cars/vw-beetle.jpg' },
   { name: 'EV Drivers IL', category: 'EV', brand: 'Tesla',
-    description: 'Charging maps, road trips and range arguments.' },
+    description: 'Charging maps, road trips and range arguments. Model 3, Model Y and the rest.', coverImage: '/img/cars/tesla-model-3.jpg' },
   { name: 'Drift Collective', category: 'Racing', brand: 'Nissan',
-    description: 'Practice days, tyre orders and seat time. Private group, we approve members.',
+    description: 'Tandem practice days, tyre orders and seat time. Private group, we approve members.', coverImage: '/img/events/drift-race.jpg',
     isPrivate: true },
   { name: 'Tuning Garage', category: 'Tuning', brand: '',
-    description: 'Maps, dynos and honest dyno graphs.' },
+    description: 'Maps, dynos and honest dyno graphs. Focus RS, Evo, STI and everything that makes more than it should.', coverImage: '/img/cars/ford-focus-rs.jpg' },
 ];
 
 // the photos come from Wikimedia Commons, see public/img/cars/CREDITS.md
@@ -110,35 +110,50 @@ const CARS = [
   { make: 'Land Rover', model: 'Defender 90', photo: '/img/cars/defender-90.jpg', year: 1998, category: 'SUV', engine: '300Tdi', horsepower: 111, color: 'Coniston Green' },
   { make: 'Jeep', model: 'Wrangler JK', photo: '/img/cars/jeep-wrangler-jk.jpg', year: 2012, category: 'SUV', engine: '3.6 Pentastar', horsepower: 285, color: 'Black' },
   { make: 'Mitsubishi', model: 'Lancer Evo IX', photo: '/img/cars/mitsubishi-evo9.jpg', year: 2006, category: 'Sedan', engine: '4G63T', horsepower: 286, color: 'Rally Red' },
+  { make: 'BMW', model: 'M3 E46', photo: '/img/cars/bmw-m3-e46-2003.jpg', year: 2003, category: 'Coupe', engine: 'S54 3.2', horsepower: 338, color: 'Laguna Seca Blue' },
+  { make: 'BMW', model: 'M2', photo: '/img/cars/bmw-m2-2025.jpg', year: 2025, category: 'Coupe', engine: 'S58 3.0T', horsepower: 473, color: 'Zandvoort Blue' },
+  { make: 'BMW', model: 'M3 CS', photo: '/img/cars/bmw-m3-cs-2023.jpg', year: 2023, category: 'Sedan', engine: 'S58 3.0T', horsepower: 543, color: 'Brands Hatch Grey' },
+  { make: 'BMW', model: 'M4 Competition', photo: '/img/cars/bmw-m4-competition-2024.jpg', year: 2024, category: 'Coupe', engine: 'S58 3.0T', horsepower: 503, color: 'Isle of Man Green' },
+  { make: 'Ferrari', model: '296 GTB', photo: '/img/cars/ferrari-296-gtb-2023.jpg', year: 2023, category: 'Coupe', engine: '3.0 V6 hybrid', horsepower: 819, color: 'Rosso Corsa' },
+  { make: 'Ferrari', model: 'F40', photo: '/img/cars/ferrari-f40.jpg', year: 1990, category: 'Coupe', engine: '2.9 twin turbo V8', horsepower: 471, color: 'Rosso Corsa' },
+  { make: 'Lamborghini', model: 'Huracan', photo: '/img/cars/lamborghini-huracan.jpg', year: 2019, category: 'Coupe', engine: '5.2 V10', horsepower: 631, color: 'Arancio Borealis' },
+  { make: 'McLaren', model: '720S', photo: '/img/cars/mclaren-720s.jpg', year: 2018, category: 'Coupe', engine: 'M840T 4.0 V8', horsepower: 710, color: 'Volcano Orange' },
+  { make: 'Audi', model: 'R8 V10', photo: '/img/cars/audi-r8-v10.jpg', year: 2021, category: 'Coupe', engine: '5.2 V10', horsepower: 562, color: 'Daytona Grey' },
+  { make: 'Porsche', model: '911 GT3 RS (997)', photo: '/img/cars/porsche-997-gt3-rs.jpg', year: 2007, category: 'Coupe', engine: '3.6 flat six', horsepower: 415, color: 'Arctic Silver' },
+  { make: 'Dodge', model: 'Challenger Hellcat', photo: '/img/cars/dodge-challenger-hellcat.jpg', year: 2018, category: 'Coupe', engine: '6.2 supercharged V8', horsepower: 707, color: 'B5 Blue' },
+  { make: 'Mercedes-Benz', model: 'C63 AMG (W204)', photo: '/img/cars/mercedes-amg-c63.jpg', year: 2013, category: 'Sedan', engine: 'M156 6.2 V8', horsepower: 457, color: 'Designo Mocha' },
+  { make: 'Ford', model: 'Focus RS Mk3', photo: '/img/cars/ford-focus-rs.jpg', year: 2017, category: 'Hatchback', engine: '2.3 EcoBoost', horsepower: 350, color: 'Stealth Grey' },
+  { make: 'Toyota', model: 'AE86 Sprinter Trueno', photo: '/img/cars/toyota-ae86.jpg', year: 1985, category: 'Coupe', engine: '4A-GE', horsepower: 128, color: 'Panda White' },
+  { make: 'Mini', model: 'Cooper', photo: '/img/cars/mini-cooper.jpg', year: 2018, category: 'Hatchback', engine: '1.5 turbo three', horsepower: 136, color: 'Lime Green' },
 ];
 
 const EVENT_TEMPLATES = [
-  { title: 'Friday night cruise', type: 'meet', city: 'Tel Aviv', address: 'Ha-Miflasim parking',
-    description: 'Meet at nine, roll out at ten along the coast road. All cars welcome, keep it civil.' },
-  { title: 'Haifa port meet', type: 'meet', city: 'Haifa', address: 'Port lot, gate 3',
-    description: 'Monthly gathering by the water. Coffee from the truck at the corner.' },
-  { title: 'Negev desert run', type: 'meet', city: 'Beer Sheva', address: 'Route 40 junction',
-    description: 'Full day convoy. Bring recovery gear, a spare and more water than you think.' },
-  { title: 'Sunday canyon drive', type: 'meet', city: 'Jerusalem', address: 'Ein Kerem car park',
-    description: 'Early start, twisty roads, breakfast at the end.' },
-  { title: 'Cars and coffee', type: 'meet', city: 'Herzliya', address: 'Marina lot',
-    description: 'Relaxed morning meet. Park up, talk rubbish, go home by noon.' },
-  { title: 'Classic breakfast run', type: 'meet', city: 'Netanya', address: 'Seafront promenade',
-    description: 'Pre-1995 cars preferred but nobody is turned away.' },
-  { title: 'EV road trip north', type: 'meet', city: 'Tiberias', address: 'Lakeside charger',
+  { title: 'Friday night cruise', coverImage: '/img/events/friday-night-cruise.jpg', type: 'meet', city: 'Tel Aviv', address: 'Ha-Miflasim parking',
+    description: 'Meet at nine, roll out at ten for a night run through the city and the tunnels. Lights on, speed sensible, all cars welcome.' },
+  { title: 'Haifa port meet', coverImage: '/img/events/car-meet.jpg', type: 'meet', city: 'Haifa', address: 'Port lot, gate 3',
+    description: 'Monthly gathering by the water. Exotics, tuners and daily drivers share the lot, coffee from the truck at the corner.' },
+  { title: 'Negev scenic run', coverImage: '/img/events/sunday-drive.jpg', type: 'meet', city: 'Beer Sheva', address: 'Route 40 junction',
+    description: 'Full day convoy through the Negev canyon roads. Fuel up before Route 40, bring a spare and more water than you think.' },
+  { title: 'Sunday canyon drive', coverImage: '/img/events/sunday-drive.jpg', type: 'meet', city: 'Jerusalem', address: 'Ein Kerem car park',
+    description: 'Early start, twisty mountain roads, a line of cars through every bend, breakfast at the end.' },
+  { title: 'Cars and coffee', coverImage: '/img/events/car-meet.jpg', type: 'meet', city: 'Herzliya', address: 'Marina lot',
+    description: 'Relaxed morning meet. Supercars next to hot hatches, park up, talk rubbish, go home by noon.' },
+  { title: 'Supercar breakfast meet', coverImage: '/img/events/car-meet.jpg', type: 'meet', city: 'Netanya', address: 'Seafront promenade',
+    description: 'Bring the dream car or just come and look. Breakfast on the promenade, nobody is turned away.' },
+  { title: 'EV road trip north', coverImage: '/img/events/sunday-drive.jpg', type: 'meet', city: 'Tiberias', address: 'Lakeside charger',
     description: 'Charging stops planned, route shared the day before.' },
-  { title: 'Drag night', type: 'race', raceType: 'Drag', circuit: 'drag-strip', laps: 8, city: 'Rishon LeZion', address: 'Industrial zone strip',
-    description: 'Timed runs. Helmets required, tech check at the gate.' },
-  { title: 'Time attack round', type: 'race', raceType: 'Time attack', circuit: 'kart-track', laps: 12, city: 'Ashdod', address: 'Circuit south paddock',
-    description: 'Three sessions, timing transponders provided.' },
-  { title: 'Drift practice', type: 'race', raceType: 'Drift', circuit: 'skid-pad', laps: 15, city: 'Ashkelon', address: 'Skid pad',
-    description: 'Open practice. Bring at least two sets of rear tyres.' },
-  { title: 'Hill climb', type: 'race', raceType: 'Hillclimb', circuit: 'mountain-hillclimb', laps: 3, city: 'Safed', address: 'Mountain road closure',
-    description: 'Closed road, single car runs, marshals on every corner.' },
-  { title: 'Rally sprint', type: 'race', raceType: 'Rally', circuit: 'forest-stage', laps: 2, city: 'Modiin', address: 'Forest service road',
-    description: 'Gravel stage, co-driver mandatory.' },
-  { title: 'Track day', type: 'race', raceType: 'Track', circuit: 'port-street', laps: 20, city: 'Eilat', address: 'Southern circuit',
-    description: 'Novice and open groups. Instruction available for the first session.' },
+  { title: 'Drag night', coverImage: '/img/events/track-day.jpg', type: 'race', raceType: 'Drag', circuit: 'drag-strip', laps: 8, city: 'Rishon LeZion', address: 'Industrial zone strip',
+    description: 'Timed runs, two cars on the strip at a time. Helmets required, tech check at the gate.' },
+  { title: 'Time attack round', coverImage: '/img/events/track-day.jpg', type: 'race', raceType: 'Time attack', circuit: 'kart-track', laps: 12, city: 'Ashdod', address: 'Circuit south paddock',
+    description: 'Three sessions, timing transponders provided. Street cars and GT cars run in separate classes.' },
+  { title: 'Drift practice', coverImage: '/img/events/drift-race.jpg', type: 'race', raceType: 'Drift', circuit: 'skid-pad', laps: 15, city: 'Ashkelon', address: 'Skid pad',
+    description: 'Open practice with tandem runs. Expect smoke, bring at least two sets of rear tyres.' },
+  { title: 'Hill climb', coverImage: '/img/events/hill-climb.jpg', type: 'race', raceType: 'Hillclimb', circuit: 'mountain-hillclimb', laps: 3, city: 'Safed', address: 'Mountain road closure',
+    description: 'Closed road, single car runs from open-wheel cars to production classes, marshals on every corner.' },
+  { title: 'Rally sprint', coverImage: '/img/events/rally-sprint.jpg', type: 'race', raceType: 'Rally', circuit: 'forest-stage', laps: 2, city: 'Modiin', address: 'Forest service road',
+    description: 'Gravel stage for Group A Imprezas, Evos and anything brave enough. Co-driver mandatory.' },
+  { title: 'Track day', coverImage: '/img/events/track-day.jpg', type: 'race', raceType: 'Track', circuit: 'port-street', laps: 20, city: 'Eilat', address: 'Southern circuit',
+    description: 'Novice and open groups, GT cars welcome. Instruction available for the first session and the pit lane is family friendly.' },
 ];
 
 const LISTINGS = [
@@ -154,6 +169,8 @@ const LISTINGS = [
     description: 'Fits FK8 and FK2. Filter included.' },
   { title: 'Coilover set, adjustable', photos: ['/img/cars/coilovers.jpg'], price: 3400, category: 'Engine & drivetrain', condition: 'Like new',
     description: 'One season of road use. All keys and tools included.' },
+  { title: 'Brembo front brake kit, 6 piston', photos: ['/img/cars/bmw-m3-e46-2003.jpg'], price: 7200, category: 'Engine & drivetrain', condition: 'Used',
+    description: 'Pulled from an M3 E46 when it went to carbon ceramics. Calipers, discs and lines included.' },
   { title: 'E30 front bumper, original', photos: ['/img/cars/bmw-m3-e30.jpg'], price: 1200, category: 'Body & exterior', condition: 'Used',
     description: 'Straight, small scuff underneath. No cracks.' },
   { title: 'Carbon bonnet, universal fit', price: 2900, category: 'Body & exterior', condition: 'New',
@@ -179,6 +196,10 @@ const LISTINGS = [
   { title: 'Honda Civic EK, track prepared', photos: ['/img/cars/honda-civic-ek.jpg'], price: 42000, category: 'Whole car', condition: 'For parts',
     make: 'Honda', model: 'Civic', year: 1998,
     description: 'Caged, no interior, sold as a track car only. Trailer collection.' },
+  { title: 'Focus RS Mk3 stage 2 kit', photos: ['/img/cars/ford-focus-rs.jpg'], price: 3900, category: 'Engine & drivetrain', condition: 'Like new',
+    description: 'Intake, cat back and the tune file. Fitted for one season, all receipts available.' },
+  { title: 'AE86 4A-GE engine and gearbox', photos: ['/img/cars/toyota-ae86.jpg'], price: 12000, category: 'Engine & drivetrain', condition: 'Used',
+    description: 'Twin cam, runs sweet, comes out with the T50 box. Sold with the loom.' },
   { title: 'Assorted E36 spares', photos: ['/img/cars/bmw-e36.jpg'], price: 300, category: 'Other parts', condition: 'For parts',
     description: 'Box of trim, brackets and clips. Take the lot.' },
 ];
@@ -203,7 +224,7 @@ async function seed() {
   await connectDB();
 
   if (!keep) {
-    console.log('[seed] clearing existing data…');
+    console.log('[seed] clearing existing dataâ€¦');
     await Promise.all([
       User.deleteMany({}), Group.deleteMany({}), Event.deleteMany({}),
       Listing.deleteMany({}), Car.deleteMany({}), Message.deleteMany({}),
@@ -280,6 +301,7 @@ async function seed() {
 
     events.push(await Event.create({
       title: template.title,
+      coverImage: template.coverImage,
       description: template.description,
       type: template.type,
       raceType: template.raceType || '',

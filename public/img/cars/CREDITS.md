@@ -1,4 +1,4 @@
-# Photo credits
+﻿# Photo credits
 
 The demo photos in this folder come from Wikimedia Commons. Each one is
 used under the license listed next to it, with the original author named.
@@ -31,10 +31,27 @@ the project code.
 - `mitsubishi-evo9.jpg` : 2005 Mitsubishi Lancer Evolution IX BS O24.jpg, by MrWalkr, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:2005_Mitsubishi_Lancer_Evolution_IX_BS_O24.jpg
 - `honda-civic-ek.jpg` : 1996 Honda Civic (EK) GLi hatchback (24586633559).jpg, by Jeremy from Sydney, Australia, CC BY 2.0. https://commons.wikimedia.org/wiki/File:1996_Honda_Civic_(EK)_GLi_hatchback_(24586633559).jpg
 - `wheels-bbs.jpg` : The optional tire wheel of Mazda ROADSTER RF RS (DBA-NDERC).jpg, by Tokumeigakarinoaoshima, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:The_optional_tire_wheel_of_Mazda_ROADSTER_RF_RS_(DBA-NDERC).jpg
-- `wheels-te37.jpg` : Mitsubishi E-CE9A Lancer GSR Evolution Ⅱ (25081019300).jpg, by 先従隗始, CC0. https://commons.wikimedia.org/wiki/File:Mitsubishi_E-CE9A_Lancer_GSR_Evolution_%E2%85%A1_(25081019300).jpg
+- `wheels-te37.jpg` : Mitsubishi E-CE9A Lancer GSR Evolution â…¡ (25081019300).jpg, by å…ˆå¾“éš—å§‹, CC0. https://commons.wikimedia.org/wiki/File:Mitsubishi_E-CE9A_Lancer_GSR_Evolution_%E2%85%A1_(25081019300).jpg
 - `engine-sr20.jpg` : 1972Datsun510-engine.jpg, by dave_7, CC BY 2.0. https://commons.wikimedia.org/wiki/File:1972Datsun510-engine.jpg
 - `coilovers.jpg` : 500overview.jpg, by Fortune Auto North America, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:500overview.jpg
-- `bucket-seat.jpg` : 1968 AMC AMX 390 Go Pac in Laurel Green with black stripes at 2021 AMO meet 5of7.jpg, by CZmarlin  — Christopher Ziemnowicz, a photo credit would be appreciated if this , CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:1968_AMC_AMX_390_Go_Pac_in_Laurel_Green_with_black_stripes_at_2021_AMO_meet_5of7.jpg
+- `bucket-seat.jpg` : 1968 AMC AMX 390 Go Pac in Laurel Green with black stripes at 2021 AMO meet 5of7.jpg, by CZmarlin  â€” Christopher Ziemnowicz, a photo credit would be appreciated if this , CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:1968_AMC_AMX_390_Go_Pac_in_Laurel_Green_with_black_stripes_at_2021_AMO_meet_5of7.jpg
 - `torque-wrench.jpg` : Click-torque-wrench.jpg, by No machine-readable author provided. Heron2 assumed (based on copyright claims)., CC BY-SA 3.0. https://commons.wikimedia.org/wiki/File:Click-torque-wrench.jpg
 - `head-unit.jpg` : Android Auto.jpg, by DoulosBen, CC BY 4.0. https://commons.wikimedia.org/wiki/File:Android_Auto.jpg
 - `dash-cam.jpg` : DashCam Ferndale CA.jpg, by Ellin Beltz, CC BY-SA 3.0. https://commons.wikimedia.org/wiki/File:DashCam_Ferndale_CA.jpg
+- `lamborghini-huracan.jpg` : Lamborghini Huracan, EMS 2024, Essen (P1032274).jpg, by Matti Blume, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Lamborghini_Huracan,_EMS_2024,_Essen_(P1032274).jpg
+- `porsche-997-gt3-rs.jpg` : Porsche 997 GT3 RS (2006) IMG 2546.jpg, by Alexander-93, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Porsche_997_GT3_RS_(2006)_IMG_2546.jpg
+- `dodge-challenger-hellcat.jpg` : Dodge Challenger SRT Hellcat 2015-20180909-RM-171853.jpg, by Ermell, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Dodge_Challenger_SRT_Hellcat_2015-20180909-RM-171853.jpg
+- `audi-r8-v10.jpg` : Audi R8 V10 RWS MYLE Festival 2025 DSC 9493.jpg, by Alexander Migl, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Audi_R8_V10_RWS_MYLE_Festival_2025_DSC_9493.jpg
+- `mclaren-720s.jpg` : McLaren 720S, IAA 2017, (1Y7A3409).jpg, by Matti Blume, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:McLaren_720S,_IAA_2017,_(1Y7A3409).jpg
+- `toyota-ae86.jpg` : Toyota Sprinter Trueno AE86 2 door.jpg, by SprinterTrueno1985, CC0. https://commons.wikimedia.org/wiki/File:Toyota_Sprinter_Trueno_AE86_2_door.jpg
+- `mini-cooper.jpg` : Dülmen, Dernekamp, Mini Hatch Cooper -- 2018 -- 1545-51.jpg, by Dietmar Rabich, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:D%C3%BClmen,_Dernekamp,_Mini_Hatch_Cooper_--_2018_--_1545-51.jpg
+- `ford-focus-rs.jpg` : Ford Focus RS Mk III, 2016.jpg, by Cjp24, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Ford_Focus_RS_Mk_III,_2016.jpg
+- `mercedes-amg-c63.jpg` : MERCEDES-AMG C63 (W204) HONG KONG.jpg, by Dinkun Chen, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:MERCEDES-AMG_C63_(W204)_HONG_KONG.jpg
+- `ferrari-f40.jpg` : Ferrari F40, TC 24, Essen (TCE43319-RR).jpg, by Matti Blume, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Ferrari_F40,_TC_24,_Essen_(TCE43319-RR).jpg
+
+## Supplied by the project team
+
+These were added by the team, the source and license are not recorded. Replace them with licensed photos before the public launch if you can not confirm the rights:
+
+- cars: bmw-m2-2025, bmw-m3-cs-2023, bmw-m3-e46-2003, bmw-m4-competition-2024, ferrari-296-gtb-2023
+- ../events: car-meet, drift-race, friday-night-cruise, hill-climb, rally-sprint, sunday-drive, track-day
