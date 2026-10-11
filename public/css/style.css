@@ -68,19 +68,21 @@ body {
 
 .brand {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
   text-decoration: none;
   color: var(--text);
 }
 
+/* the chequered flag logo. the text-shadow requirement is still covered by
+   .glow, this one gets the same red glow through a drop shadow instead */
 .brand-mark {
-  font-family: 'MaslulDisplay', 'Segoe UI', sans-serif;
-  font-size: 1.5rem;
-  color: var(--accent);
-  /* ---- 2. text-shadow (CSS3 requirement) ---- */
-  text-shadow: 0 0 12px rgba(230, 57, 70, 0.55);
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(230, 57, 70, 0.55));
+  transform-origin: 4px 30px;
+  transition: transform 0.3s ease;
 }
+.brand:hover .brand-mark { transform: rotate(-8deg); }
 
 .brand-name {
   font-weight: 700;

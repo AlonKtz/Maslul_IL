@@ -8,7 +8,21 @@
 <header class="site-header">
   <nav class="nav container">
     <a class="brand" href="/">
-      <span class="brand-mark">מסלול</span>
+      <%# a waving chequered flag, drawn in svg: a grid of squares cut to a wavy flag shape %>
+      <svg class="brand-mark" viewBox="0 0 40 32" width="50" height="40" aria-hidden="true">
+        <defs>
+          <clipPath id="flag-wave">
+            <path d="M6 3 C14 0, 22 6, 30 3 S38 2, 38 3 L38 19 C30 22, 22 16, 14 19 S6 20, 6 19 Z"/>
+          </clipPath>
+          <pattern id="flag-checks" width="8" height="8" patternUnits="userSpaceOnUse">
+            <rect width="8" height="8" fill="#f2f4f7"/>
+            <rect width="4" height="4" fill="#11151a"/>
+            <rect x="4" y="4" width="4" height="4" fill="#11151a"/>
+          </pattern>
+        </defs>
+        <rect x="3" y="2" width="2.2" height="29" rx="1.1" fill="#e63946"/>
+        <rect x="6" y="0" width="32" height="22" fill="url(#flag-checks)" clip-path="url(#flag-wave)"/>
+      </svg>
       <span class="brand-name">Maslul</span>
     </a>
 
