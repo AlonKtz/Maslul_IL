@@ -1260,4 +1260,5 @@ a { color: var(--accent-2); }
   .partner-banner { flex-direction: column; align-items: flex-start; padding-left: 1.5rem; padding-top: 5rem; }
   .partner-flag { width: auto; right: 0; bottom: auto; height: 3.5rem;
     -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent); mask-image: linear-gradient(180deg, #000 40%, transparent); }
-}
+}.partner-text .partner-contact { margin-top: 0.6rem; color: var(--text); font-size: 0.9rem; }
+.partner-contact a { color: var(--accent-2); font-weight: 600; }
