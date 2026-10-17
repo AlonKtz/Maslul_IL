@@ -1,4 +1,4 @@
-<% pageScripts = ['/js/event-detail.js']; %>
+<% pageScripts = ['/build/event.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
@@ -10,7 +10,7 @@
   public/js/event-detail.js keeps it up to date without reloading.
 %>
 
-<main class="container" data-event-id="<%= event._id %>">
+<main class="container">
 
   <div class="page-head">
     <div>
@@ -23,7 +23,7 @@
       </p>
     </div>
     <% if (isHost) { %>
-      <button id="delete-event" class="btn btn-ghost" type="button">Delete event</button>
+      <span class="react-slot" data-react="DeleteEventButton" data-props='<%- reactProps({ eventId: event._id }) %>'></span>
     <% } %>
   </div>
 
@@ -35,7 +35,7 @@
 
         <p class="muted small" style="margin-top:1rem">
           <strong>When:</strong>
-          <span id="event-when" data-value="<%= event.startsAt.toISOString() %>"></span>
+          <span class="react-slot" data-react="LocalDateTime" data-props='<%- reactProps({ value: event.startsAt }) %>'></span>
         </p>
         <p class="muted small">
           <strong>Hosted by:</strong>
@@ -64,28 +64,23 @@
                 <p class="muted small" style="margin:.2rem 0 0"><%= circuit.description %></p>
               </div>
             </div>
-            <canvas id="circuit-canvas" class="circuit-canvas" width="560" height="320"></canvas>
+            <div data-react="CircuitCanvas" data-props='<%- reactProps({ layout: circuit.layout, closed: circuit.closed }) %>'></div>
             <div class="circuit-stats">
               <div><strong class="glow"><%= circuit.lengthKm %> km</strong><br><span class="muted small">per <%= circuit.unit === 'laps' ? 'lap' : 'run' %></span></div>
               <div><strong class="glow"><%= event.laps %></strong><br><span class="muted small"><%= circuit.unit %></span></div>
               <div><strong class="glow"><%= (circuit.lengthKm * event.laps).toFixed(1) %> km</strong><br><span class="muted small">total distance</span></div>
               <div><strong class="glow"><%= event.raceType || 'Race' %></strong><br><span class="muted small">format</span></div>
             </div>
-            <script id="circuit-data" type="application/json"><%- JSON.stringify({ layout: circuit.layout, closed: circuit.closed }) %></script>
           </div>
         <% } %>
 
         <div class="form-actions">
           <% if (!isHost) { %>
-            <button id="attend-btn" class="btn btn-primary" type="button">
-              <%= isAttending ? 'Cancel attendance' : 'I am going' %>
-            </button>
+            <span class="react-slot" data-react="AttendButton" data-props='<%- reactProps({ eventId: event._id, attending: isAttending }) %>'></span>
           <% } else { %>
             <span class="muted small">You are hosting this event.</span>
           <% } %>
-          <button id="like-btn" class="btn btn-ghost" type="button">
-            Like (<span id="like-count"><%= event.likes.length %></span>)
-          </button>
+          <span class="react-slot" data-react="LikeButton" data-props='<%- reactProps({ url: "/api/events/" + event._id + "/like", count: event.likes.length }) %>'></span>
         </div>
       </section>
 
@@ -93,23 +88,7 @@
       <section class="card">
         <h2>Comments</h2>
 
-        <form id="comment-form" novalidate>
-          <label for="comment-text" class="small">Add a comment</label>
-          <textarea id="comment-text" name="text" rows="2" maxlength="500"
-                    placeholder="Ask a question or say you are coming…"></textarea>
-          <p id="comment-error" class="form-error"></p>
-          <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Post comment</button>
-          </div>
-        </form>
-
-        <div id="comments"></div>
-
-        <%# The comments already loaded by the controller are handed to the
-            client as JSON, so the first render needs no extra request. %>
-        <script id="event-comments" type="application/json">
-          <%- JSON.stringify(event.comments) %>
-        </script>
+        <div data-react="Comments" data-props='<%- reactProps({ url: "/api/events/" + event._id + "/comments", initial: event.comments }) %>'></div>
       </section>
     </div>
 

@@ -3153,6 +3153,7 @@ app.use(morgan(inProduction ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.locals.assetVersion = (process.env.RENDER_GIT_COMMIT || Date.now().toString(36)).slice(0, 8);
+app.locals.reactProps = (data) => JSON.stringify(data === void 0 ? {} : data).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
 app.use(express.static(PUBLIC, { maxAge: "7d" }));
 var sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || "maslul-dev-secret",

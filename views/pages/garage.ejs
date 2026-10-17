@@ -10,7 +10,7 @@
 %>
 
 <main class="container garage-page">
-  <div data-react="GaragePage" data-props='<%- JSON.stringify({ categories: categories }).replace(/'/g, "&#39;") %>'></div>
+  <div data-react="GaragePage" data-props='<%- reactProps({ categories: categories }) %>'></div>
 </main>
 
 <%- include('../partials/footer') %>

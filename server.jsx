@@ -57,6 +57,14 @@ app.use(express.urlencoded({ extended: true }));
 // a week without ever showing an old one after a deploy
 app.locals.assetVersion = (process.env.RENDER_GIT_COMMIT || Date.now().toString(36)).slice(0, 8);
 
+// hands data to a React component on the page: data-props='<%- reactProps(x) %>'.
+// the json goes inside a single quoted html attribute, so & and ' are
+// written as entities; the browser turns them back before the component
+// reads them (client/lib/mount.jsx)
+app.locals.reactProps = (data) => JSON.stringify(data === undefined ? {} : data)
+  .replace(/&/g, '&amp;')
+  .replace(/'/g, '&#39;');
+
 // the static files can be kept by the browser for a week instead of being
 // asked for again on every page
 app.use(express.static(PUBLIC, { maxAge: '7d' }));
