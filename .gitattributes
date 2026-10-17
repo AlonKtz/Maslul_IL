@@ -1,0 +1,5 @@
+# The compiled output (npm run build) is written with LF line endings by
+# esbuild. Keep it that way in git too, so a rebuild on Windows does not
+# show every generated file as changed.
+dist/** text eol=lf
+public/build/** text eol=lf
