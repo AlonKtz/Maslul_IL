@@ -1,13 +1,11 @@
-<% pageScripts = ['/js/feed.js']; %>
+<% pageScripts = ['/build/feed.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <%#
   The feed.
-  This page is nearly empty on purpose. All it has is the tabs, an empty div
-  and the sidebar. public/js/feed.js asks /api/feed for the timeline and
-  fills it in. Doing it this way means switching tabs or loading more does
-  not reload the page.
+  The page itself is only the heading. The tabs, the timeline and the side
+  boxes are React components (client/components/feed/), filled from /api/feed.
 %>
 
 <main class="container">
@@ -21,34 +19,8 @@
     </div>
   </div>
 
-  <div class="tabs" id="feed-tabs">
-    <button class="tab is-active" data-tab="panel-feed" type="button" data-filter="all">Everything</button>
-    <button class="tab" data-tab="panel-feed" type="button" data-filter="friends">Friends</button>
-    <button class="tab" data-tab="panel-feed" type="button" data-filter="groups">My groups</button>
-  </div>
-
-  <div class="layout-split">
-    <div id="panel-feed" class="tab-panel is-active">
-      <div id="feed-items"></div>
-      <div class="form-actions">
-        <button id="load-more" class="btn btn-ghost" type="button" style="display:none">
-          Load more
-        </button>
-      </div>
-    </div>
-
-    <aside>
-      <section class="card" style="margin-top:0">
-        <h2 class="small">Your groups</h2>
-        <div id="my-groups" class="people"></div>
-      </section>
-
-      <section class="card">
-        <h2 class="small">People you might know</h2>
-        <div id="suggestions" class="people"></div>
-      </section>
-    </aside>
-  </div>
+  <%# the tabs, the timeline and the side boxes: client/components/feed/FeedPage.jsx %>
+  <div data-react="FeedPage"></div>
 
 </main>
 
