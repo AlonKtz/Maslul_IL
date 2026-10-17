@@ -1125,6 +1125,7 @@ var require_userController = __commonJS({
         const isSelf = user._id.equals(req.currentUser._id);
         const isFriend = user.friends.some((f) => f._id.equals(req.currentUser._id));
         const requestSent = user.friendRequests.some((f) => f.equals(req.currentUser._id));
+        const requests = isSelf && user.friendRequests.length ? await User.find({ _id: { $in: user.friendRequests } }).select("username displayName avatar") : [];
         res.render("pages/profile", {
           title: user.displayName || user.username,
           user,
@@ -1134,7 +1135,8 @@ var require_userController = __commonJS({
           groups,
           isSelf,
           isFriend,
-          requestSent
+          requestSent,
+          requests
         });
       } catch (err) {
         next(err);

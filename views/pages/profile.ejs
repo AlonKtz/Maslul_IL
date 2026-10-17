@@ -1,4 +1,4 @@
-<% pageScripts = ['/js/profile.js']; %>
+<% pageScripts = ['/build/profile.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
@@ -10,7 +10,7 @@
   the friend button and a link to message them instead.
 %>
 
-<main class="container" data-profile-id="<%= user._id %>" data-profile-username="<%= user.username %>">
+<main class="container">
 
   <div class="page-head">
     <div style="display:flex;align-items:center;gap:1rem">
@@ -24,20 +24,7 @@
       </div>
     </div>
 
-    <div class="form-actions" style="margin:0">
-      <% if (isSelf) { %>
-        <button id="toggle-edit" class="btn btn-ghost" type="button">Edit profile</button>
-      <% } else { %>
-        <% if (isFriend) { %>
-          <button id="unfriend-btn" class="btn btn-ghost" type="button">Remove friend</button>
-        <% } else if (requestSent) { %>
-          <button class="btn btn-ghost" type="button" disabled>Request sent</button>
-        <% } else { %>
-          <button id="friend-btn" class="btn btn-primary" type="button">Add friend</button>
-        <% } %>
-        <a class="btn btn-ghost" href="/chat?to=<%= user._id %>">Message</a>
-      <% } %>
-    </div>
+    <div data-react="ProfileActions" data-props='<%- reactProps({ profileId: user._id, isSelf: isSelf, isFriend: isFriend, requestSent: requestSent }) %>'></div>
   </div>
 
   <% if (user.bio) { %>
@@ -46,49 +33,7 @@
 
   <!-- ------------------------------------------------------- edit own profile -->
   <% if (isSelf) { %>
-    <section id="edit-panel" class="card collapse">
-      <h2>Edit your profile</h2>
-      <form id="profile-form" novalidate>
-        <div class="form-grid">
-          <div>
-            <label for="p-name">Display name</label>
-            <input id="p-name" name="displayName" type="text" maxlength="40" value="<%= user.displayName %>">
-          </div>
-          <div>
-            <label for="p-location">Location</label>
-            <input id="p-location" name="location" type="text" maxlength="60" value="<%= user.location %>">
-          </div>
-          <div>
-            <label for="p-avatar">Profile photo</label>
-            <input id="p-avatar" name="avatarFile" type="file" accept="image/*">
-          </div>
-        </div>
-
-        <label for="p-bio">Bio</label>
-        <textarea id="p-bio" name="bio" rows="3" maxlength="300"><%= user.bio %></textarea>
-
-        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">
-        <p class="hint">Leave the password fields empty to keep your current password.</p>
-
-        <div class="form-grid">
-          <div>
-            <label for="p-current">Current password</label>
-            <input id="p-current" name="currentPassword" type="password" autocomplete="current-password">
-          </div>
-          <div>
-            <label for="p-new">New password</label>
-            <input id="p-new" name="newPassword" type="password" autocomplete="new-password">
-          </div>
-        </div>
-
-        <p id="profile-error" class="form-error"></p>
-
-        <div class="form-actions">
-          <button class="btn btn-primary" type="submit">Save profile</button>
-          <button id="delete-account" class="btn btn-ghost" type="button">Delete my account</button>
-        </div>
-      </form>
-    </section>
+    <div data-react="ProfileEditForm" data-props='<%- reactProps({ profileId: user._id, user: { displayName: user.displayName, location: user.location, bio: user.bio } }) %>'></div>
   <% } %>
 
   <!-- --------------------------------------------------------------- stats -->
@@ -161,11 +106,8 @@
       </section>
 
       <!-- --------------------------------------------- incoming friend requests -->
-      <% if (isSelf && user.friendRequests && user.friendRequests.length) { %>
-        <section class="card">
-          <h2 class="small">Friend requests</h2>
-          <div id="requests" class="people"></div>
-        </section>
+      <% if (isSelf && requests.length) { %>
+        <div data-react="FriendRequests" data-props='<%- reactProps({ requests: requests.map(function (u) { return { _id: u._id, username: u.username, displayName: u.displayName, avatar: u.avatar }; }) }) %>'></div>
       <% } %>
     </aside>
   </div>

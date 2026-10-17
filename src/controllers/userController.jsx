@@ -39,6 +39,12 @@ async function showProfile(req, res, next) {
     const isFriend = user.friends.some((f) => f._id.equals(req.currentUser._id));
     const requestSent = user.friendRequests.some((f) => f.equals(req.currentUser._id));
 
+    // on my own profile, the people who asked to be my friend, with their
+    // names and pictures for the "Friend requests" box
+    const requests = isSelf && user.friendRequests.length
+      ? await User.find({ _id: { $in: user.friendRequests } }).select('username displayName avatar')
+      : [];
+
     res.render('pages/profile', {
       title: user.displayName || user.username,
       user,
@@ -49,6 +55,7 @@ async function showProfile(req, res, next) {
       isSelf,
       isFriend,
       requestSent,
+      requests,
     });
   } catch (err) {
     next(err);
