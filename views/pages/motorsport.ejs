@@ -1,3 +1,4 @@
+<% pageScripts = ['/build/motorsport.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
@@ -6,7 +7,7 @@
 
   This page is about racing everywhere, not about our own meets, which is why
   the recap videos moved here from the events page. The video player is the
-  React component in public/components/VideoShowcase.jsx. Our own clips tab is
+  React component in client/components/motorsport/VideoShowcase.jsx. Our own clips tab is
   switched off with showClips: false, flip it to true to bring it back.
 
   The second section is deliberately empty for now. The plan is a feed of
@@ -31,9 +32,7 @@
       The site checks each channel for a newer one every three days.
     </p>
 
-    <div id="video-showcase"
-         data-react="VideoShowcase"
-         data-props='<%- JSON.stringify({ videos: videos, showClips: true }).replace(/'/g, "&#39;") %>'></div>
+    <div data-react="VideoShowcase" data-props='<%- reactProps({ videos: videos, showClips: true }) %>'></div>
   </section>
 
   <!-- ---------------------------------------------------------------- worldwide -->
@@ -65,13 +64,5 @@
 
 </main>
 
-<%# React and Babel come from /public/vendor so the page works offline. %>
-<%# the component is written in VideoShowcase.jsx and compiled to plain
-    VideoShowcase.js ahead of time (npm run build:components), so the browser
-    does not have to download Babel and compile it on every visit %>
-<script src="/vendor/react.production.min.js"></script>
-<script src="/vendor/react-dom.production.min.js"></script>
-<script src="/components/VideoShowcase.js?v=<%= assetVersion %>"></script>
-<script src="/components/mount.js?v=<%= assetVersion %>" defer></script>
 
 <%- include('../partials/footer') %>

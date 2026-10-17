@@ -1,1 +1,0 @@
-import{a as o,b as p}from"./chunk-7EU2QGX2.js";var r=o(p());function e({text:t}){return r.default.createElement("p",{className:"loading"},t||"Loading\u2026")}var a=o(p());function n({children:t}){return a.default.createElement("p",{className:"empty"},t)}export{e as a,n as b};

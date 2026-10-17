@@ -415,6 +415,7 @@ var require_routes = __commonJS({
     var express2 = require("express");
     var { requireLogin } = require_auth();
     var { CITIES } = require_cities();
+    var Group = require_Group();
     var { latestRecaps } = require_recap();
     var router = express2.Router();
     router.get("/", (req, res) => {
@@ -422,7 +423,7 @@ var require_routes = __commonJS({
       res.render("pages/landing", { title: "Home" });
     });
     router.get("/search", requireLogin, (req, res) => {
-      res.render("pages/search", { title: "Search", cities: CITIES });
+      res.render("pages/search", { title: "Search", cities: CITIES, categories: Group.CATEGORIES });
     });
     router.get("/motorsport", requireLogin, async (req, res, next) => {
       try {

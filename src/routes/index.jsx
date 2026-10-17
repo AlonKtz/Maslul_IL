@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireLogin } = require('../middleware/auth');
 const { CITIES } = require('../data/cities');
+const Group = require('../models/Group');
 const { latestRecaps } = require('../utils/recap');
 
 const router = express.Router();
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
 // the search page is just an empty shell. the content gets loaded over ajax
 // by the matching script in /public/js.
 router.get('/search', requireLogin, (req, res) => {
-  res.render('pages/search', { title: 'Search', cities: CITIES });
+  res.render('pages/search', { title: 'Search', cities: CITIES, categories: Group.CATEGORIES });
 });
 
 // GET /motorsport. racing from around the world, plus the recap videos.

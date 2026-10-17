@@ -7,7 +7,7 @@
   $geoWithin.
 
   The border, the neighbouring land and the two lakes come from Natural Earth,
-  which is public domain map data, and live in mapData.js next to this file.
+  which is public domain map data, and live in mapData.jsx next to this file.
   Nothing is fetched off the internet while the page runs, so the map still
   works with no connection. I went this way instead of using a map library
   because the project is only allowed to use what we covered in class, and it
@@ -16,9 +16,13 @@
   This is the component that covers the Canvas part of the React requirement.
 */
 
-const { useState, useRef, useEffect, useCallback } = React;
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import MAP_DATA from './mapData';
+import { api, errorText } from '../../lib/api';
+import { t, currentLang } from '../../lib/i18n';
+import { formatDateTime } from '../../lib/format';
 
-const DATA = window.MAP_DATA;
+const DATA = MAP_DATA;
 
 const WIDTH = 420;
 const HEIGHT = 720;
@@ -111,7 +115,7 @@ function CanvasMap({ cities, mode }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [satellite, setSatellite] = useState(null); // loaded tiles, null until all are in
-  const [lang, setLang] = useState(window.I18N ? window.I18N.lang : 'en');
+  const [lang, setLang] = useState(currentLang());
 
   // the city names are drawn on the canvas, so redraw them when the
   // language switch in the top bar is used
@@ -208,7 +212,7 @@ function CanvasMap({ cities, mode }) {
       // country turns into a pile of overlapping labels
       if (city.major) {
         // the canvas is not part of the page text, so ask i18n.js directly
-        const label = window.I18N ? window.I18N.t(city.name) : city.name;
+        const label = t(city.name);
         ctx.font = '600 11px Segoe UI, sans-serif';
         if (satellite) {
           ctx.lineWidth = 3;
@@ -318,27 +322,19 @@ function CanvasMap({ cities, mode }) {
 
     const url = mode === 'listings' ? '/api/listings/area' : '/api/events/area';
 
-    // jQuery ajax, same as everywhere else in the project
-    window.jQuery
-      .ajax({
-        url,
-        type: 'POST',
-        contentType: 'application/json',
-        dataType: 'json',
-        data: JSON.stringify({ polygon }),
-      })
-      .done((res) => {
+    api.post(url, { polygon })
+      .then((res) => {
         const items = mode === 'listings' ? res.listings : res.events;
         setResults({
           items,
           points: items.map((it) => ({ coordinates: it.location.coordinates })),
         });
       })
-      .fail((jq) => {
-        setError(window.API ? window.API.errorMessage(jq) : 'Search failed.');
+      .catch((err) => {
+        setError(errorText(err));
         setResults(null);
       })
-      .always(() => setLoading(false));
+      .finally(() => setLoading(false));
   }
 
   // ------------------------------------------------------------------ render
@@ -401,7 +397,7 @@ function CanvasMap({ cities, mode }) {
                   </p>
                   <p className="item-meta">{item.city}</p>
                   <p className="item-meta">
-                    {window.UI ? window.UI.formatDateTime(item.startsAt) : item.startsAt}
+                    {formatDateTime(item.startsAt)}
                   </p>
                 </div>
               )
@@ -412,4 +408,4 @@ function CanvasMap({ cities, mode }) {
   );
 }
 
-window.CanvasMap = CanvasMap;
+export default CanvasMap;

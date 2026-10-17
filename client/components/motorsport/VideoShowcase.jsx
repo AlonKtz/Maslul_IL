@@ -17,7 +17,7 @@
   be switched back on with one attribute.
 */
 
-const { useState, useRef, useEffect } = React;
+import React, { useState, useRef, useEffect } from 'react';
 
 function formatTime(seconds) {
   if (!isFinite(seconds)) return '0:00';
@@ -41,10 +41,10 @@ function VideoShowcase({ videos = [], showClips = true }) {
 
   // grab the clip list once when the component first appears
   useEffect(() => {
-    window.jQuery
-      .getJSON('/video/clips.json')
-      .done((data) => setClips(Array.isArray(data) ? data : []))
-      .fail(() => setClips([]));
+    fetch('/video/clips.json')
+      .then((res) => res.json())
+      .then((data) => setClips(Array.isArray(data) ? data : []))
+      .catch(() => setClips([]));
   }, []);
 
   // push the slider value onto the actual video element
@@ -235,4 +235,4 @@ function VideoShowcase({ videos = [], showClips = true }) {
   );
 }
 
-window.VideoShowcase = VideoShowcase;
+export default VideoShowcase;

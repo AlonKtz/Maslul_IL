@@ -4,9 +4,8 @@
   "description": "Maslul - Israel's first social network for car lovers (Web Applications final project)",
   "main": "dist/server.js",
   "scripts": {
-    "build": "npm run build:server && npm run build:client && npm run build:components",
+    "build": "npm run build:server && npm run build:client",
     "build:server": "esbuild server.jsx seed/seed.jsx tests/api.test.jsx tests/chat.test.jsx --bundle --platform=node --packages=external --format=cjs --target=node18 --outdir=dist --outbase=. --log-level=warning",
-    "build:components": "esbuild public/components/CanvasMap.jsx public/components/VideoShowcase.jsx --outdir=public/components --target=es2019 --log-level=warning",
     "start": "node dist/server.js",
     "dev": "nodemon --watch server.jsx --watch src --watch config --watch seed --watch client --ext jsx,json --exec \"npm run build:server && npm run build:client && node dist/server.js\"",
     "seed": "node dist/seed/seed.js",

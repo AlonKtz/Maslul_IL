@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 */
 const EMPTY = { name: '', category: '', brand: '', privacy: '', minMembers: '' };
 
-export default function GroupFilters({ categories, onSearch, onClear }) {
+export default function GroupFilters({ categories, onSearch, onClear, title = 'Find a group', buttonText = 'Search' }) {
   const [f, setF] = useState(EMPTY);
   const set = (field) => (e) => setF({ ...f, [field]: e.target.value });
 
@@ -26,7 +26,7 @@ export default function GroupFilters({ categories, onSearch, onClear }) {
 
   return (
     <section className="search-panel">
-      <h2 className="small" style={{ marginTop: 0 }}>Find a group</h2>
+      <h2 className="small" style={{ marginTop: 0 }}>{title}</h2>
       <form onSubmit={submit} noValidate>
         <div className="filter-row">
           <div>
@@ -58,7 +58,7 @@ export default function GroupFilters({ categories, onSearch, onClear }) {
           </div>
         </div>
         <div className="form-actions">
-          <button className="btn btn-primary" type="submit">Search</button>
+          <button className="btn btn-primary" type="submit">{buttonText}</button>
           <button className="btn btn-ghost" type="button" onClick={clear}>Clear</button>
         </div>
       </form>

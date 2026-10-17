@@ -1,1 +1,0 @@
-import{a as n,b as s}from"./chunk-7EU2QGX2.js";var i=n(s());function d({tabs:e,active:o,onChange:a}){return i.default.createElement("div",{className:"tabs"},e.map(t=>i.default.createElement("button",{key:t.id,type:"button",className:"tab"+(t.id===o?" is-active":""),onClick:()=>a(t.id)},t.label)))}export{d as a};
