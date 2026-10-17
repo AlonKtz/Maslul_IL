@@ -1,12 +1,13 @@
 const fs = require('fs').promises;
 const path = require('path');
 const express = require('express');
+const { VIDEO } = require('../paths');
 const upload = require('../middleware/upload');
 const { requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
 
-const CLIPS_FILE = path.join(__dirname, '..', '..', 'public', 'video', 'clips.json');
+const CLIPS_FILE = path.join(VIDEO, 'clips.json');
 
 /*
   The upload endpoints for images and video.

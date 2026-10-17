@@ -9,6 +9,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 
 const connectDB = require('./config/db');
+const { VIEWS, PUBLIC } = require('./src/paths');
 const { attachUser } = require('./src/middleware/auth');
 const { notFound, errorHandler } = require('./src/middleware/error');
 
@@ -17,7 +18,7 @@ const server = http.createServer(app);
 
 // ---------------------------------------------------------------- view engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', VIEWS);
 
 // ---------------------------------------------------------------- middleware
 // when the site is hosted, the host puts a proxy in front of it that handles
@@ -58,7 +59,7 @@ app.locals.assetVersion = (process.env.RENDER_GIT_COMMIT || Date.now().toString(
 
 // the static files can be kept by the browser for a week instead of being
 // asked for again on every page
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d' }));
+app.use(express.static(PUBLIC, { maxAge: '7d' }));
 
 // sessions go in mongo rather than memory, so restarting the server does not
 // log everybody out

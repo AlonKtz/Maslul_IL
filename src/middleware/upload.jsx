@@ -1,6 +1,7 @@
 const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');
+const { UPLOADS, VIDEO } = require('../paths');
 
 /*
   Handles image uploads, so car photos, event covers, listing photos and avatars.
@@ -13,7 +14,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, path.join(__dirname, '..', '..', 'public', 'uploads'));
+    cb(null, UPLOADS);
   },
   filename(req, file, cb) {
     const ext = path.extname(file.originalname).toLowerCase();
@@ -44,7 +45,7 @@ const upload = multer({
 const uploadVideo = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
-      cb(null, path.join(__dirname, '..', '..', 'public', 'video'));
+      cb(null, VIDEO);
     },
     filename(req, file, cb) {
       const ext = path.extname(file.originalname).toLowerCase();
