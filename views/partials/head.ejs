@@ -17,12 +17,11 @@
   <title><%= typeof title !== 'undefined' ? title + ' | Maslul' : 'Maslul' %></title>
   <link rel="stylesheet" href="/css/style.css?v=<%= assetVersion %>">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-  <script src="/vendor/jquery.min.js"></script>
 </head>
 <%# The top of every page.
 
     I put the signed in member's id and role on the body tag. The client
-    scripts read them with $('body').data('user-id') to work out which cards
+    components read them (client/lib/session.jsx) to work out which cards
     belong to you, so they can show an Edit button instead of a View one.
     It saves a request on every page. It is only used for what to display,
     never for permission, because anyone can edit it in devtools. %>

@@ -1,71 +1,16 @@
-<% pageScripts = ['/js/stats.js']; %>
+<% pageScripts = ['/build/stats.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <%#
-  The statistics page.
-
-  Every chart is an empty div here. public/js/stats.js asks each endpoint for
-  its numbers and draws the svg with D3. D3 itself is loaded at the bottom of
-  this file from /public/vendor, not from a CDN, so the charts still work with
-  no internet.
+  Statistics.
+  The whole page is React (client/components/stats/): the totals and five
+  charts drawn with D3. Each chart asks the server for its own numbers, which
+  are worked out from the database at that moment.
 %>
 
 <main class="container stats-page">
-
-  <div class="page-head">
-    <div>
-      <h1 class="glow">Statistics</h1>
-      <p class="muted">
-        Everything on this page is calculated from the database as it is right now.
-      </p>
-    </div>
-    <button id="refresh-stats" class="btn btn-ghost" type="button">Refresh</button>
-  </div>
-
-  <!-- ------------------------------------------------------------ counters -->
-  <section id="summary" class="stat-tiles">
-    <p class="muted">Loading…</p>
-  </section>
-
-  <!-- -------------------------------------------------------------- charts -->
-  <section class="card">
-    <h2>Meets and races per month</h2>
-    <p class="muted small">Grouped by the month the event takes place.</p>
-    <div id="chart-events-month" class="chart"></div>
-  </section>
-
-  <section class="card">
-    <h2>Most common makes in the garages</h2>
-    <p class="muted small">Bar length is the number of cars; hover for average power.</p>
-    <div id="chart-cars-make" class="chart"></div>
-  </section>
-
-  <section class="card">
-    <h2>Marketplace by category</h2>
-    <p class="muted small">How many items are listed, and what they cost on average.</p>
-    <div id="chart-listings" class="chart"></div>
-  </section>
-
-  <section class="card">
-    <h2>How busy each group is</h2>
-    <p class="muted small">
-      Roughly how many events each group puts on per month, worked out from how
-      long the group has existed. This is the closest one to the example in the
-      brief, which asks for an average per group per month.
-    </p>
-    <div id="chart-group-activity" class="chart"></div>
-  </section>
-
-  <section class="card">
-    <h2>Where events happen</h2>
-    <p class="muted small">Events per city, with the total number of people going.</p>
-    <div id="chart-cities" class="chart"></div>
-  </section>
-
+  <div data-react="StatsPage"></div>
 </main>
-
-<%# D3 is served from /public/vendor so the charts work with no internet. %>
-<script src="/vendor/d3.min.js"></script>
 
 <%- include('../partials/footer') %>

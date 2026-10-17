@@ -4,8 +4,6 @@
     </div>
   </footer>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
   <%# The React side of the site. common.js runs on every page: the
       translation, the top bar controls and the toast. A page that has its
       own components lists its bundle in pageScripts at the top of the file.
@@ -14,17 +12,9 @@
   <div data-react="Toast"></div>
   <script type="module" src="/build/common.js?v=<%= assetVersion %>"></script>
 
-  <%# pages that are not moved to React yet still use these %>
-  <script src="/js/api.js?v=<%= assetVersion %>"></script>
-  <script src="/js/ui.js?v=<%= assetVersion %>"></script>
-
   <% if (typeof pageScripts !== "undefined" && pageScripts.length) { %>
     <% pageScripts.forEach(function (src) { %>
-      <% if (src.indexOf("/build/") === 0) { %>
-        <script type="module" src="<%= src %>?v=<%= assetVersion %>"></script>
-      <% } else { %>
-        <script src="<%= src %>?v=<%= assetVersion %>"></script>
-      <% } %>
+      <script type="module" src="<%= src %>?v=<%= assetVersion %>"></script>
     <% }); %>
   <% } %>
 </body>

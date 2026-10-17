@@ -4,8 +4,8 @@ const User = require('../models/User');
   Register, login and logout.
 
   All three send back json rather than rendering a page, because the forms are
-  submitted with jQuery ajax. The browser does the redirect itself once it
-  gets an ok back.
+  React components that send them with fetch (client/components/auth/). The
+  browser does the redirect itself once it gets an ok back.
 */
 
 // GET /register, shows the sign up page

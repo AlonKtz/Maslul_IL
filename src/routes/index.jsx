@@ -12,8 +12,8 @@ router.get('/', (req, res) => {
   res.render('pages/landing', { title: 'Home' });
 });
 
-// the search page is just an empty shell. the content gets loaded over ajax
-// by the matching script in /public/js.
+// the search page is just an empty shell. the content is React
+// (client/components/search/), loaded from the api routes.
 router.get('/search', requireLogin, (req, res) => {
   res.render('pages/search', { title: 'Search', cities: CITIES, categories: Group.CATEGORIES });
 });

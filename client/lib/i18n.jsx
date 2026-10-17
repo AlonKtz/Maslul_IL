@@ -636,6 +636,7 @@
     [/^(\d+) found in this area$/, 'נמצאו $1 באזור הזה'],
     [/^(\d+) (\w+) found$/, function (m, n, noun) { return 'נמצאו ' + n + ' ' + (NOUNS[noun] || noun); }],
     [/^(\d+) members?$/, '$1 חברים'],
+    [/^(\d+) friends$/, '$1 חברים'],
     [/^(\d+) cars?$/, '$1 רכבים'],
     [/^(\d+) hp$/, '$1 כ״ס'],
     [/^avg (\d+) hp$/, 'ממוצע $1 כ״ס'],

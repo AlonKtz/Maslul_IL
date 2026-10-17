@@ -90,8 +90,9 @@ app.use(sessionMiddleware);
 app.use(attachUser);
 
 // the language the page is shown in, from the cookie the language button
-// sets. the head partial uses it for lang and dir, public/js/i18n.js does
-// the translating. the theme works the same way, see public/js/theme.js
+// sets. the head partial uses it for lang and dir, client/lib/i18n.jsx does
+// the translating. the theme works the same way, see
+// client/components/nav/ThemeToggle.jsx
 app.use((req, res, next) => {
   const match = /(?:^|;\s*)lang=(he|en)\b/.exec(req.headers.cookie || '');
   res.locals.lang = match ? match[1] : 'en';
