@@ -1,0 +1,1 @@
+import{b as e,c as l}from"./chunk-HKHNT7HY.js";var o=e(l());function t({message:r}){return o.default.createElement("p",{className:"form-error",role:"alert",style:{display:r?"block":"none"}},r)}export{t as a};

@@ -1,1 +1,0 @@
-import{a as e,b as l}from"./chunk-3CU4DVJA.js";var o=e(l());function t({message:r}){return o.default.createElement("p",{className:"form-error",role:"alert",style:{display:r?"block":"none"}},r)}export{t as a};

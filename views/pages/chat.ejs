@@ -1,118 +1,21 @@
-<% pageScripts = ['/js/chat.js']; %>
+<% pageScripts = ['/build/chat.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
 <%#
-  The chat page.
-
-  The left column is who you can talk to, the middle is the conversation, and
-  the panel at the bottom searches your old messages.
-
-  The socket.io client is loaded at the bottom of this file, before the footer
-  scripts, because public/js/chat.js needs io() to exist when it runs.
+  Chat.
+  The whole page is React (client/components/chat/): the conversation list,
+  friends, the open thread, the message box and the message search. Messages
+  travel over a WebSocket (Socket.io), which shares the site's session so the
+  server knows who is connected. The server hands over my friends, and
+  openWith when I came here with "Message" from someone's profile.
 %>
 
-<main class="container chat-page" data-open-with="<%= openWith %>">
-
-  <div class="page-head">
-    <div>
-      <h1 class="glow">Chat</h1>
-      <p class="muted">
-        Messages are delivered live over WebSockets
-        <span id="connection" class="badge">connecting…</span>
-      </p>
-    </div>
-  </div>
-
-  <div class="chat-layout">
-
-    <!-- -------------------------------------------------------- left column -->
-    <aside class="chat-sidebar card">
-      <h2 class="small" style="margin-top:0">Conversations</h2>
-      <div id="conversations"></div>
-
-      <h2 class="small">Friends</h2>
-      <div id="friend-list" class="people">
-        <% if (!friends.length) { %>
-          <p class="muted small">
-            Add a friend from their profile to start chatting.
-          </p>
-        <% } %>
-        <% friends.forEach(function (f) { %>
-          <button class="person chat-open" type="button"
-                  data-user-id="<%= f._id %>"
-                  data-user-name="<%= f.displayName || f.username %>"
-                  data-user-avatar="<%= f.avatar %>">
-            <img src="<%= f.avatar %>" alt="">
-            <span><%= f.displayName || f.username %></span>
-            <span class="dot" data-presence="<%= f._id %>"></span>
-          </button>
-        <% }); %>
-      </div>
-    </aside>
-
-    <!-- ------------------------------------------------------- conversation -->
-    <section class="chat-main card">
-      <header class="chat-header">
-        <img id="peer-avatar" src="/img/default-avatar.svg" alt="" hidden>
-        <div>
-          <strong id="peer-name">Pick somebody to talk to</strong>
-          <p class="muted small" id="peer-status" style="margin:0"></p>
-        </div>
-      </header>
-
-      <div id="thread" class="chat-thread">
-        <p class="empty">Choose a conversation on the left.</p>
-      </div>
-
-      <p id="typing-indicator" class="muted small" style="min-height:1.2em"></p>
-
-      <form id="chat-form" class="chat-form" novalidate>
-        <input id="chat-text" type="text" maxlength="1000" autocomplete="off"
-               placeholder="Write a message…" disabled>
-        <button class="btn btn-primary" type="submit" disabled>Send</button>
-      </form>
-      <p id="chat-error" class="form-error"></p>
-    </section>
-  </div>
-
-  <!-- ------------------------------------------------------------- search -->
-  <section class="search-panel" style="margin-top:1.5rem">
-    <h2 class="small" style="margin-top:0">Search your messages</h2>
-    <form id="message-search" novalidate>
-      <div class="filter-row">
-        <div>
-          <label for="ms-keyword">Contains</label>
-          <input id="ms-keyword" name="keyword" type="text" placeholder="wheels">
-        </div>
-        <div>
-          <label for="ms-with">With</label>
-          <select id="ms-with" name="withUser">
-            <option value="">Anyone</option>
-            <% friends.forEach(function (f) { %>
-              <option value="<%= f._id %>"><%= f.displayName || f.username %></option>
-            <% }); %>
-          </select>
-        </div>
-        <div>
-          <label for="ms-from">From</label>
-          <input id="ms-from" name="dateFrom" type="date">
-        </div>
-        <div>
-          <label for="ms-to">To</label>
-          <input id="ms-to" name="dateTo" type="date">
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" type="submit">Search messages</button>
-        <button class="btn btn-ghost" type="reset">Clear</button>
-      </div>
-    </form>
-    <div id="message-results"></div>
-  </section>
-
+<main class="container chat-page">
+  <div data-react="ChatPage" data-props='<%- reactProps({
+    openWith: openWith,
+    friends: friends.map(function (f) { return { _id: f._id, username: f.username, displayName: f.displayName, avatar: f.avatar }; })
+  }) %>'></div>
 </main>
-
-<script src="/vendor/socket.io.min.js"></script>
 
 <%- include('../partials/footer') %>
