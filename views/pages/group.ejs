@@ -1,4 +1,4 @@
-<% pageScripts = ['/js/group-detail.js']; %>
+<% pageScripts = ['/build/group.js']; %>
 <%- include('../partials/head') %>
 <%- include('../partials/nav') %>
 
@@ -12,7 +12,7 @@
   server, so removing the hidden markup in devtools gets you nowhere.
 %>
 
-<main class="container" data-group-id="<%= group._id %>">
+<main class="container">
 
   <div class="page-head">
     <div>
@@ -25,18 +25,7 @@
         <a href="/profile/<%= group.admin.username %>"><%= group.admin.displayName || group.admin.username %></a>
       </p>
     </div>
-    <div class="form-actions" style="margin:0">
-      <% if (!isManager) { %>
-        <% if (isMember) { %>
-          <button id="leave-group" class="btn btn-ghost" type="button">Leave group</button>
-        <% } else { %>
-          <button id="join-group" class="btn btn-primary" type="button">Join group</button>
-        <% } %>
-      <% } else { %>
-        <button id="toggle-edit" class="btn btn-ghost" type="button">Edit group</button>
-        <button id="delete-group" class="btn btn-ghost" type="button">Delete group</button>
-      <% } %>
-    </div>
+    <div data-react="GroupActions" data-props='<%- reactProps({ groupId: group._id, isManager: isManager, isMember: isMember }) %>'></div>
   </div>
 
   <% if (group.description) { %>
@@ -47,90 +36,17 @@
 
   <!-- ------------------------------------------------- manager-only editing -->
   <% if (isManager) { %>
-    <section id="edit-panel" class="card collapse">
-      <h2>Group settings</h2>
-      <form id="group-edit-form" novalidate>
-        <div class="form-grid">
-          <div>
-            <label for="e-name">Name</label>
-            <input id="e-name" name="name" type="text" maxlength="50" value="<%= group.name %>" required>
-          </div>
-          <div>
-            <label for="e-category">Category</label>
-            <select id="e-category" name="category">
-              <% ['Brand','Off-road','Classic','EV','Racing','Tuning','JDM','General'].forEach(function (c) { %>
-                <option value="<%= c %>" <%= group.category === c ? 'selected' : '' %>><%= c %></option>
-              <% }); %>
-            </select>
-          </div>
-          <div>
-            <label for="e-brand">Brand</label>
-            <input id="e-brand" name="brand" type="text" maxlength="40" value="<%= group.brand %>">
-          </div>
-          <div>
-            <label for="e-private" style="margin-top:2rem">
-              <input id="e-private" name="isPrivate" type="checkbox" value="true"
-                     style="width:auto" <%= group.isPrivate ? 'checked' : '' %>>
-              Private group
-            </label>
-          </div>
-        </div>
-
-        <label for="e-desc">Description</label>
-        <textarea id="e-desc" name="description" rows="3" maxlength="500"><%= group.description %></textarea>
-
-        <p id="edit-error" class="form-error"></p>
-
-        <div class="form-actions">
-          <button class="btn btn-primary" type="submit">Save changes</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- ------------------------------------------- pending join requests -->
-    <section class="card">
-      <h2>Join requests <span class="muted small">(manager only)</span></h2>
-      <div id="pending" class="people">
-        <% group.pendingRequests.forEach(function (p) { %>
-          <span class="person" data-user-id="<%= p._id %>">
-            <img src="<%= p.avatar %>" alt="">
-            <span><%= p.displayName || p.username %></span>
-            <button class="btn btn-ghost small btn-approve" type="button">Approve</button>
-            <button class="btn btn-ghost small btn-reject" type="button">Reject</button>
-          </span>
-        <% }); %>
-      </div>
-      <% if (!group.pendingRequests.length) { %>
-        <p class="muted small" id="no-pending">No requests waiting.</p>
-      <% } %>
-    </section>
+    <div data-react="GroupSettings" data-props='<%- reactProps({ categories: categories, group: { _id: group._id, name: group.name, category: group.category, brand: group.brand, description: group.description, isPrivate: group.isPrivate } }) %>'></div>
+    <div data-react="JoinRequests" data-props='<%- reactProps({ groupId: group._id, pending: group.pendingRequests.map(function (p) { return { _id: p._id, username: p.username, displayName: p.displayName, avatar: p.avatar }; }) }) %>'></div>
   <% } %>
 
   <div class="layout-split">
     <!-- ------------------------------------------------------ group events -->
-    <section>
-      <h2>Events from this group</h2>
-      <div id="group-events" class="grid"></div>
-    </section>
+    <div data-react="GroupEvents" data-props='<%- reactProps({ groupId: group._id }) %>'></div>
 
     <!-- ----------------------------------------------------------- members -->
     <aside>
-      <section class="card" style="margin-top:0">
-        <h2 class="small">Members</h2>
-        <div id="members" class="people">
-          <% group.members.forEach(function (m) { %>
-            <span class="person" data-user-id="<%= m._id %>">
-              <a href="/profile/<%= m.username %>" style="display:flex;align-items:center;gap:.5rem;color:inherit;text-decoration:none">
-                <img src="<%= m.avatar %>" alt="">
-                <span><%= m.displayName || m.username %></span>
-              </a>
-              <% if (isManager && !m._id.equals(group.admin._id)) { %>
-                <button class="btn btn-ghost small btn-remove-member" type="button">&times;</button>
-              <% } %>
-            </span>
-          <% }); %>
-        </div>
-      </section>
+      <div data-react="MemberList" data-props='<%- reactProps({ groupId: group._id, adminId: group.admin._id, isManager: isManager, members: group.members.map(function (m) { return { _id: m._id, username: m.username, displayName: m.displayName, avatar: m.avatar }; }) }) %>'></div>
     </aside>
   </div>
 

@@ -1372,7 +1372,8 @@ var require_groupController = __commonJS({
           title: group.name,
           group,
           isMember,
-          isManager: isManager || me.role === "admin"
+          isManager: isManager || me.role === "admin",
+          categories: Group.CATEGORIES
         });
       } catch (err) {
         next(err);

@@ -50,6 +50,7 @@ async function showGroup(req, res, next) {
       group,
       isMember,
       isManager: isManager || me.role === 'admin',
+      categories: Group.CATEGORIES,
     });
   } catch (err) {
     next(err);
