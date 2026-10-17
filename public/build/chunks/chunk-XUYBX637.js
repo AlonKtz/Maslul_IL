@@ -1,0 +1,1 @@
+import{a as e,b as n}from"./chunk-7EU2QGX2.js";function a(o,t){document.dispatchEvent(new CustomEvent("maslul:toast",{detail:{message:o,isError:!!t}}))}var r=e(n());function l({message:o}){return r.default.createElement("p",{className:"form-error",role:"alert",style:{display:o?"block":"none"}},o)}export{a,l as b};

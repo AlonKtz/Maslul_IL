@@ -12,7 +12,7 @@
     "seed": "node dist/seed/seed.js",
     "seed:live": "node dist/seed/seed.js live",
     "test": "node dist/tests/api.test.js && node dist/tests/chat.test.js",
-    "build:client": "esbuild \"client/pages/*.jsx\" --bundle --splitting --format=esm --minify --target=es2019 --outdir=public/build --chunk-names=chunks/[name]-[hash] --log-level=warning"
+    "build:client": "node -e \"require('fs').rmSync('public/build',{recursive:true,force:true})\" && esbuild \"client/pages/*.jsx\" --bundle --splitting --format=esm --minify --target=es2019 --outdir=public/build --chunk-names=chunks/[name]-[hash] --log-level=warning"
   },
   "keywords": [
     "social-network",
