@@ -14,7 +14,7 @@ import FormError from './FormError';
 */
 export default function Comments({
   url, initial, label = 'Add a comment', placeholder = 'Ask a question or say you are coming…',
-  buttonText = 'Post comment', postedText = 'Comment posted',
+  buttonText = 'Post comment', postedText = 'Comment posted', removedText = 'Comment removed',
 }) {
   const [comments, setComments] = useState(initial || []);
   const [text, setText] = useState('');
@@ -45,7 +45,7 @@ export default function Comments({
     try {
       await api.del(url + '/' + c._id);
       setComments((list) => list.filter((x) => x._id !== c._id));
-      toast('Comment removed');
+      toast(removedText);
     } catch (err) {
       toast(errorText(err), true);
     }
