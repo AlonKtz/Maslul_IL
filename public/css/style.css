@@ -1583,3 +1583,7 @@ body, .site-header, .site-footer, .search-panel, input, select, textarea {
 }
 
 [dir="rtl"] .nav-menu .nav-links a.is-active::after { inset: 10px -12px 10px auto; }
+/* a spot where a React component is placed (client/lib/mount.jsx). it takes
+   no room of its own, so the component sits in the layout as if the wrapper
+   was not there */
+.react-slot { display: contents; }

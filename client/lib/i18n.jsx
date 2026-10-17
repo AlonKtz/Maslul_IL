@@ -15,8 +15,6 @@
   The server reads the same cookie to put lang="he" dir="rtl" on the page, so
   the layout is right to left from the first paint.
 */
-(function () {
-  'use strict';
 
   // not a const: the switch in the top bar changes it without a reload
   var LANG = document.documentElement.lang === 'he' ? 'he' : 'en';
@@ -397,7 +395,6 @@
     'Managed by': 'בניהול',
     '(manager only)': '(למנהל/ת בלבד)',
     'Group:': 'קבוצה:',
-    'Brand': 'יצרן',
     'Off-road': 'שטח',
     'Classic': 'קלאסי',
     'EV': 'חשמלי',
@@ -899,4 +896,21 @@
     childList: true, subtree: true, characterData: true,
     attributes: true, attributeFilter: ATTRS,
   });
-})();
+
+// ---------------------------------------------------------------- for components
+// t('Dark mode') gives back the text in the current language. Most text is
+// translated on the page automatically, this is for things drawn on a canvas
+// or set as an attribute by a component.
+export function t(text) {
+  return window.I18N.t(text);
+}
+
+// the language currently shown, 'he' or 'en'
+export function currentLang() {
+  return window.I18N.lang;
+}
+
+// runs a change to the whole page as a smooth animation (see smoothSwitch)
+export function smoothSwitch(update, origin) {
+  return window.smoothSwitch(update, origin);
+}
